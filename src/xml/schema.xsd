@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="prodisfuzz" type="prodisfuzz"/>
+    <xsd:complexType name="prodisfuzz">
+        <xsd:sequence>
+            <xsd:element name="parts" type="parts"/>
+        </xsd:sequence>
+        <xsd:attribute name="datetime" type="xsd:dateTime" use="required"/>
+    </xsd:complexType>
+    <xsd:complexType name="parts">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="partvar" type="partvar" minOccurs="0"
+                         maxOccurs="unbounded"/>
+            <xsd:element name="partfix" type="partfix" minOccurs="0"
+                         maxOccurs="unbounded"/>
+            <xsd:element name="partsemivar" type="partsemivar" minOccurs="0"
+                         maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="content">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="byte" type="xsd:byte"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="partfix">
+        <xsd:sequence>
+            <xsd:element name="content" type="content"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="length"/>
+    </xsd:complexType>
+    <xsd:complexType name="partsemivar">
+        <xsd:sequence>
+            <xsd:element name="content" minOccurs="2" maxOccurs="unbounded"
+                         type="content"/>
+        </xsd:sequence>
+        <xsd:attributeGroup ref="length"/>
+    </xsd:complexType>
+    <xsd:complexType name="partvar">
+        <xsd:attributeGroup ref="length"/>
+    </xsd:complexType>
+    <xsd:attributeGroup name="length">
+        <xsd:attribute name="minlength" type="xsd:positiveInteger"
+                       use="required"/>
+        <xsd:attribute name="maxlength" type="xsd:positiveInteger"
+                       use="required"/>
+    </xsd:attributeGroup>
+</xsd:schema>

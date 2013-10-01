@@ -1,8 +1,14 @@
-/**
- * This file is part of the ProDisFuzz program.
- * (c) by Volker Nebelung, 2012
+/*
+ * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
  */
+
 package model;
+
+import model.logger.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,34 +16,10 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * The Class ProtocolFile implements all information about a collected protocol
- * file.
- *
- * @author Volker Nebelung
- * @version 1.0
- */
 public class ProtocolFile implements Comparable<ProtocolFile> {
 
-    /**
-     * The file.
-     */
     private final Path filePath;
-
-    /**
-     * The checked status.
-     */
-    private boolean checked;
-
-    /**
-     * The learned status.
-     */
-    private boolean learned;
-
-    /**
-     * The MD5 hash of the file.
-     */
-    private final String md5;
+    private String sha256;
 
     /**
      * Instantiates a new protocol file.
@@ -46,56 +28,45 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      */
     public ProtocolFile(final Path filePath) {
         this.filePath = filePath;
-        checked = true;
-        learned = false;
-        md5 = generateHash("MD5");
+        sha256 = "";
+        try {
+            sha256 = generateHash(MessageDigest.getInstance("SHA-256"));
+        } catch (NoSuchAlgorithmException e) {
+            Logger.getInstance().error(e);
+        }
     }
 
     /**
      * Generates a Hash for the file depending on the given message digest
      * algorithm.
      *
-     * @param messageDigestAlg the message digest algorithm
+     * @param algorithm the message digest algorithm
      * @return the hash for the file
      */
-    private String generateHash(final String messageDigestAlg) {
-        final StringBuffer hash = new StringBuffer();
-        MessageDigest messageDigest;
+    private String generateHash(final MessageDigest algorithm) {
+        final StringBuilder hash = new StringBuilder();
+        algorithm.reset();
+        byte[] bytes;
         try {
-            switch (messageDigestAlg) {
-                case "SHA1":
-                    messageDigest = MessageDigest.getInstance("SHA-1");
-                    break;
-                case "SHA-256":
-                    messageDigest = MessageDigest.getInstance("SHA-256");
-                    break;
-                default:
-                    messageDigest = MessageDigest.getInstance("MD5");
-                    break;
-            }
-            // Compute the hash
-            messageDigest.reset();
-            byte[] bytes;
-            try {
-                bytes = Files.readAllBytes(filePath);
-
-            } catch (IOException e) {
-                bytes = new byte[0];
-            }
-            messageDigest.update(bytes, 0, bytes.length);
-            final byte[] digest = messageDigest.digest();
-
+            bytes = Files.readAllBytes(filePath);
+            algorithm.update(bytes, 0, bytes.length);
+            final byte[] digest = algorithm.digest();
             String hex;
-            for (int i = 0; i < digest.length; i++) {
-                hex = Integer.toHexString(0xff & digest[i]);
+            for (final byte aDigest : digest) {
+                hex = Integer.toHexString(0xff & aDigest);
                 if (hex.length() == 1) {
                     hash.append('0');
                 }
                 hash.append(hex);
             }
-        } catch (NoSuchAlgorithmException e) {
+        } catch (IOException e) {
             hash.delete(0, hash.length());
-            hash.append(e.getMessage());
+            hash.append("File could not be read");
+            Logger.getInstance().error(e);
+        } catch (OutOfMemoryError e) {
+            hash.delete(0, hash.length());
+            hash.append("File too large");
+            Logger.getInstance().warning("File '" + getName() + "' is too large for checksum calculating");
         }
         return hash.toString();
     }
@@ -114,32 +85,14 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      *
      * @return the hash
      */
-    public String getMD5() {
-        return md5;
+    public String getSHA256() {
+        return sha256;
     }
 
     /**
-     * Checks if the file is checked.
+     * Gets the size of the file in the current file system.
      *
-     * @return true, if it is checked
-     */
-    public boolean isChecked() {
-        return checked;
-    }
-
-    /**
-     * Sets the checked status.
-     *
-     * @param state the new checked status
-     */
-    public void setChecked(final boolean state) {
-        checked = state;
-    }
-
-    /**
-     * Gets the file size (in bytes) or. Can be 0 if the file can not be read.
-     *
-     * @return the file size
+     * @return the file size or 0 if the file can not be read.
      */
     public long getSize() {
         long size;
@@ -149,15 +102,6 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             size = 0;
         }
         return size;
-    }
-
-    /**
-     * Gets the learned status.
-     *
-     * @return the learned status
-     */
-    public boolean isLearned() {
-        return learned;
     }
 
     /**
@@ -177,17 +121,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     /**
-     * Sets the learned status.
-     *
-     * @param learned the learned status to set
-     */
-    public void setLearnStatus(final boolean learned) {
-        this.learned = learned;
-    }
-
-    /**
-     * Gets the file content (in bytes) or an empty array if the file can not be
-     * read.
+     * Gets the file content (in bytes) or an empty array if the file can not be read or is too large.
      *
      * @return the file content
      */
@@ -196,16 +130,15 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         try {
             content = Files.readAllBytes(filePath);
         } catch (IOException e) {
+            Logger.getInstance().error("File '" + filePath.getFileName() + "' can not be read");
+            content = new byte[0];
+        } catch (OutOfMemoryError e) {
+            Logger.getInstance().error("File '" + filePath.getFileName() + "' is too large to be read");
             content = new byte[0];
         }
         return content;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
     @Override
     public int compareTo(final ProtocolFile otherFile) {
         // Custom comparison by comparing the name of the particular files

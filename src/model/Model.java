@@ -1,71 +1,60 @@
-/**
- * This file is part of the ProDisFuzz program.
- * (c) by Volker Nebelung, 2012
+/*
+ * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
  */
+
 package model;
 
+import model.connector.AbstractConnector;
+import model.logger.ExceptionHandler;
+import model.logger.Logger;
+import model.modificator.AbstractModificator;
 import model.process.*;
 
-/**
- * The Class Model implements the model of the MVC pattern.
- *
- * @author Volker Nebelung
- * @version 1.0
- */
-public class Model {
+public final class Model {
+
+    private static final Model INSTANCE = new Model();
+    private final CollectProcess collectProcess;
+    private final LearnProcess learnProcess;
+    private final ExportProcess exportProcess;
+    private final ImportProcess importProcess;
+    private final FuzzOptionsProcess fuzzOptionsProcess;
+    private final FuzzingProcess fuzzingProcess;
+    private final ReportProcess reportProcess;
+    private AbstractConnector connector;
+    private AbstractModificator modificator;
 
     /**
-     * The collect process.
+     * Instantiates a new singelton model.
      */
-    private final CollectP collectProcess;
+    private Model() {
+        collectProcess = new CollectProcess();
+        learnProcess = new LearnProcess();
+        exportProcess = new ExportProcess();
+        importProcess = new ImportProcess();
+        fuzzOptionsProcess = new FuzzOptionsProcess();
+        fuzzingProcess = new FuzzingProcess();
+        reportProcess = new ReportProcess();
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
+    }
 
     /**
-     * The check process.
+     * Gets the only instance of Logger.
      */
-    private final CheckP checkProcess;
+    public static Model getInstance() {
+        return INSTANCE;
+    }
 
     /**
-     * The learn process.
+     * Returns the current memory usage of ProDisFuzz.
+     *
+     * @return the current memory usage in bytes
      */
-    private final LearnP learnProcess;
-
-    /**
-     * The XML generation process.
-     */
-    private final XMLGenP xmlGenProcess;
-
-    /**
-     * The XML loading process.
-     */
-    private final LoadXMLP loadXmlProcess;
-
-    /**
-     * The fuzzing options process.
-     */
-    private final OptionsP optionsProcess;
-
-    /**
-     * The fuzzing process.
-     */
-    private final FuzzingP fuzzingProcess;
-
-    /**
-     * The report generation process.
-     */
-    private final ReportGenP reportGenProcess;
-
-    /**
-     * Instantiates a new model.
-     */
-    public Model() {
-        collectProcess = new CollectP();
-        checkProcess = new CheckP();
-        learnProcess = new LearnP();
-        xmlGenProcess = new XMLGenP();
-        loadXmlProcess = new LoadXMLP();
-        optionsProcess = new OptionsP();
-        fuzzingProcess = new FuzzingP();
-        reportGenProcess = new ReportGenP();
+    public static long getMemoryUsage() {
+        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
     /**
@@ -73,110 +62,75 @@ public class Model {
      * methods of all process classes.
      */
     public void reset() {
+        Logger.getInstance().reset();
         collectProcess.reset();
-        checkProcess.reset();
         learnProcess.reset();
-        xmlGenProcess.reset();
-        loadXmlProcess.reset();
-        optionsProcess.reset();
+        exportProcess.reset();
+        importProcess.reset();
+        fuzzOptionsProcess.reset();
         fuzzingProcess.reset();
-        reportGenProcess.reset();
     }
 
     /**
-     * Gets the collect process.
+     * Gets the collect process, responsible for collecting all communication files.
      *
      * @return the collect process
      */
-    public CollectP getCollectProcess() {
+    public CollectProcess getCollectProcess() {
         return collectProcess;
     }
 
     /**
-     * Gets the check process.
-     *
-     * @return the collect process
-     */
-    public CheckP getCheckProcess() {
-        return checkProcess;
-    }
-
-    /**
-     * Gets the learn process.
+     * Gets the learn process, responsible for learning the protocol structure.
      *
      * @return the learn process
      */
-    public LearnP getLearnProcess() {
+    public LearnProcess getLearnProcess() {
         return learnProcess;
     }
 
     /**
-     * Gets the XML generation process.
+     * Gets the export process, responsible for exporting the learned protocol structure into a XML format.
      *
-     * @return the XML generation process
+     * @return the export process
      */
-    public XMLGenP getXmlGenProcess() {
-        return xmlGenProcess;
+    public ExportProcess getExportProcess() {
+        return exportProcess;
     }
 
     /**
-     * Gets the XML loading process.
+     * Gets the import process, responsible for importing the learned protocol structure from a XML format.
      *
-     * @return the XML loading process
+     * @return the import process
      */
-    public LoadXMLP getLoadXmlProcess() {
-        return loadXmlProcess;
+    public ImportProcess getImportProcess() {
+        return importProcess;
     }
 
     /**
-     * Gets the fuzzing options process.
+     * Gets the fuzz options process, responsible for setting all relevant fuzzing options.
      *
-     * @return the fuzzing options process
+     * @return the fuzz options process
      */
-    public OptionsP getOptionsProcess() {
-        return optionsProcess;
+    public FuzzOptionsProcess getFuzzOptionsProcess() {
+        return fuzzOptionsProcess;
     }
 
     /**
-     * Gets the fuzzing process.
+     * Gets the fuzzing process, responsible for executing the fuzz testing.
      *
-     * @return the fuzzing process
+     * @return the fuzz options process
      */
-    public FuzzingP getFuzzingProcess() {
+    public FuzzingProcess getFuzzingProcess() {
         return fuzzingProcess;
     }
 
     /**
-     * Gets the report generation process.
+     * Gets the fuzreportzing process, responsible for generating the final report.
      *
-     * @return the report generation process
+     * @return the report process
      */
-    public ReportGenP getReportGenProcess() {
-        return reportGenProcess;
-    }
-
-    /**
-     * Updates all observers of the model by calling the spreadUpdate methods of
-     * all process classes.
-     */
-    public void spreadUpdate() {
-        collectProcess.spreadUpdate(true);
-        checkProcess.spreadUpdate(true);
-        learnProcess.spreadUpdate(true);
-        xmlGenProcess.spreadUpdate(true);
-        loadXmlProcess.spreadUpdate(true);
-        optionsProcess.spreadUpdate(true);
-        fuzzingProcess.spreadUpdate(true);
-        reportGenProcess.spreadUpdate(true);
-    }
-
-    /**
-     * Returns the current memory usage of ProDisFuzz in bytes.
-     *
-     * @return the current memory usage in bytes
-     */
-    public static long getMemoryUsage() {
-        return (Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
-                .freeMemory());
+    public ReportProcess getReportProcess() {
+        return reportProcess;
     }
 }

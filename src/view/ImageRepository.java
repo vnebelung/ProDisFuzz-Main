@@ -1,58 +1,34 @@
-/**
- * This file is part of the ProDisFuzz program.
- * (c) by Volker Nebelung, 2012
+/*
+ * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
  */
 package view;
 
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
+import javax.swing.*;
 
-/**
- * The Class ImageRepository is responsible for managing all icons which can be
- * displayed in a composite.
- *
- * @author Volker Nebelung
- * @version 1.0
- */
 public final class ImageRepository {
 
-    /**
-     * Private class attribute. Only 1 instance
-     */
     private static final ImageRepository INSTANCE = new ImageRepository();
+    private final Icon errorIcon;
+    private final Icon workingIcon;
+    private final Icon okIcon;
+    private final Icon logo;
 
     /**
-     * The error icon.
-     */
-    private final Image errorIcon = new Image(Display.getCurrent(), getClass()
-            .getResourceAsStream("/icons/error.png"));
-
-    /**
-     * The warning icon.
-     */
-    private final Image workingIcon = new Image(Display.getCurrent(),
-            getClass().getResourceAsStream("/icons/working.png"));
-
-    /**
-     * The ok icon.
-     */
-    private final Image okIcon = new Image(Display.getCurrent(), getClass()
-            .getResourceAsStream("/icons/ok.png"));
-
-    /**
-     * The ProDisFuzz logo.
-     */
-    private final Image logo = new Image(Display.getCurrent(), getClass()
-            .getResourceAsStream("/icons/logo.png"));
-
-    /**
-     * Singelton Constructor.
+     * Singelton constructor.
      */
     private ImageRepository() {
+        errorIcon = new ImageIcon(getClass().getResource("/icons/error.png"));
+        workingIcon = new ImageIcon(getClass().getResource("/icons/working.png"));
+        okIcon = new ImageIcon(getClass().getResource("/icons/ok.png"));
+        logo = new ImageIcon(getClass().getResource("/icons/logo.png"));
     }
 
     /**
-     * Gets the only instance of ImagerRepository.
+     * Gets the only instance of ImageRepository.
      */
     public static ImageRepository getInstance() {
         return INSTANCE;
@@ -63,7 +39,7 @@ public final class ImageRepository {
      *
      * @return the warning icon
      */
-    public Image getWorkingIcon() {
+    public Icon getWorkingIcon() {
         return workingIcon;
     }
 
@@ -72,7 +48,7 @@ public final class ImageRepository {
      *
      * @return the error icon
      */
-    public Image getErrorIcon() {
+    public Icon getErrorIcon() {
         return errorIcon;
     }
 
@@ -81,7 +57,7 @@ public final class ImageRepository {
      *
      * @return the ok icon
      */
-    public Image getOkIcon() {
+    public Icon getOkIcon() {
         return okIcon;
     }
 
@@ -90,7 +66,7 @@ public final class ImageRepository {
      *
      * @return the logo
      */
-    public Image getLogo() {
+    public Icon getLogo() {
         return logo;
     }
 

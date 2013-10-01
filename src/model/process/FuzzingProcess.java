@@ -1,0 +1,239 @@
+/*
+ * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ */
+
+package model.process;
+
+import model.InjectedProtocolPart;
+import model.Model;
+import model.SavedDataFile;
+import model.logger.Logger;
+import model.runnable.FuzzingRunnable;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.Duration;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Observable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+public class FuzzingProcess extends AbstractThreadProcess {
+
+    private List<InjectedProtocolPart> injectedProtocolParts;
+    private List<SavedDataFile> savedDataFiles;
+    private Duration duration;
+    private long startTime;
+    private FuzzingRunnable runnable;
+    private FuzzOptionsProcess.InjectionMethod injectionMethod;
+    private Future fuzzingFuture;
+
+    /**
+     * Instantiates a new fuzzing process.
+     */
+    public FuzzingProcess() {
+        super();
+        injectedProtocolParts = new ArrayList<>();
+        savedDataFiles = new ArrayList<>();
+    }
+
+    @Override
+    public void init() {
+        injectedProtocolParts = new ArrayList<>(Model.getInstance().getFuzzOptionsProcess().getInjectedProtocolParts());
+        savedDataFiles = new ArrayList<>();
+        final InetSocketAddress target = Model.getInstance().getFuzzOptionsProcess().getTarget();
+        final int interval = Model.getInstance().getFuzzOptionsProcess().getInterval();
+        final int timeout = Model.getInstance().getFuzzOptionsProcess().getTimeout();
+        final FuzzOptionsProcess.CommunicationSave saveCommunication = Model.getInstance().getFuzzOptionsProcess()
+                .getSaveCommunication();
+        injectionMethod = Model.getInstance().getFuzzOptionsProcess().getInjectionMethod();
+        // Work steps depending on the previous chosen fuzz options
+        workTotal = calcWorkTotal();
+        workProgress = 0;
+        startTime = -1;
+        try {
+            duration = DatatypeFactory.newInstance().newDuration(0);
+        } catch (DatatypeConfigurationException e) {
+            Logger.getInstance().error(e);
+        }
+        runnable = new FuzzingRunnable(injectionMethod, injectedProtocolParts, target, timeout, interval,
+                saveCommunication);
+        runnable.addObserver(this);
+        spreadUpdate();
+    }
+
+    @Override
+    public void interrupt() {
+        if (fuzzingFuture.isDone()) {
+            return;
+        }
+        fuzzingFuture.cancel(true);
+        Logger.getInstance().warning("Fuzzing process interrupted");
+        spreadUpdate();
+    }
+
+    @Override
+    public void start() {
+        Logger.getInstance().info("Fuzzing process started");
+        workProgress = 0;
+        fuzzingFuture = EXECUTOR.submit(runnable);
+        spreadUpdate();
+    }
+
+    @Override
+    protected void complete() {
+        try {
+            fuzzingFuture.get();
+        } catch (InterruptedException e) {
+            interrupt();
+            return;
+        } catch (ExecutionException e) {
+            Logger.getInstance().error(e);
+            interrupt();
+            return;
+        }
+        Logger.getInstance().info("Learn process successfully completed");
+    }
+
+    @Override
+    public boolean isRunning() {
+        return fuzzingFuture != null && !fuzzingFuture.isDone();
+    }
+
+    @Override
+    public void reset() {
+        injectedProtocolParts.clear();
+        try {
+            for (final SavedDataFile savedDataFile : savedDataFiles) {
+                Files.delete(savedDataFile.getFilePath());
+            }
+        } catch (IOException ignored) {
+        }
+        savedDataFiles.clear();
+        startTime = -1;
+        try {
+            duration = DatatypeFactory.newInstance().newDuration(0);
+        } catch (DatatypeConfigurationException e) {
+            Logger.getInstance().error(e);
+        }
+        spreadUpdate();
+    }
+
+    /**
+     * Calculates the amount of work for this process.
+     *
+     * @return the number of work steps
+     */
+    private int calcWorkTotal() {
+        switch (injectionMethod) {
+            case SEPARATE:
+                return calcWorkTotalSeparate();
+            case SIMULTANEOUS:
+                return calcWorkTotalSimultaneous();
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Calculates the amount of work for the SEPARATE injection method.
+     *
+     * @return the number of work steps
+     */
+    private int calcWorkTotalSeparate() {
+        int work = 1;
+        for (final InjectedProtocolPart injectedProtocolPart : Model.getInstance().getFuzzOptionsProcess()
+                .filterVarParts(injectedProtocolParts)) {
+            switch (injectedProtocolPart.getDataInjectionMethod()) {
+                case LIBRARY:
+                    work += injectedProtocolPart.getNumOfLibraryLines();
+                    break;
+                case RANDOM:
+                    return -1;
+                default:
+                    return 0;
+            }
+        }
+        return work;
+    }
+
+    /**
+     * Calculates the amount of work for the SIMULTANEOUS injection method.
+     *
+     * @return the number of work steps
+     */
+    private int calcWorkTotalSimultaneous() {
+        final InjectedProtocolPart injectedProtocolPart = Model.getInstance().getFuzzOptionsProcess().filterVarParts
+                (injectedProtocolParts).get(0);
+        switch (injectedProtocolPart.getDataInjectionMethod()) {
+            case LIBRARY:
+                return injectedProtocolPart.getNumOfLibraryLines() + 1;
+            case RANDOM:
+                return -1;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Gets the time the fuzzing was started.
+     *
+     * @return the start time of the fuzzing process
+     */
+    public long getStartTime() {
+        return startTime;
+    }
+
+    @Override
+    public void update(final Observable o, final Object arg) {
+        final FuzzingRunnable data = (FuzzingRunnable) o;
+        if (data.isFinished()) {
+            complete();
+        }
+        startTime = data.getStartTime();
+        try {
+            duration = DatatypeFactory.newInstance().newDuration(data.getDuration());
+        } catch (DatatypeConfigurationException e) {
+            Logger.getInstance().error(e);
+        }
+        savedDataFiles = new ArrayList<>(data.getSavedDataFiles());
+        increaseWorkProgress();
+    }
+
+    /**
+     * Gets the number of recorded data files.
+     *
+     * @return the number of recorded data files
+     */
+    public int getNumOfRecords() {
+        return savedDataFiles.size();
+    }
+
+    /**
+     * Gets the saved data files.
+     *
+     * @return the saved data files
+     */
+    public List<SavedDataFile> getSavedDataFiles() {
+        return Collections.unmodifiableList(savedDataFiles);
+    }
+
+    /**
+     * Gets the fuzzing duration.
+     *
+     * @return the fuzzing duration
+     */
+    public Duration getDuration() {
+        return duration;
+    }
+
+}

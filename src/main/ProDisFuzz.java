@@ -1,35 +1,28 @@
-/**
- * This file is part of the ProDisFuzz program.
- * (c) by Volker Nebelung, 2012
+/*
+ * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
  */
+
 package main;
 
-import controller.Controller;
 import model.Model;
 import view.View;
 
-/**
- * @author Volker Nebelung
- * @version 1.0
- *          <p/>
- *          Implements the MVC pattern of ProDisFuzz.
- */
 public final class ProDisFuzz {
 
-    /**
-     * The model component of the MVC pattern.
-     */
-    private static Model model;
+    private final Model model;
+    private final View view;
 
     /**
-     * The view component of the MVC pattern.
+     * Instantiates a new instance of ProDisFuzz.
      */
-    private static View view;
-
-    /**
-     * The controller component of the MVC pattern.
-     */
-    private static Controller controller;
+    private ProDisFuzz() {
+        model = Model.getInstance();
+        view = new View();
+    }
 
     /**
      * Main method of ProDisFuzz.
@@ -37,23 +30,17 @@ public final class ProDisFuzz {
      * @param args the arguments
      */
     public static void main(final String[] args) {
-        view = new View();
-        model = new Model();
-        controller = new Controller(model, view);
-        // Adds the observers in the observer pattern
-        controller.assignObservers();
-        // Adds the listeners to all view elements
-        controller.addListeners();
-        // Sends an initial update signal to update the view
-        model.spreadUpdate();
-        // Displays the view
-        view.show();
+        final ProDisFuzz pdf = new ProDisFuzz();
+        pdf.init();
     }
 
     /**
-     * Instantiates a new ProDisFuzz.
+     * Prepares ProDisFuzz for the initial start.
      */
-    private ProDisFuzz() {
+    private void init() {
+        // Send an initial reset to update the view
+        model.reset();
+        // Make the window
+        view.show();
     }
-
 }

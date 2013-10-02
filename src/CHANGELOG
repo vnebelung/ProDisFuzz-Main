@@ -1,3 +1,10 @@
+2013-10-01 - Version 2 "Green River":
+
+- GUI changed from SWT to Swing
+- Internal changes in code architecture
+- New logging mechanism implemented
+- Better visualization of protocol structure
+
 2013-05-19 - Version 1:
 
 First release

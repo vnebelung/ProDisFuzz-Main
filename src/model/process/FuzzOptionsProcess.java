@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -46,7 +46,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
 
     @Override
     public void init() {
-        for (final ProtocolPart part : Model.getInstance().getImportProcess().getProtocolParts()) {
+        for (final ProtocolPart part : Model.INSTANCE.getImportProcess().getProtocolParts()) {
             injectedProtocolParts.add(new InjectedProtocolPart(part));
         }
         target = new InetSocketAddress("", PORT_MIN);

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:37.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -46,7 +46,7 @@ public abstract class AbstractPage extends JPanel {
         navCancel = new JButton(new AbstractAction("Cancel") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().reset();
+                Model.INSTANCE.reset();
                 frame.showModePage();
             }
         });
@@ -62,7 +62,7 @@ public abstract class AbstractPage extends JPanel {
         navFinish = new JButton(new AbstractAction("Finish") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().reset();
+                Model.INSTANCE.reset();
                 frame.showModePage();
             }
         });

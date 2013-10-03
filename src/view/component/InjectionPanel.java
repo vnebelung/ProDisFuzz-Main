@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -41,7 +41,7 @@ public class InjectionPanel extends JPanel {
         randomButton = new JRadioButton(new AbstractAction("Random") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setRandomInjectionForPart(processHash);
+                Model.INSTANCE.getFuzzOptionsProcess().setRandomInjectionForPart(processHash);
             }
         });
         add(randomButton, "0, 0, c, c");
@@ -49,7 +49,7 @@ public class InjectionPanel extends JPanel {
         libraryButton = new JRadioButton(new AbstractAction("File:") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setLibraryInjectionForPart(processHash);
+                Model.INSTANCE.getFuzzOptionsProcess().setLibraryInjectionForPart(processHash);
             }
         });
         add(libraryButton, "1, 0, c, c");
@@ -94,17 +94,17 @@ public class InjectionPanel extends JPanel {
         return new DocumentListener() {
             @Override
             public void insertUpdate(final DocumentEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
+                Model.INSTANCE.getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
             }
 
             @Override
             public void removeUpdate(final DocumentEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
+                Model.INSTANCE.getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
             }
 
             @Override
             public void changedUpdate(final DocumentEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
+                Model.INSTANCE.getFuzzOptionsProcess().setLibraryFile(libraryText.getText(), processHash);
             }
         };
     }

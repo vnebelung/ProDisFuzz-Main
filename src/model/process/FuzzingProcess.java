@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -48,14 +48,14 @@ public class FuzzingProcess extends AbstractThreadProcess {
 
     @Override
     public void init() {
-        injectedProtocolParts = new ArrayList<>(Model.getInstance().getFuzzOptionsProcess().getInjectedProtocolParts());
+        injectedProtocolParts = new ArrayList<>(Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolParts());
         savedDataFiles = new ArrayList<>();
-        final InetSocketAddress target = Model.getInstance().getFuzzOptionsProcess().getTarget();
-        final int interval = Model.getInstance().getFuzzOptionsProcess().getInterval();
-        final int timeout = Model.getInstance().getFuzzOptionsProcess().getTimeout();
-        final FuzzOptionsProcess.CommunicationSave saveCommunication = Model.getInstance().getFuzzOptionsProcess()
+        final InetSocketAddress target = Model.INSTANCE.getFuzzOptionsProcess().getTarget();
+        final int interval = Model.INSTANCE.getFuzzOptionsProcess().getInterval();
+        final int timeout = Model.INSTANCE.getFuzzOptionsProcess().getTimeout();
+        final FuzzOptionsProcess.CommunicationSave saveCommunication = Model.INSTANCE.getFuzzOptionsProcess()
                 .getSaveCommunication();
-        injectionMethod = Model.getInstance().getFuzzOptionsProcess().getInjectionMethod();
+        injectionMethod = Model.INSTANCE.getFuzzOptionsProcess().getInjectionMethod();
         // Work steps depending on the previous chosen fuzz options
         workTotal = calcWorkTotal();
         workProgress = 0;
@@ -151,8 +151,8 @@ public class FuzzingProcess extends AbstractThreadProcess {
      */
     private int calcWorkTotalSeparate() {
         int work = 1;
-        for (final InjectedProtocolPart injectedProtocolPart : Model.getInstance().getFuzzOptionsProcess()
-                .filterVarParts(injectedProtocolParts)) {
+        for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
+                (injectedProtocolParts)) {
             switch (injectedProtocolPart.getDataInjectionMethod()) {
                 case LIBRARY:
                     work += injectedProtocolPart.getNumOfLibraryLines();
@@ -172,7 +172,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
      * @return the number of work steps
      */
     private int calcWorkTotalSimultaneous() {
-        final InjectedProtocolPart injectedProtocolPart = Model.getInstance().getFuzzOptionsProcess().filterVarParts
+        final InjectedProtocolPart injectedProtocolPart = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
                 (injectedProtocolParts).get(0);
         switch (injectedProtocolPart.getDataInjectionMethod()) {
             case LIBRARY:

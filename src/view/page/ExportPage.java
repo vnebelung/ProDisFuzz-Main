@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -35,7 +35,7 @@ public class ExportPage extends AbstractPage implements Observer {
         super(frame);
         disableNext();
         enableFinish();
-        Model.getInstance().getExportProcess().addObserver(this);
+        Model.INSTANCE.getExportProcess().addObserver(this);
         final double[][] areaLayout = {{0.1, 30, TableLayout.FILL}, {TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
 
@@ -49,7 +49,7 @@ public class ExportPage extends AbstractPage implements Observer {
             public void actionPerformed(final ActionEvent e) {
                 final int choose = fileChooser.showSaveDialog(frame);
                 if (choose == JFileChooser.APPROVE_OPTION) {
-                    Model.getInstance().getExportProcess().export(fileChooser.getSelectedFile().toPath());
+                    Model.INSTANCE.getExportProcess().export(fileChooser.getSelectedFile().toPath());
                 }
             }
         });

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -48,7 +48,7 @@ public class LearnProcess extends AbstractThreadProcess {
 
     @Override
     public void init() {
-        files = new ArrayList<>(Model.getInstance().getCollectProcess().getSelectedFiles());
+        files = new ArrayList<>(Model.INSTANCE.getCollectProcess().getSelectedFiles());
         // Convert + Select + Hirschberg + Parts + Clean + Parts
         workTotal = 1 + files.size() - 1 + files.size() - 1 + files.size() - 1 + 1 + 1;
         workProgress = 0;

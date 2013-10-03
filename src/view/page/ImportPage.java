@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -36,7 +36,7 @@ public class ImportPage extends AbstractPage implements Observer {
      */
     public ImportPage(final Frame frame) {
         super(frame);
-        Model.getInstance().getImportProcess().addObserver(this);
+        Model.INSTANCE.getImportProcess().addObserver(this);
         final double[][] areaLayout = {{0.2, 10, TableLayout.FILL, 10, 0.2}, {0.1, 0.2, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
 
@@ -84,17 +84,17 @@ public class ImportPage extends AbstractPage implements Observer {
         return new DocumentListener() {
             @Override
             public void insertUpdate(final DocumentEvent e) {
-                Model.getInstance().getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
             }
 
             @Override
             public void removeUpdate(final DocumentEvent e) {
-                Model.getInstance().getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
             }
 
             @Override
             public void changedUpdate(final DocumentEvent e) {
-                Model.getInstance().getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
             }
         };
     }
@@ -119,7 +119,7 @@ public class ImportPage extends AbstractPage implements Observer {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().init();
+                Model.INSTANCE.getFuzzOptionsProcess().init();
                 frame.showFuzzOptionsPage();
             }
         };

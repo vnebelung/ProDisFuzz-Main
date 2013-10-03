@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -38,7 +38,7 @@ public class LearnPage extends AbstractPage implements Observer {
      */
     public LearnPage(final Frame frame) {
         super(frame);
-        Model.getInstance().getLearnProcess().addObserver(this);
+        Model.INSTANCE.getLearnProcess().addObserver(this);
         final double[][] areaLayout = {{0.1, 30, TableLayout.FILL}, {0.1, 0.1, 0.1, 0.2, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
 
@@ -89,7 +89,7 @@ public class LearnPage extends AbstractPage implements Observer {
         }
 
         final DecimalFormat numberFormat = new DecimalFormat("#0.00");
-        memoryLabel.setText(numberFormat.format(Model.getMemoryUsage() / 1024 / 1024) + " MB memory usage");
+        memoryLabel.setText(numberFormat.format(Model.INSTANCE.getMemoryUsage() / 1024 / 1024) + " MB memory usage");
 
         synchronized (this) {
             protocolPane.addProtocolText(data.getProtocolParts());
@@ -117,7 +117,7 @@ public class LearnPage extends AbstractPage implements Observer {
         return new AbstractAction("Start") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getLearnProcess().start();
+                Model.INSTANCE.getLearnProcess().start();
             }
         };
     }
@@ -131,7 +131,7 @@ public class LearnPage extends AbstractPage implements Observer {
         return new AbstractAction("Stop") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getLearnProcess().interrupt();
+                Model.INSTANCE.getLearnProcess().interrupt();
             }
         };
     }
@@ -141,7 +141,7 @@ public class LearnPage extends AbstractPage implements Observer {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getExportProcess().init();
+                Model.INSTANCE.getExportProcess().init();
                 frame.showExportPage();
             }
         };

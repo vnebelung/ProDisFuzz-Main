@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -61,7 +61,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
     public FuzzOptionsPage(final Frame frame) {
         super(frame);
         this.frame = frame;
-        Model.getInstance().getFuzzOptionsProcess().addObserver(this);
+        Model.INSTANCE.getFuzzOptionsProcess().addObserver(this);
         final double[][] areaLayout = {{TableLayout.FILL}, {TableLayout.MINIMUM, 2 * Frame.SPACE,
                 TableLayout.MINIMUM, 2 * Frame.SPACE, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -151,7 +151,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         simInjectionButton = new JRadioButton(new AbstractAction("Simultaneous") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setSimultaneousInjectionMode();
+                Model.INSTANCE.getFuzzOptionsProcess().setSimultaneousInjectionMode();
             }
         });
         miscPanel.add(simInjectionButton, "6, 0, l, c");
@@ -159,7 +159,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         sepInjectionButton = new JRadioButton(new AbstractAction("Separate") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setSeparateInjectionMethod();
+                Model.INSTANCE.getFuzzOptionsProcess().setSeparateInjectionMethod();
             }
         });
         miscPanel.add(sepInjectionButton, "6, 1, l, c");
@@ -174,7 +174,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         saveCriticalComButton = new JRadioButton(new AbstractAction("Only critical") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setSaveCriticalCommunication();
+                Model.INSTANCE.getFuzzOptionsProcess().setSaveCriticalCommunication();
             }
         });
         miscPanel.add(saveCriticalComButton, "10, 0, l, c");
@@ -182,7 +182,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         saveAllComButton = new JRadioButton(new AbstractAction("All") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzOptionsProcess().setSaveAllCommunication();
+                Model.INSTANCE.getFuzzOptionsProcess().setSaveAllCommunication();
             }
         });
         miscPanel.add(saveAllComButton, "10, 1, l, c");
@@ -219,7 +219,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         if (targetTimer == null) {
             targetTimer = new javax.swing.Timer(10, new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    Model.getInstance().getFuzzOptionsProcess().setTarget(targetAddressText.getText(),
+                    Model.INSTANCE.getFuzzOptionsProcess().setTarget(targetAddressText.getText(),
                             (int) targetPortSpinner.getModel().getValue());
                 }
             });
@@ -240,7 +240,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         if (timeoutTimer == null) {
             timeoutTimer = new javax.swing.Timer(10, new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    Model.getInstance().getFuzzOptionsProcess().setTimeout((int) timeoutSpinner.getValue());
+                    Model.INSTANCE.getFuzzOptionsProcess().setTimeout((int) timeoutSpinner.getValue());
                 }
             });
             timeoutTimer.setInitialDelay(1500);
@@ -260,7 +260,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         if (intervalTimer == null) {
             intervalTimer = new javax.swing.Timer(10, new ActionListener() {
                 public void actionPerformed(final ActionEvent e) {
-                    Model.getInstance().getFuzzOptionsProcess().setInterval((int) intervalSpinner.getValue());
+                    Model.INSTANCE.getFuzzOptionsProcess().setInterval((int) intervalSpinner.getValue());
                 }
             });
             intervalTimer.setInitialDelay(1500);
@@ -348,7 +348,7 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzingProcess().init();
+                Model.INSTANCE.getFuzzingProcess().init();
                 frame.showFuzzingPage();
             }
         };

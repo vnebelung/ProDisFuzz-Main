@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:37.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -14,9 +14,10 @@ import model.logger.Logger;
 import model.modificator.AbstractModificator;
 import model.process.*;
 
-public final class Model {
+public enum Model {
 
-    private static final Model INSTANCE = new Model();
+    INSTANCE;
+
     private final CollectProcess collectProcess;
     private final LearnProcess learnProcess;
     private final ExportProcess exportProcess;
@@ -42,18 +43,11 @@ public final class Model {
     }
 
     /**
-     * Gets the only instance of Logger.
-     */
-    public static Model getInstance() {
-        return INSTANCE;
-    }
-
-    /**
      * Returns the current memory usage of ProDisFuzz.
      *
      * @return the current memory usage in bytes
      */
-    public static long getMemoryUsage() {
+    public long getMemoryUsage() {
         return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 

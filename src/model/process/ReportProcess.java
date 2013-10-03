@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -559,16 +559,16 @@ public class ReportProcess extends AbstractProcess {
 
     @Override
     public void init() {
-        this.savedDataFiles = new ArrayList<>(Model.getInstance().getFuzzingProcess().getSavedDataFiles());
-        this.duration = Model.getInstance().getFuzzingProcess().getDuration();
-        this.target = new InetSocketAddress(Model.getInstance().getFuzzOptionsProcess().getTarget().getHostName(),
-                Model.getInstance().getFuzzOptionsProcess().getTarget().getPort());
-        this.interval = Model.getInstance().getFuzzOptionsProcess().getInterval();
-        this.protocolParts = new ArrayList<>(Model.getInstance().getFuzzOptionsProcess().getInjectedProtocolParts());
-        this.workProgress = Model.getInstance().getFuzzingProcess().getWorkProgress();
-        this.workTotal = Model.getInstance().getFuzzingProcess().getWorkTotal();
-        this.saveCommunication = Model.getInstance().getFuzzOptionsProcess().getSaveCommunication();
-        this.timeout = Model.getInstance().getFuzzOptionsProcess().getTimeout();
+        this.savedDataFiles = new ArrayList<>(Model.INSTANCE.getFuzzingProcess().getSavedDataFiles());
+        this.duration = Model.INSTANCE.getFuzzingProcess().getDuration();
+        this.target = new InetSocketAddress(Model.INSTANCE.getFuzzOptionsProcess().getTarget().getHostName(),
+                Model.INSTANCE.getFuzzOptionsProcess().getTarget().getPort());
+        this.interval = Model.INSTANCE.getFuzzOptionsProcess().getInterval();
+        this.protocolParts = new ArrayList<>(Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolParts());
+        this.workProgress = Model.INSTANCE.getFuzzingProcess().getWorkProgress();
+        this.workTotal = Model.INSTANCE.getFuzzingProcess().getWorkTotal();
+        this.saveCommunication = Model.INSTANCE.getFuzzOptionsProcess().getSaveCommunication();
+        this.timeout = Model.INSTANCE.getFuzzOptionsProcess().getTimeout();
     }
 
     /**

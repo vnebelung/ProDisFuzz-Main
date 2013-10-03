@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -142,12 +142,12 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> sepFinMessage() {
-        if (currentLibraryLine >= Model.getInstance().getFuzzOptionsProcess().filterVarParts(injectedProtocolParts)
-                .get(currentInjectedProtocolPart).getNumOfLibraryLines()) {
+        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get
+                (currentInjectedProtocolPart).getNumOfLibraryLines()) {
             currentLibraryLine = 0;
             currentInjectedProtocolPart++;
         }
-        if (currentInjectedProtocolPart >= Model.getInstance().getFuzzOptionsProcess().filterVarParts
+        if (currentInjectedProtocolPart >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
                 (injectedProtocolParts).size()) {
             return null;
         }
@@ -159,10 +159,9 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
                     bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
                     break;
                 case VAR:
-                    bytes.addAll(injectedProtocolPart.equals(Model.getInstance().getFuzzOptionsProcess()
-                            .filterVarParts(injectedProtocolParts).get(currentInjectedProtocolPart)) ?
-                            injectedProtocolPart.getLibraryLine(currentLibraryLine) : injectedProtocolPart
-                            .getRandomLibraryLine());
+                    bytes.addAll(injectedProtocolPart.equals(Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
+                            (injectedProtocolParts).get(currentInjectedProtocolPart)) ? injectedProtocolPart
+                            .getLibraryLine(currentLibraryLine) : injectedProtocolPart.getRandomLibraryLine());
                     break;
                 default:
                     break;
@@ -178,13 +177,13 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> simFinMessage() {
-        if (currentLibraryLine >= Model.getInstance().getFuzzOptionsProcess().filterVarParts(injectedProtocolParts)
-                .get(0).getNumOfLibraryLines()) {
+        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get(0)
+                .getNumOfLibraryLines()) {
             return null;
         }
         final List<Byte> bytes = new ArrayList<>();
-        final List<Byte> line = Model.getInstance().getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get
-                (0).getLibraryLine(currentLibraryLine);
+        final List<Byte> line = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get(0)
+                .getLibraryLine(currentLibraryLine);
         for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
             switch (injectedProtocolPart.getProtocolPart().getType()) {
                 case FIX:
@@ -208,8 +207,8 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
      * @return true if all variable protocol parts use library files
      */
     private boolean finiteIterations() {
-        for (final InjectedProtocolPart injectedProtocolPart : Model.getInstance().getFuzzOptionsProcess()
-                .filterVarParts(injectedProtocolParts)) {
+        for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
+                (injectedProtocolParts)) {
             if (injectedProtocolPart.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.RANDOM) {
                 return false;
             }

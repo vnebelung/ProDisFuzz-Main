@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -41,7 +41,7 @@ public class FuzzingPage extends AbstractPage implements Observer {
      */
     public FuzzingPage(final Frame frame) {
         super(frame);
-        Model.getInstance().getFuzzingProcess().addObserver(this);
+        Model.INSTANCE.getFuzzingProcess().addObserver(this);
         final double[][] areaLayout = {{TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.FILL},
                 {TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.MINIMUM}};
         area.setLayout(new TableLayout(areaLayout));
@@ -128,7 +128,7 @@ public class FuzzingPage extends AbstractPage implements Observer {
         return new AbstractAction("Start") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzingProcess().start();
+                Model.INSTANCE.getFuzzingProcess().start();
             }
         };
     }
@@ -142,7 +142,7 @@ public class FuzzingPage extends AbstractPage implements Observer {
         return new AbstractAction("Stop") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getFuzzingProcess().interrupt();
+                Model.INSTANCE.getFuzzingProcess().interrupt();
             }
         };
     }
@@ -178,7 +178,7 @@ public class FuzzingPage extends AbstractPage implements Observer {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                Model.getInstance().getReportProcess().init();
+                Model.INSTANCE.getReportProcess().init();
                 frame.showReportPage();
             }
         };

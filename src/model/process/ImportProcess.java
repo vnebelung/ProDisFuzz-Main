@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,8 +8,8 @@
 
 package model.process;
 
+import model.Model;
 import model.ProtocolPart;
-import model.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -62,13 +62,13 @@ public class ImportProcess extends AbstractProcess {
     public void importFile(final String path) {
         final Path file = Paths.get(path).toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
-            Logger.getInstance().error("File '" + file.toString() + "' is not a regular file");
+            Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not a regular file");
             imported = false;
             spreadUpdate();
             return;
         }
         if (!Files.isReadable(file)) {
-            Logger.getInstance().error("File '" + file.toString() + "' is not readable");
+            Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not readable");
             imported = false;
             spreadUpdate();
             return;
@@ -85,9 +85,9 @@ public class ImportProcess extends AbstractProcess {
             protocolParts = readXMLParts(document);
             imported = true;
             spreadUpdate();
-            Logger.getInstance().info("XML file successfully imported");
+            Model.INSTANCE.getLogger().info("XML file successfully imported");
         } catch (IOException | SAXException | ParserConfigurationException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
             imported = false;
             spreadUpdate();
         }
@@ -179,19 +179,19 @@ public class ImportProcess extends AbstractProcess {
         final ErrorHandler errorHandler = new ErrorHandler() {
             @Override
             public void warning(final SAXParseException e) throws SAXException {
-                Logger.getInstance().warning(e.getMessage());
+                Model.INSTANCE.getLogger().warning(e.getMessage());
                 success[0] = false;
             }
 
             @Override
             public void fatalError(final SAXParseException e) throws SAXException {
-                Logger.getInstance().error(e);
+                Model.INSTANCE.getLogger().error(e);
                 success[0] = false;
             }
 
             @Override
             public void error(final SAXParseException e) throws SAXException {
-                Logger.getInstance().error(e);
+                Model.INSTANCE.getLogger().error(e);
                 success[0] = false;
             }
         };

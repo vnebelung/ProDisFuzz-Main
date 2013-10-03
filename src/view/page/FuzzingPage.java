@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,7 +10,6 @@ package view.page;
 
 import info.clearthought.layout.TableLayout;
 import model.Model;
-import model.logger.Logger;
 import model.process.FuzzingProcess;
 import view.ImageRepository;
 import view.component.Frame;
@@ -96,8 +95,8 @@ public class FuzzingPage extends AbstractPage implements Observer {
                 .getWorkTotal()));
 
         statusLabel.setText(data.isRunning() ? "Fuzzing process is running ..." : "Ready to start");
-        statusIcon.setIcon(data.isRunning() ? ImageRepository.getInstance().getWorkingIcon() : ImageRepository
-                .getInstance().getOkIcon());
+        statusIcon.setIcon(data.isRunning() ? ImageRepository.INSTANCE.getWorkingIcon() : ImageRepository.INSTANCE
+                .getOkIcon());
 
         if (data.isRunning()) {
             disableCancel();
@@ -160,7 +159,7 @@ public class FuzzingPage extends AbstractPage implements Observer {
                         timeCountLabel.setText(timeFormat.format(duration.getHours()) + ":" + timeFormat.format
                                 (duration.getMinutes()) + ":" + timeFormat.format(duration.getSeconds()));
                     } catch (DatatypeConfigurationException e1) {
-                        Logger.getInstance().error(e1);
+                        Model.INSTANCE.getLogger().error(e1);
                     }
 
                 }

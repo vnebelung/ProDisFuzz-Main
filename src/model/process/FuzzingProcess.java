@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,7 +11,6 @@ package model.process;
 import model.InjectedProtocolPart;
 import model.Model;
 import model.SavedDataFile;
-import model.logger.Logger;
 import model.runnable.FuzzingRunnable;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -63,7 +62,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
         try {
             duration = DatatypeFactory.newInstance().newDuration(0);
         } catch (DatatypeConfigurationException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         runnable = new FuzzingRunnable(injectionMethod, injectedProtocolParts, target, timeout, interval,
                 saveCommunication);
@@ -77,13 +76,13 @@ public class FuzzingProcess extends AbstractThreadProcess {
             return;
         }
         fuzzingFuture.cancel(true);
-        Logger.getInstance().warning("Fuzzing process interrupted");
+        Model.INSTANCE.getLogger().warning("Fuzzing process interrupted");
         spreadUpdate();
     }
 
     @Override
     public void start() {
-        Logger.getInstance().info("Fuzzing process started");
+        Model.INSTANCE.getLogger().info("Fuzzing process started");
         workProgress = 0;
         fuzzingFuture = EXECUTOR.submit(runnable);
         spreadUpdate();
@@ -97,11 +96,11 @@ public class FuzzingProcess extends AbstractThreadProcess {
             interrupt();
             return;
         } catch (ExecutionException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
             interrupt();
             return;
         }
-        Logger.getInstance().info("Learn process successfully completed");
+        Model.INSTANCE.getLogger().info("Learn process successfully completed");
     }
 
     @Override
@@ -123,7 +122,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
         try {
             duration = DatatypeFactory.newInstance().newDuration(0);
         } catch (DatatypeConfigurationException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         spreadUpdate();
     }
@@ -203,7 +202,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
         try {
             duration = DatatypeFactory.newInstance().newDuration(data.getDuration());
         } catch (DatatypeConfigurationException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         savedDataFiles = new ArrayList<>(data.getSavedDataFiles());
         increaseWorkProgress();

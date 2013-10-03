@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,10 +8,10 @@
 
 package model.runnable;
 
+import model.Model;
 import model.ProtocolFile;
 import model.ProtocolPart;
 import model.callable.*;
-import model.logger.Logger;
 import model.process.AbstractThreadProcess;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class LearnRunnable extends AbstractRunnable {
             final LearnConvertCallable convertCallable = new LearnConvertCallable(files);
             convertFuture = AbstractThreadProcess.EXECUTOR.submit(convertCallable);
             final List<List<Byte>> sequences = new ArrayList<>(convertFuture.get());
-            Logger.getInstance().info("Files converted to sequences");
+            Model.INSTANCE.getLogger().info("Files converted to sequences");
             spreadUpdate();
 
             // Every iteration two sequences are combined into a new one until there is only one left
@@ -71,7 +71,7 @@ public class LearnRunnable extends AbstractRunnable {
                         string.append('*');
                     }
                 }
-                Logger.getInstance().info(string.toString());
+                Model.INSTANCE.getLogger().info(string.toString());
                 spreadUpdate();
 
                 //Execute the Hirschberg algorithm
@@ -86,14 +86,14 @@ public class LearnRunnable extends AbstractRunnable {
                 // Remove the two learned sequences from the list, first minIndices[1] because it is the higher index
                 sequences.remove(minIndices[1]);
                 sequences.remove(minIndices[0]);
-                Logger.getInstance().info("Sequences merged: " + hash0 + ", " + hash1 + " -> " + newHash);
+                Model.INSTANCE.getLogger().info("Sequences merged: " + hash0 + ", " + hash1 + " -> " + newHash);
                 spreadUpdate();
 
                 final LearnPartsCallable partsCallable = new LearnPartsCallable(sequences.get(sequences.size() - 1));
                 partsFuture = AbstractThreadProcess.EXECUTOR.submit(partsCallable);
                 parts.clear();
                 parts.addAll(partsFuture.get());
-                Logger.getInstance().info("Temporary protocol structure generated");
+                Model.INSTANCE.getLogger().info("Temporary protocol structure generated");
                 spreadUpdate();
             }
 
@@ -101,7 +101,7 @@ public class LearnRunnable extends AbstractRunnable {
             adjustFuture = AbstractThreadProcess.EXECUTOR.submit(adjustRunnable);
             sequences.add(adjustFuture.get());
             sequences.remove(0);
-            Logger.getInstance().info("Protocol structure adjusted");
+            Model.INSTANCE.getLogger().info("Protocol structure adjusted");
             spreadUpdate();
 
             final LearnPartsCallable partsCallable = new LearnPartsCallable(sequences.get(0));
@@ -109,7 +109,7 @@ public class LearnRunnable extends AbstractRunnable {
             parts.clear();
             parts.addAll(partsFuture.get());
             finished = true;
-            Logger.getInstance().info("Final protocol structure generated");
+            Model.INSTANCE.getLogger().info("Final protocol structure generated");
             spreadUpdate();
         } catch (InterruptedException e) {
             convertFuture.cancel(true);
@@ -126,7 +126,7 @@ public class LearnRunnable extends AbstractRunnable {
                 adjustFuture.cancel(true);
             }
         } catch (ExecutionException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 

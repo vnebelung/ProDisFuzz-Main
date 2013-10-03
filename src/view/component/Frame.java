@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,6 +8,7 @@
 
 package view.component;
 
+import model.Model;
 import model.logger.Logger;
 import view.page.*;
 
@@ -48,7 +49,7 @@ public class Frame extends JFrame implements Observer {
     public Frame(final String name) {
         super(name);
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
-        Logger.getInstance().addObserver(this);
+        Model.INSTANCE.getLogger().addObserver(this);
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new Dimension(1024, 768));
@@ -125,7 +126,7 @@ public class Frame extends JFrame implements Observer {
             try {
                 styledDoc.remove(0, styledDoc.getLength());
             } catch (BadLocationException e) {
-                Logger.getInstance().error(e);
+                Model.INSTANCE.getLogger().error(e);
             }
         } else {
             final StringBuilder text = new StringBuilder();
@@ -153,7 +154,7 @@ public class Frame extends JFrame implements Observer {
             try {
                 styledDoc.insertString(styledDoc.getLength(), text.toString(), style);
             } catch (BadLocationException e) {
-                Logger.getInstance().error(e);
+                Model.INSTANCE.getLogger().error(e);
             }
             final int diff = logArea.getText().split(System.lineSeparator()).length - Logger.MAX_ENTRIES;
             if (diff > 0) {

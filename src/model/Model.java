@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:37.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -17,7 +17,6 @@ import model.process.*;
 public enum Model {
 
     INSTANCE;
-
     private final CollectProcess collectProcess;
     private final LearnProcess learnProcess;
     private final ExportProcess exportProcess;
@@ -25,6 +24,7 @@ public enum Model {
     private final FuzzOptionsProcess fuzzOptionsProcess;
     private final FuzzingProcess fuzzingProcess;
     private final ReportProcess reportProcess;
+    private final Logger logger;
     private AbstractConnector connector;
     private AbstractModificator modificator;
 
@@ -39,6 +39,7 @@ public enum Model {
         fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzingProcess = new FuzzingProcess();
         reportProcess = new ReportProcess();
+        logger = new Logger();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
     }
 
@@ -56,7 +57,7 @@ public enum Model {
      * methods of all process classes.
      */
     public void reset() {
-        Logger.getInstance().reset();
+        Model.INSTANCE.getLogger().reset();
         collectProcess.reset();
         learnProcess.reset();
         exportProcess.reset();
@@ -126,5 +127,14 @@ public enum Model {
      */
     public ReportProcess getReportProcess() {
         return reportProcess;
+    }
+
+    /**
+     * Gets the logging mechanism.
+     *
+     * @return the logger
+     */
+    public Logger getLogger() {
+        return logger;
     }
 }

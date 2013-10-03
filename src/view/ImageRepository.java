@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 21:34.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,9 +9,9 @@ package view;
 
 import javax.swing.*;
 
-public final class ImageRepository {
+public enum ImageRepository {
 
-    private static final ImageRepository INSTANCE = new ImageRepository();
+    INSTANCE;
     private final Icon errorIcon;
     private final Icon workingIcon;
     private final Icon okIcon;
@@ -25,13 +25,6 @@ public final class ImageRepository {
         workingIcon = new ImageIcon(getClass().getResource("/icons/working.png"));
         okIcon = new ImageIcon(getClass().getResource("/icons/ok.png"));
         logo = new ImageIcon(getClass().getResource("/icons/logo.png"));
-    }
-
-    /**
-     * Gets the only instance of ImageRepository.
-     */
-    public static ImageRepository getInstance() {
-        return INSTANCE;
     }
 
     /**

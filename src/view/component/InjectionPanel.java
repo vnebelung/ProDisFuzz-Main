@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -118,8 +118,8 @@ public class InjectionPanel extends JPanel {
         libraryButton.setEnabled(enabled);
         libraryText.setEnabled(enabled && injectedData == InjectedProtocolPart.DataInjectionMethod.LIBRARY);
         browseButton.setEnabled(enabled && injectedData == InjectedProtocolPart.DataInjectionMethod.LIBRARY);
-        libraryIcon.setIcon(path == null ? ImageRepository.getInstance().getErrorIcon() : ImageRepository.getInstance
-                ().getOkIcon());
+        libraryIcon.setIcon(path == null ? ImageRepository.INSTANCE.getErrorIcon() : ImageRepository.INSTANCE
+                .getOkIcon());
         libraryLabel.setText(path == null ? "Please choose a valid library file" : "Valid library file chosen");
 
         libraryIcon.setVisible(injectedData == InjectedProtocolPart.DataInjectionMethod.LIBRARY && enabled);

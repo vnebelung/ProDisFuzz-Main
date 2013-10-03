@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,7 +10,6 @@ package model.process;
 
 import model.Model;
 import model.ProtocolPart;
-import model.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import xml.XmlNames;
@@ -67,13 +66,13 @@ public class ExportProcess extends AbstractProcess {
     public void export(final Path path) {
         Path savePath = path.toAbsolutePath().normalize();
         if (!Files.isDirectory(savePath.getParent())) {
-            Logger.getInstance().error("File path for saving protocol structure invalid");
+            Model.INSTANCE.getLogger().error("File path for saving protocol structure invalid");
             exported = false;
             spreadUpdate();
             return;
         }
         if (!Files.isWritable(savePath.getParent())) {
-            Logger.getInstance().error("File path for saving protocol structure not writable");
+            Model.INSTANCE.getLogger().error("File path for saving protocol structure not writable");
             exported = false;
             spreadUpdate();
             return;
@@ -94,11 +93,11 @@ public class ExportProcess extends AbstractProcess {
             transformer.transform(source, result);
             exported = true;
             spreadUpdate();
-            Logger.getInstance().info("XML file saved to '" + savePath.toString() + "'");
+            Model.INSTANCE.getLogger().info("XML file saved to '" + savePath.toString() + "'");
         } catch (ParserConfigurationException | TransformerException | IOException e) {
             exported = false;
             spreadUpdate();
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 

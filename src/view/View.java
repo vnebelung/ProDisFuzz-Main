@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,7 +8,7 @@
 
 package view;
 
-import model.logger.Logger;
+import model.Model;
 import view.component.Frame;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ public class View {
             }
         } catch (ClassNotFoundException | UnsupportedLookAndFeelException | InstantiationException |
                 IllegalAccessException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         frame = new Frame("ProDisFuzz");
     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,13 +9,13 @@
 package model.runnable;
 
 import model.InjectedProtocolPart;
+import model.Model;
 import model.ProtocolPart;
 import model.SavedDataFile;
 import model.callable.FuzzingCheckLibraryCallable;
 import model.callable.FuzzingMessageCallable;
 import model.callable.FuzzingReconnectCallable;
 import model.callable.FuzzingSendCallable;
-import model.logger.Logger;
 import model.process.AbstractThreadProcess;
 import model.process.FuzzOptionsProcess;
 
@@ -87,7 +87,7 @@ public class FuzzingRunnable extends AbstractRunnable {
                 if (message == null) {
                     break;
                 }
-                Logger.getInstance().info("Sending fuzzed message #" + iteration);
+                Model.INSTANCE.getLogger().info("Sending fuzzed message #" + iteration);
                 final FuzzingSendCallable sendCallable = new FuzzingSendCallable(message, target, timeout);
                 sendFuture = AbstractThreadProcess.EXECUTOR.submit(sendCallable);
                 for (int i = 0; i < 3; i++) {
@@ -116,7 +116,7 @@ public class FuzzingRunnable extends AbstractRunnable {
             }
             finished = true;
         } catch (ExecutionException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 
@@ -140,26 +140,26 @@ public class FuzzingRunnable extends AbstractRunnable {
                     crashTime = System.currentTimeMillis();
                 case 1:
                     // Error interval has a logarithmic style curve
-                    Logger.getInstance().warning("Target not reachable. Resend message again in " + (decimalFormat
-                            .format(errorInterval / 1000)) + " seconds");
+                    Model.INSTANCE.getLogger().warning("Target not reachable. Resend message again in " +
+                            (decimalFormat.format(errorInterval / 1000)) + " seconds");
                     Thread.sleep((long) errorInterval);
                     break;
                 case 2:
-                    Logger.getInstance().fine("Target not reachable for 3 times in a row. Information about the " +
-                            "crash is being saved");
+                    Model.INSTANCE.getLogger().fine("Target not reachable for 3 times in a row. Information about the" +
+                            " " + "crash is being saved");
                     savedDataFiles.add(new SavedDataFile(message, true, crashTime));
                     int count = 1;
                     do {
                         errorInterval = Math.pow(count++, 0.75) * interval;
-                        Logger.getInstance().warning("Trying to reconnect to target in " + (decimalFormat.format
-                                (errorInterval / 1000)) + " seconds");
+                        Model.INSTANCE.getLogger().warning("Trying to reconnect to target in " + (decimalFormat
+                                .format(errorInterval / 1000)) + " seconds");
                         Thread.sleep((long) errorInterval);
                         // Try again to connect
                         final FuzzingReconnectCallable reconnectCallable = new FuzzingReconnectCallable(target,
                                 timeout);
                         reconnectFuture = AbstractThreadProcess.EXECUTOR.submit(reconnectCallable);
                     } while (!reconnectFuture.get());
-                    Logger.getInstance().info("Connection to target successfully reestablished");
+                    Model.INSTANCE.getLogger().info("Connection to target successfully reestablished");
                     startTime += System.currentTimeMillis() - crashTime;
                     spreadUpdate();
                     break;
@@ -193,7 +193,8 @@ public class FuzzingRunnable extends AbstractRunnable {
                                 (injectedProtocolPart.getLibrary());
                         checkLibraryFuture = AbstractThreadProcess.EXECUTOR.submit(checkLibraryCallable);
                         if (!checkLibraryFuture.get()) {
-                            Logger.getInstance().error("File '" + injectedProtocolPart.getLibrary().toString() + "' " +
+                            Model.INSTANCE.getLogger().error("File '" + injectedProtocolPart.getLibrary().toString()
+                                    + "' " +
                                     "contains empty lines");
                             return;
                         }
@@ -204,7 +205,7 @@ public class FuzzingRunnable extends AbstractRunnable {
                             (varLibInjectedProtocolParts.get(0).getLibrary());
                     checkLibraryFuture = AbstractThreadProcess.EXECUTOR.submit(checkLibraryCallable);
                     if (!checkLibraryFuture.get()) {
-                        Logger.getInstance().error("File '" + varLibInjectedProtocolParts.get(0).getLibrary()
+                        Model.INSTANCE.getLogger().error("File '" + varLibInjectedProtocolParts.get(0).getLibrary()
                                 .toString() + "' contains empty lines");
                         return;
                     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -61,10 +61,10 @@ public class ReportPage extends AbstractPage implements Observer {
         final ReportProcess data = (ReportProcess) o;
 
         if (data.isWritten()) {
-            statusIcon.setIcon(ImageRepository.getInstance().getOkIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getOkIcon());
             statusLabel.setText("Report generated");
         } else {
-            statusIcon.setIcon(ImageRepository.getInstance().getErrorIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getErrorIcon());
             statusLabel.setText("Report not generated");
         }
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -7,8 +7,6 @@
  */
 
 package model;
-
-import model.logger.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -38,7 +36,7 @@ public class SavedDataFile {
             // Write the bytes into the file
             Files.write(filePath, content);
         } catch (IOException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
 
     }

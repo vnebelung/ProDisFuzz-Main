@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -28,7 +28,7 @@ public class ModePage extends AbstractPage {
         final double[][] areaLayout = {{0.5, 20, TableLayout.FILL}, {0.3, TableLayout.FILL, 10, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
 
-        final JLabel logo = new JLabel(ImageRepository.getInstance().getLogo());
+        final JLabel logo = new JLabel(ImageRepository.INSTANCE.getLogo());
         area.add(logo, "0, 0, 2, 0, c, c");
 
         final JButton learningButton = new JButton(new AbstractAction("Learning Mode") {

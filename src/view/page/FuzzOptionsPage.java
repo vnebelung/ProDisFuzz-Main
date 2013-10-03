@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -277,8 +277,8 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
     public void update(final Observable o, final Object arg) {
         final FuzzOptionsProcess data = (FuzzOptionsProcess) o;
 
-        targetStatusIcon.setIcon(data.isTargetReachable() ? ImageRepository.getInstance().getOkIcon() :
-                ImageRepository.getInstance().getErrorIcon());
+        targetStatusIcon.setIcon(data.isTargetReachable() ? ImageRepository.INSTANCE.getOkIcon() : ImageRepository
+                .INSTANCE.getErrorIcon());
         targetStatusLabel.setText(data.isTargetReachable() ? "Target reachable" : "Please enter a valid target " +
                 "address");
 

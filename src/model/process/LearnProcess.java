@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,7 +11,6 @@ package model.process;
 import model.Model;
 import model.ProtocolFile;
 import model.ProtocolPart;
-import model.logger.Logger;
 import model.runnable.LearnRunnable;
 
 import java.util.ArrayList;
@@ -72,14 +71,14 @@ public class LearnProcess extends AbstractThreadProcess {
             return;
         }
         learnFuture.cancel(true);
-        Logger.getInstance().warning("Learn process interrupted");
+        Model.INSTANCE.getLogger().warning("Learn process interrupted");
         workProgress = 0;
         spreadUpdate();
     }
 
     @Override
     public void start() {
-        Logger.getInstance().info("Learn process started");
+        Model.INSTANCE.getLogger().info("Learn process started");
         workProgress = 0;
         learnFuture = EXECUTOR.submit(runnable);
         spreadUpdate();
@@ -93,11 +92,11 @@ public class LearnProcess extends AbstractThreadProcess {
             interrupt();
             return;
         } catch (ExecutionException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
             interrupt();
             return;
         }
-        Logger.getInstance().info("Learn process successfully completed");
+        Model.INSTANCE.getLogger().info("Learn process successfully completed");
     }
 
     @Override

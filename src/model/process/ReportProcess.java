@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,7 +11,6 @@ package model.process;
 import model.InjectedProtocolPart;
 import model.Model;
 import model.SavedDataFile;
-import model.logger.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -71,13 +70,13 @@ public class ReportProcess extends AbstractProcess {
     public void write(final Path path) {
         final Path outputPath = path.toAbsolutePath().normalize();
         if (!Files.isDirectory(outputPath)) {
-            Logger.getInstance().error("File path for saving final report invalid");
+            Model.INSTANCE.getLogger().error("File path for saving final report invalid");
             written = false;
             spreadUpdate();
             return;
         }
         if (!Files.isWritable(outputPath)) {
-            Logger.getInstance().error("File path for saving final report not writable");
+            Model.INSTANCE.getLogger().error("File path for saving final report not writable");
             written = false;
             spreadUpdate();
             return;
@@ -114,12 +113,13 @@ public class ReportProcess extends AbstractProcess {
             }
             written = true;
             spreadUpdate();
-            Logger.getInstance().info("Report successfully generated and written to '" + outputPath.toString() + "'");
+            Model.INSTANCE.getLogger().info("Report successfully generated and written to '" + outputPath.toString()
+                    + "'");
         } catch (ParserConfigurationException | IOException |
                 TransformerException e) {
             written = false;
             spreadUpdate();
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -67,10 +67,10 @@ public class ExportPage extends AbstractPage implements Observer {
         final ExportProcess data = (ExportProcess) o;
 
         if (data.isExported()) {
-            statusIcon.setIcon(ImageRepository.getInstance().getOkIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getOkIcon());
             statusLabel.setText("Protocol structure saved");
         } else {
-            statusIcon.setIcon(ImageRepository.getInstance().getErrorIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getErrorIcon());
             statusLabel.setText("Protocol structure not saved");
         }
 

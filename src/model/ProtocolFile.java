@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -7,8 +7,6 @@
  */
 
 package model;
-
-import model.logger.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -32,7 +30,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         try {
             sha256 = generateHash(MessageDigest.getInstance("SHA-256"));
         } catch (NoSuchAlgorithmException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 
@@ -62,11 +60,11 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         } catch (IOException e) {
             hash.delete(0, hash.length());
             hash.append("File could not be read");
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         } catch (OutOfMemoryError e) {
             hash.delete(0, hash.length());
             hash.append("File too large");
-            Logger.getInstance().warning("File '" + getName() + "' is too large for checksum calculating");
+            Model.INSTANCE.getLogger().warning("File '" + getName() + "' is too large for checksum calculating");
         }
         return hash.toString();
     }
@@ -130,10 +128,10 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         try {
             content = Files.readAllBytes(filePath);
         } catch (IOException e) {
-            Logger.getInstance().error("File '" + filePath.getFileName() + "' can not be read");
+            Model.INSTANCE.getLogger().error("File '" + filePath.getFileName() + "' can not be read");
             content = new byte[0];
         } catch (OutOfMemoryError e) {
-            Logger.getInstance().error("File '" + filePath.getFileName() + "' is too large to be read");
+            Model.INSTANCE.getLogger().error("File '" + filePath.getFileName() + "' is too large to be read");
             content = new byte[0];
         }
         return content;

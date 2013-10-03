@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 20:59.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,25 +15,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 
-public final class Logger extends Observable {
+public class Logger extends Observable {
 
     public static final int MAX_ENTRIES = 500;
-    private static final Logger INSTANCE = new Logger();
     private final List<Message> log;
 
     /**
-     * Singelton Constructor.
+     * Instantiates a new logger.
      */
-    private Logger() {
+    public Logger() {
         super();
         log = new LinkedList<>();
-    }
-
-    /**
-     * Gets the only instance of Logger.
-     */
-    public static Logger getInstance() {
-        return INSTANCE;
     }
 
     /**

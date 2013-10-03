@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -78,13 +78,13 @@ public class LearnPage extends AbstractPage implements Observer {
         progressBar.setValue(data.getWorkProgress());
 
         if (data.isRunning()) {
-            statusIcon.setIcon(ImageRepository.getInstance().getWorkingIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getWorkingIcon());
             statusLabel.setText(data.getWorkProgress() + "/" + data.getWorkTotal());
         } else if (data.getWorkProgress() == data.getWorkTotal()) {
-            statusIcon.setIcon(ImageRepository.getInstance().getOkIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getOkIcon());
             statusLabel.setText("All protocol sequences have been processed");
         } else {
-            statusIcon.setIcon(ImageRepository.getInstance().getOkIcon());
+            statusIcon.setIcon(ImageRepository.INSTANCE.getOkIcon());
             statusLabel.setText("Ready for learning the protocol structure");
         }
 

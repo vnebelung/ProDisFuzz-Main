@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,8 +8,8 @@
 
 package model.process;
 
+import model.Model;
 import model.ProtocolFile;
-import model.logger.Logger;
 
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -53,10 +53,10 @@ public class CollectProcess extends AbstractProcess {
                     count++;
                 }
             }
-            Logger.getInstance().info(count + " files detected");
+            Model.INSTANCE.getLogger().info(count + " files detected");
             Collections.sort(files);
         } catch (IOException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 
@@ -70,12 +70,12 @@ public class CollectProcess extends AbstractProcess {
         if (!newPath.equals(directory)) {
             if (Files.isDirectory(newPath) && !path.isEmpty()) {
                 directory = newPath;
-                Logger.getInstance().info("Directory for collecting set to '" + directory.toString() + "'");
+                Model.INSTANCE.getLogger().info("Directory for collecting set to '" + directory.toString() + "'");
                 setFiles();
             } else if (directory != null) {
                 directory = null;
                 files.clear();
-                Logger.getInstance().error("Directory for collecting invalid");
+                Model.INSTANCE.getLogger().error("Directory for collecting invalid");
             }
             spreadUpdate();
         }
@@ -123,9 +123,9 @@ public class CollectProcess extends AbstractProcess {
             selected.put(files.get(index), true);
             spreadUpdate();
             if (getNumOfSelectedFiles() < 2) {
-                Logger.getInstance().warning("At least 2 files must be selected");
+                Model.INSTANCE.getLogger().warning("At least 2 files must be selected");
             } else {
-                Logger.getInstance().info(getNumOfSelectedFiles() + " files selected");
+                Model.INSTANCE.getLogger().info(getNumOfSelectedFiles() + " files selected");
             }
         }
     }
@@ -140,9 +140,9 @@ public class CollectProcess extends AbstractProcess {
             selected.put(files.get(index), false);
             spreadUpdate();
             if (getNumOfSelectedFiles() < 2) {
-                Logger.getInstance().warning("At least 2 files must be selected");
+                Model.INSTANCE.getLogger().warning("At least 2 files must be selected");
             } else {
-                Logger.getInstance().info(getNumOfSelectedFiles() + " files selected");
+                Model.INSTANCE.getLogger().info(getNumOfSelectedFiles() + " files selected");
             }
         }
     }

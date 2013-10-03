@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -7,8 +7,6 @@
  */
 
 package model;
-
-import model.logger.Logger;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -74,13 +72,13 @@ public class InjectedProtocolPart {
         }
         // Update only if the path is a file
         if (!Files.isRegularFile(newLibrary)) {
-            Logger.getInstance().error("'" + newLibrary.toString() + "' is not a regular file");
+            Model.INSTANCE.getLogger().error("'" + newLibrary.toString() + "' is not a regular file");
             library = null;
             return;
         }
         // Update only if the file is readable
         if (!Files.isReadable(newLibrary)) {
-            Logger.getInstance().error("'" + newLibrary.toString() + "' is not a readable");
+            Model.INSTANCE.getLogger().error("'" + newLibrary.toString() + "' is not a readable");
             library = null;
             return;
         }
@@ -140,7 +138,7 @@ public class InjectedProtocolPart {
             numOfLines = lineNumberReader.getLineNumber() + 1;
 
         } catch (IOException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         return numOfLines;
     }
@@ -164,7 +162,7 @@ public class InjectedProtocolPart {
             }
             return bytes;
         } catch (IOException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
             return null;
         }
     }

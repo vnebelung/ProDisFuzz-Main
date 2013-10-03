@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,8 +8,8 @@
 
 package view.component;
 
+import model.Model;
 import model.ProtocolPart;
-import model.logger.Logger;
 
 import javax.swing.*;
 import javax.swing.text.*;
@@ -74,7 +74,7 @@ public class ProtocolPane extends JTextPane {
         try {
             styledDoc.insertString(0, text, null);
         } catch (BadLocationException e) {
-            Logger.getInstance().error(e);
+            Model.INSTANCE.getLogger().error(e);
         }
         int index = text.indexOf(System.lineSeparator());
         while (index > 0) {

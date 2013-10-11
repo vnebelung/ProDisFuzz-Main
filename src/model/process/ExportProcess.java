@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 06.10.13 15:49.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:43.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -129,8 +129,8 @@ public class ExportProcess extends AbstractProcess {
         // Create the protocolParts element
         final Element parts = d.createElement(XmlNames.PARTS);
         // Append individual part elements to the protocolParts element
-        for (final ProtocolPart protocolPart : protocolParts) {
-            parts.appendChild(createXMLPart(d, protocolPart));
+        for (final ProtocolPart each : protocolParts) {
+            parts.appendChild(createXMLPart(d, each));
         }
         return parts;
     }

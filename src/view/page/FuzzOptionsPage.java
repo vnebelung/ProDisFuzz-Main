@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -295,8 +295,8 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
 
         synchronized (this) {
             final List<ProtocolPart> parts = new ArrayList<>(data.getInjectedProtocolParts().size());
-            for (final InjectedProtocolPart injectedPart : data.getInjectedProtocolParts()) {
-                parts.add(injectedPart.getProtocolPart());
+            for (final InjectedProtocolPart each : data.getInjectedProtocolParts()) {
+                parts.add(each.getProtocolPart());
             }
             sourceInjectionPane.addProtocolText(parts);
         }
@@ -308,14 +308,14 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
             lastProtocolHash = varParts.hashCode();
             partPanels.clear();
             // Create new part injection panels for every variable protocol part
-            for (final InjectedProtocolPart part : varParts) {
-                partPanels.add(new InjectionPanel(frame, part.hashCode()));
+            for (final InjectedProtocolPart each : varParts) {
+                partPanels.add(new InjectionPanel(frame, each.hashCode()));
             }
 
             partsInjectionPanel.removeAll();
             // Update the parent panel
-            for (final InjectionPanel panel : partPanels) {
-                partsInjectionPanel.add(panel);
+            for (final InjectionPanel each : partPanels) {
+                partsInjectionPanel.add(each);
                 partsInjectionPanel.add(Box.createRigidArea(new Dimension(0, Frame.SPACE)));
             }
         }
@@ -329,9 +329,9 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
         }
 
         boolean next = data.isTargetReachable();
-        for (final InjectedProtocolPart injectedProtocolPart : varParts) {
-            if (injectedProtocolPart.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.LIBRARY &&
-                    injectedProtocolPart.getLibrary() == null) {
+        for (final InjectedProtocolPart each : varParts) {
+            if (each.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.LIBRARY && each.getLibrary
+                    () == null) {
                 next = false;
                 break;
             }

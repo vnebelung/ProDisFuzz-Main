@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -107,9 +107,9 @@ public class ReportProcess extends AbstractProcess {
             // Create the directory
             Files.createDirectory(directory);
             // Write every recorded file in a file in the specified directory
-            for (final SavedDataFile savedDataFile : savedDataFiles) {
+            for (final SavedDataFile each : savedDataFiles) {
                 // Move the temporary file to the output directory
-                Files.move(savedDataFile.getFilePath(), savedDataFile.getOutputPath());
+                Files.move(each.getFilePath(), each.getOutputPath());
             }
             written = true;
             spreadUpdate();
@@ -241,8 +241,8 @@ public class ReportProcess extends AbstractProcess {
         ths[2].appendChild(d.createTextNode("Bytes received"));
         ths[3].appendChild(d.createTextNode("Time"));
         // Append all th elements to the first tr element
-        for (final Element th : ths) {
-            trs[0].appendChild(th);
+        for (final Element each : ths) {
+            trs[0].appendChild(each);
         }
         Element[][] tds = new Element[numOfIterations()][ths.length];
         // Create all td elements
@@ -288,8 +288,8 @@ public class ReportProcess extends AbstractProcess {
             }
         }
         // Append all tr elements to the table element
-        for (final Element tr : trs) {
-            table.appendChild(tr);
+        for (final Element each : trs) {
+            table.appendChild(each);
         }
         return table;
     }
@@ -301,9 +301,9 @@ public class ReportProcess extends AbstractProcess {
      */
     private int numOfIterations() {
         int result = 0;
-        for (final SavedDataFile file : savedDataFiles) {
+        for (final SavedDataFile each : savedDataFiles) {
             result++;
-            if (file.isCrash()) {
+            if (each.isCrash()) {
                 result++;
             }
         }
@@ -333,8 +333,8 @@ public class ReportProcess extends AbstractProcess {
         ths[1].appendChild(d.createTextNode("Time"));
         ths[2].appendChild(d.createTextNode("Message"));
         // Append all th elements to the first tr element
-        for (final Element th : ths) {
-            trs[0].appendChild(th);
+        for (final Element each : ths) {
+            trs[0].appendChild(each);
         }
         Element[][] tds = new Element[crashes.size()][ths.length];
         // Create all td elements
@@ -366,8 +366,8 @@ public class ReportProcess extends AbstractProcess {
             }
         }
         // Append all tr elements to the table element
-        for (final Element tr : trs) {
-            table.appendChild(tr);
+        for (final Element each : trs) {
+            table.appendChild(each);
         }
         // Append the table element to the body element
         return table;
@@ -381,9 +381,9 @@ public class ReportProcess extends AbstractProcess {
      */
     private List<SavedDataFile> filterCrashes(final List<SavedDataFile> savedDataFiles) {
         final List<SavedDataFile> crashes = new ArrayList<>();
-        for (final SavedDataFile savedDataFile : savedDataFiles) {
-            if (savedDataFile.isCrash()) {
-                crashes.add(savedDataFile);
+        for (final SavedDataFile each : savedDataFiles) {
+            if (each.isCrash()) {
+                crashes.add(each);
             }
         }
         return crashes;
@@ -412,8 +412,8 @@ public class ReportProcess extends AbstractProcess {
         ths[2].appendChild(d.createTextNode("Minimum Length"));
         ths[3].appendChild(d.createTextNode("Maximum Length"));
         // Append the th elements to the first tr element
-        for (final Element th : ths) {
-            trs[0].appendChild(th);
+        for (final Element each : ths) {
+            trs[0].appendChild(each);
         }
         final Element[][] tds = new Element[protocolParts.size()][ths.length];
         // Create all td elements
@@ -438,8 +438,8 @@ public class ReportProcess extends AbstractProcess {
             }
         }
         // Append all tr elements to the table element
-        for (final Element tr : trs) {
-            table.appendChild(tr);
+        for (final Element each : trs) {
+            table.appendChild(each);
         }
         return table;
     }
@@ -469,8 +469,8 @@ public class ReportProcess extends AbstractProcess {
         ths[4].appendChild(d.createTextNode("# Iterations"));
         ths[5].appendChild(d.createTextNode("Duration"));
         // Append the th elements to the first tr element
-        for (final Element th : ths) {
-            trs[0].appendChild(th);
+        for (final Element each : ths) {
+            trs[0].appendChild(each);
         }
         final Element[] tds = new Element[6];
         // Create all td elements that contain the data
@@ -490,12 +490,12 @@ public class ReportProcess extends AbstractProcess {
         tds[5].appendChild(d.createTextNode(timeFormat.format(duration.getHours()) + ":" + timeFormat.format(duration
                 .getMinutes()) + ":" + timeFormat.format(duration.getSeconds())));
         // Append the td elements to the second tr element
-        for (final Element td : tds) {
-            trs[1].appendChild(td);
+        for (final Element each : tds) {
+            trs[1].appendChild(each);
         }
         // Append the both tr elements to the table element
-        for (final Element tr : trs) {
-            table.appendChild(tr);
+        for (final Element each : trs) {
+            table.appendChild(each);
         }
         return table;
     }
@@ -507,8 +507,8 @@ public class ReportProcess extends AbstractProcess {
      */
     private int numOfCrashes() {
         int result = 0;
-        for (final SavedDataFile savedDataFile : savedDataFiles) {
-            if (savedDataFile.isCrash()) {
+        for (final SavedDataFile each : savedDataFiles) {
+            if (each.isCrash()) {
                 result++;
             }
         }
@@ -544,11 +544,11 @@ public class ReportProcess extends AbstractProcess {
         // Set the file path for each detected crash
         int messageIteration = 0;
         int messageCount = 0;
-        for (final SavedDataFile savedDataFile : savedDataFiles) {
+        for (final SavedDataFile each : savedDataFiles) {
             final Path path = p.resolve(s + DIR_POSTFIX).resolve("record" + messageIteration + "-" +
                     messageCount + ".bytes");
-            savedDataFile.setOutputPath(path);
-            if (savedDataFile.isCrash() == (messageCount == 0)) {
+            each.setOutputPath(path);
+            if (each.isCrash() == (messageCount == 0)) {
                 messageIteration++;
                 messageCount = 0;
             } else {

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:32.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -24,9 +24,9 @@ public class View {
     public View() {
         JComponent.setDefaultLocale(Locale.ENGLISH);
         try {
-            for (final UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
+            for (final UIManager.LookAndFeelInfo each : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(each.getName())) {
+                    UIManager.setLookAndFeel(each.getClassName());
                     break;
                 }
             }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -47,8 +47,8 @@ public class FuzzOptionsProcess extends AbstractProcess {
 
     @Override
     public void init() {
-        for (final ProtocolPart part : Model.INSTANCE.getImportProcess().getProtocolParts()) {
-            injectedProtocolParts.add(new InjectedProtocolPart(part));
+        for (final ProtocolPart each : Model.INSTANCE.getImportProcess().getProtocolParts()) {
+            injectedProtocolParts.add(new InjectedProtocolPart(each));
         }
         target = new InetSocketAddress("", PORT_MIN);
         timeout = 5 * TIMEOUT_MIN;
@@ -265,9 +265,9 @@ public class FuzzOptionsProcess extends AbstractProcess {
     public void setLibraryInjectionForPart(final int hash) {
         switch (injectionMethod) {
             case SEPARATE:
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    if (injectedPart.hashCode() == hash) {
-                        if (injectedPart.setLibraryInjection()) {
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.hashCode() == hash) {
+                        if (each.setLibraryInjection()) {
                             Model.INSTANCE.getLogger().info("Data Injection method of protocol part '" + Integer
                                     .toHexString(hash) + "' set to " + InjectedProtocolPart.DataInjectionMethod
                                     .LIBRARY);
@@ -279,8 +279,8 @@ public class FuzzOptionsProcess extends AbstractProcess {
                 break;
             case SIMULTANEOUS:
                 boolean hasChanged = false;
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    if (injectedPart.setLibraryInjection()) {
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.setLibraryInjection()) {
                         hasChanged = true;
                     }
                 }
@@ -305,13 +305,13 @@ public class FuzzOptionsProcess extends AbstractProcess {
     public void setLibraryFile(final Path p, final int hash) {
         switch (injectionMethod) {
             case SEPARATE:
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    if (injectedPart.hashCode() == hash) {
-                        injectedPart.setLibrary(p);
-                        if (injectedPart.getLibrary() != null) {
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.hashCode() == hash) {
+                        each.setLibrary(p);
+                        if (each.getLibrary() != null) {
                             Model.INSTANCE.getLogger().info("Library file of protocol part '" + Integer.toHexString
                                     (hash) +
-                                    "' set to '" + injectedPart.getLibrary().toString() + "'");
+                                    "' set to '" + each.getLibrary().toString() + "'");
                         }
                         spreadUpdate();
                         break;
@@ -319,13 +319,13 @@ public class FuzzOptionsProcess extends AbstractProcess {
                 }
                 break;
             case SIMULTANEOUS:
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    injectedPart.setLibrary(p);
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    each.setLibrary(p);
                 }
-                for (final InjectedProtocolPart injectedPart : filterVarParts(injectedProtocolParts)) {
-                    if (injectedPart.getLibrary() != null) {
+                for (final InjectedProtocolPart each : filterVarParts(injectedProtocolParts)) {
+                    if (each.getLibrary() != null) {
                         Model.INSTANCE.getLogger().info("Library file of all protocol parts set to '" +
-                                injectedPart.getLibrary().toString() + "'");
+                                each.getLibrary().toString() + "'");
                         break;
                     }
                 }
@@ -347,9 +347,9 @@ public class FuzzOptionsProcess extends AbstractProcess {
     public void setRandomInjectionForPart(final int hash) {
         switch (injectionMethod) {
             case SEPARATE:
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    if (injectedPart.hashCode() == hash) {
-                        if (injectedPart.setRandomInjection()) {
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.hashCode() == hash) {
+                        if (each.setRandomInjection()) {
                             Model.INSTANCE.getLogger().info("Data Injection method of protocol part '" + Integer
                                     .toHexString(hash) + "' set to " + InjectedProtocolPart.DataInjectionMethod.RANDOM);
                             spreadUpdate();
@@ -360,8 +360,8 @@ public class FuzzOptionsProcess extends AbstractProcess {
                 break;
             case SIMULTANEOUS:
                 boolean hasChanged = false;
-                for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    if (injectedPart.setRandomInjection()) {
+                for (final InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.setRandomInjection()) {
                         hasChanged = true;
                     }
                 }

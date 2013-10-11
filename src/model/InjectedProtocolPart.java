@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -156,8 +156,8 @@ public class InjectedProtocolPart {
                 lineNumberReader.readLine();
             }
             final String line = lineNumberReader.readLine();
-            for (final byte b : line.getBytes()) {
-                bytes.add(b);
+            for (final byte each : line.getBytes()) {
+                bytes.add(each);
             }
             return bytes;
         } catch (IOException e) {

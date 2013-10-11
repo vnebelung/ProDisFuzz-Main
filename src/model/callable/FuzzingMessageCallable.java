@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.10.13 23:06.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -81,19 +81,19 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     private List<Byte> sepInfMessage() {
         final List<Byte> bytes = new ArrayList<>();
         // Generates the fuzzed string separate for every single protocol part
-        for (final InjectedProtocolPart injectedProtocolPart : parts) {
-            switch (injectedProtocolPart.getProtocolPart().getType()) {
+        for (final InjectedProtocolPart each : parts) {
+            switch (each.getProtocolPart().getType()) {
                 case FIX:
-                    bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
+                    bytes.addAll(each.getProtocolPart().getBytes());
                     break;
                 case VAR:
-                    switch (injectedProtocolPart.getDataInjectionMethod()) {
+                    switch (each.getDataInjectionMethod()) {
                         case LIBRARY:
-                            bytes.addAll(injectedProtocolPart.getRandomLibraryLine());
+                            bytes.addAll(each.getRandomLibraryLine());
                             break;
                         case RANDOM:
-                            bytes.addAll(RandomPool.getInstance().nextBloatBytes(injectedProtocolPart.getProtocolPart
-                                    ().getMaxLength()));
+                            bytes.addAll(RandomPool.getInstance().nextBloatBytes(each.getProtocolPart().getMaxLength
+                                    ()));
                             break;
                         default:
                             break;
@@ -115,15 +115,15 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
         final List<Byte> bytes = new ArrayList<>();
         // Generate the random bytes
         int maxLength = 0;
-        for (final InjectedProtocolPart injectedProtocolPart : parts) {
-            maxLength = Math.max(maxLength, injectedProtocolPart.getProtocolPart().getMaxLength());
+        for (final InjectedProtocolPart each : parts) {
+            maxLength = Math.max(maxLength, each.getProtocolPart().getMaxLength());
         }
         final List<Byte> rndBytes = RandomPool.getInstance().nextBloatBytes(maxLength);
         // Apply the bytes for each VAR part
-        for (final InjectedProtocolPart injectedProtocolPart : parts) {
-            switch (injectedProtocolPart.getProtocolPart().getType()) {
+        for (final InjectedProtocolPart each : parts) {
+            switch (each.getProtocolPart().getType()) {
                 case FIX:
-                    bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
+                    bytes.addAll(each.getProtocolPart().getBytes());
                     break;
                 case VAR:
                     bytes.addAll(rndBytes);
@@ -151,15 +151,15 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
         }
         final List<Byte> bytes = new ArrayList<>();
         // For every protocol part other than the current read a random line of its library file
-        for (final InjectedProtocolPart injectedProtocolPart : parts) {
-            switch (injectedProtocolPart.getProtocolPart().getType()) {
+        for (final InjectedProtocolPart each : parts) {
+            switch (each.getProtocolPart().getType()) {
                 case FIX:
-                    bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
+                    bytes.addAll(each.getProtocolPart().getBytes());
                     break;
                 case VAR:
-                    bytes.addAll(injectedProtocolPart.equals(Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                            (parts).get(currentInjectedProtocolPart)) ? injectedProtocolPart.getLibraryLine
-                            (currentLibraryLine) : injectedProtocolPart.getRandomLibraryLine());
+                    bytes.addAll(each.equals(Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get
+                            (currentInjectedProtocolPart)) ? each.getLibraryLine(currentLibraryLine) : each
+                            .getRandomLibraryLine());
                     break;
                 default:
                     break;
@@ -182,10 +182,10 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
         final List<Byte> bytes = new ArrayList<>();
         final List<Byte> line = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get(0).getLibraryLine
                 (currentLibraryLine);
-        for (final InjectedProtocolPart injectedProtocolPart : parts) {
-            switch (injectedProtocolPart.getProtocolPart().getType()) {
+        for (final InjectedProtocolPart each : parts) {
+            switch (each.getProtocolPart().getType()) {
                 case FIX:
-                    bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
+                    bytes.addAll(each.getProtocolPart().getBytes());
                     break;
                 case VAR:
                     bytes.addAll(line);
@@ -205,9 +205,8 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
      * @return true if all variable protocol parts use library files
      */
     private boolean finiteIterations() {
-        for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                (parts)) {
-            if (injectedProtocolPart.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.RANDOM) {
+        for (final InjectedProtocolPart each : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts)) {
+            if (each.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.RANDOM) {
                 return false;
             }
         }

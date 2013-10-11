@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 06.10.13 01:55.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:43.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -44,10 +44,10 @@ public class CollectProcess extends AbstractProcess {
         selected.clear();
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             int count = 0;
-            for (final Path path : stream) {
+            for (final Path each : stream) {
                 // Sort out any files that are not an actual file, are not readable or are hidden
-                if (Files.isRegularFile(path) && Files.isReadable(path) && !Files.isHidden(path)) {
-                    final ProtocolFile file = new ProtocolFile(path);
+                if (Files.isRegularFile(each) && Files.isReadable(each) && !Files.isHidden(each)) {
+                    final ProtocolFile file = new ProtocolFile(each);
                     files.add(file);
                     selected.put(file, true);
                     count++;
@@ -97,9 +97,9 @@ public class CollectProcess extends AbstractProcess {
      */
     public List<ProtocolFile> getSelectedFiles() {
         final List<ProtocolFile> selection = new ArrayList<>();
-        for (final ProtocolFile file : files) {
-            if (selected.get(file)) {
-                selection.add(file);
+        for (final ProtocolFile each : files) {
+            if (selected.get(each)) {
+                selection.add(each);
             }
         }
         return Collections.unmodifiableList(selection);

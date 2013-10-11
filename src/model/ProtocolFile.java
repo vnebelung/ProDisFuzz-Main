@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:40.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -49,8 +49,8 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             algorithm.update(bytes, 0, bytes.length);
             final byte[] digest = algorithm.digest();
             String hex;
-            for (final byte aDigest : digest) {
-                hex = Integer.toHexString(0xff & aDigest);
+            for (final byte each : digest) {
+                hex = Integer.toHexString(0xff & each);
                 if (hex.length() == 1) {
                     hash.append('0');
                 }

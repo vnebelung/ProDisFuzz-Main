@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -103,8 +103,8 @@ public class ProtocolPane extends JTextPane {
      * @return true if the character is in the range of 0-9a-f
      */
     private boolean isHex(final char c) {
-        for (final char hex : HEX_CHARS) {
-            if (hex == c) {
+        for (final char each : HEX_CHARS) {
+            if (each == c) {
                 return true;
             }
         }
@@ -184,10 +184,10 @@ public class ProtocolPane extends JTextPane {
     private String hexText(final List<ProtocolPart> protocolParts) {
         final StringBuilder text = new StringBuilder();
         numOfBytes = 0;
-        for (final ProtocolPart protocolPart : protocolParts) {
-            for (final Byte currentByte : protocolPart.getBytes()) {
-                text.append(currentByte == null ? String.valueOf(VAR_CHAR) + String.valueOf(VAR_CHAR) : hexValue
-                        (currentByte));
+        for (final ProtocolPart eachPart : protocolParts) {
+            for (final Byte eachByte : eachPart.getBytes()) {
+                text.append(eachByte == null ? String.valueOf(VAR_CHAR) + String.valueOf(VAR_CHAR) : hexValue
+                        (eachByte));
                 text.append(' ');
                 numOfBytes++;
             }

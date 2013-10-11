@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.10.13 23:11.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:43.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -34,16 +34,16 @@ public class LearnPartsCallable implements Callable<List<ProtocolPart>> {
     public List<ProtocolPart> call() throws Exception {
         ProtocolPart.Type type = getType(sequence.get(0));
         List<Byte> content = new ArrayList<>();
-        for (final Byte currentByte : sequence) {
+        for (final Byte each : sequence) {
             // If the type is equal to the preceding type this byte belongs to the same protocol part
-            if (type != getType(currentByte)) {
+            if (type != getType(each)) {
                 // If the types do not match the preceding part is written into the protocol part list and a
                 // new content list is initialized
                 parts.add(new ProtocolPart(type, content));
                 content = new ArrayList<>();
-                type = getType(currentByte);
+                type = getType(each);
             }
-            content.add(currentByte);
+            content.add(each);
         }
         // At the end the last (and not yet written) part is added to the protocol part list
         parts.add(new ProtocolPart(type, content));

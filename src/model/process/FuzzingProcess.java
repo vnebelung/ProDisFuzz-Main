@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -112,8 +112,8 @@ public class FuzzingProcess extends AbstractThreadProcess {
     public void reset() {
         injectedProtocolParts.clear();
         try {
-            for (final SavedDataFile savedDataFile : savedDataFiles) {
-                Files.delete(savedDataFile.getFilePath());
+            for (final SavedDataFile each : savedDataFiles) {
+                Files.delete(each.getFilePath());
             }
         } catch (IOException ignored) {
         }
@@ -150,11 +150,11 @@ public class FuzzingProcess extends AbstractThreadProcess {
      */
     private int calcWorkTotalSeparate() {
         int result = 1;
-        for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
+        for (final InjectedProtocolPart each : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
                 (injectedProtocolParts)) {
-            switch (injectedProtocolPart.getDataInjectionMethod()) {
+            switch (each.getDataInjectionMethod()) {
                 case LIBRARY:
-                    result += injectedProtocolPart.getNumOfLibraryLines();
+                    result += each.getNumOfLibraryLines();
                     break;
                 case RANDOM:
                     return -1;

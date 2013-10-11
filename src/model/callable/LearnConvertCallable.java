@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.10.13 21:20.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:40.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -30,11 +30,11 @@ public class LearnConvertCallable implements Callable<List<List<Byte>>> {
     @Override
     public List<List<Byte>> call() throws Exception {
         final List<List<Byte>> sequences = new ArrayList<>(files.size());
-        for (final ProtocolFile file : files) {
-            if (file.getContent().length > 0 && !Thread.currentThread().isInterrupted()) {
-                sequences.add(new ArrayList<Byte>(file.getContent().length));
-                for (final byte currentByte : file.getContent()) {
-                    sequences.get(sequences.size() - 1).add(currentByte);
+        for (final ProtocolFile eachFile : files) {
+            if (eachFile.getContent().length > 0 && !Thread.currentThread().isInterrupted()) {
+                sequences.add(new ArrayList<Byte>(eachFile.getContent().length));
+                for (final byte eachByte : eachFile.getContent()) {
+                    sequences.get(sequences.size() - 1).add(eachByte);
                 }
             }
         }

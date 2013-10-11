@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 21:37.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:40.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -44,8 +44,8 @@ public final class RandomPool extends Random {
         final byte[] bytes = new byte[fuzzDataLength];
         nextBytes(bytes);
         final List<Byte> lBytes = new ArrayList<>(bytes.length);
-        for (final byte b : bytes) {
-            lBytes.add(b);
+        for (final byte each : bytes) {
+            lBytes.add(each);
         }
         return lBytes;
     }

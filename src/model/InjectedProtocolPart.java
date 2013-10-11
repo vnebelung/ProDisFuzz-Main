@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -24,7 +24,7 @@ public class InjectedProtocolPart {
     private DataInjectionMethod dataInjectionMethod;
 
     /**
-     * Instantiates a new injected protocol part. The class consists of a protocol part and information about the
+     * Instantiates a new injected protocol part. The instance consists of a protocol part and information about the
      * selected data injection method.
      *
      * @param protocolPart the protocol part
@@ -37,7 +37,7 @@ public class InjectedProtocolPart {
     }
 
     /**
-     * Gets the data injection method.
+     * Returns the data injection method indicating what data will be injected during the fuzzing process.
      *
      * @return the data injection method, null for not variable protocol parts
      */
@@ -46,9 +46,9 @@ public class InjectedProtocolPart {
     }
 
     /**
-     * Gets the library path.
+     * Returns the path to the library file that contains the data input for fuzzing.
      *
-     * @return the path to the library file, null for not variable protocol parts
+     * @return the path to the library file, null for not variable protocol parts or not library-based parts
      */
     public Path getLibrary() {
         return protocolPart.getType() != ProtocolPart.Type.VAR || library == null ? null : Paths.get(library.toString
@@ -57,19 +57,19 @@ public class InjectedProtocolPart {
     }
 
     /**
-     * Sets the library file.
+     * Sets the path to the library file used for data injection while fuzzing.
      *
-     * @param path the path to the library file
+     * @param p the path to the library file
      */
-    public void setLibrary(final String path) {
+    public void setLibrary(final Path p) {
         if (protocolPart.getType() != ProtocolPart.Type.VAR) {
             return;
         }
-        final Path newLibrary = Paths.get(path).toAbsolutePath().normalize();
-        if (path.isEmpty()) {
+        if (p == null) {
             library = null;
             return;
         }
+        final Path newLibrary = p.toAbsolutePath().normalize();
         // Update only if the path is a file
         if (!Files.isRegularFile(newLibrary)) {
             Model.INSTANCE.getLogger().error("'" + newLibrary.toString() + "' is not a regular file");
@@ -112,7 +112,7 @@ public class InjectedProtocolPart {
     }
 
     /**
-     * Returns the protocol part.
+     * Returns the protocol part that defines the content.
      *
      * @return the protocol part
      */
@@ -121,10 +121,9 @@ public class InjectedProtocolPart {
     }
 
     /**
-     * Returns the number of lines of the library file. If the data injection method for this part is not set to
-     * LIBRARY the return value will be 0.
+     * Returns the number of lines of the library file.
      *
-     * @return the number of lines of the defined library file
+     * @return the number of lines of the defined library file or 0 if data injection method is not library-based
      */
     public int getNumOfLibraryLines() {
         if (dataInjectionMethod != DataInjectionMethod.LIBRARY) {

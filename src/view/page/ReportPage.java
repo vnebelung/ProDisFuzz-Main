@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,8 +11,8 @@ package view.page;
 import info.clearthought.layout.TableLayout;
 import model.Model;
 import model.process.ReportProcess;
-import view.ImageRepository;
 import view.component.Frame;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -25,12 +25,12 @@ public class ReportPage extends AbstractPage implements Observer {
     private final JLabel statusLabel;
 
     /**
-     * Instantiates a basic version of a page.
+     * Instantiates a new report page responsible for visualizing the report process.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public ReportPage(final Frame frame) {
-        super(frame);
+    public ReportPage(final Frame f) {
+        super(f);
         Model.INSTANCE.getReportProcess().addObserver(this);
         final double[][] areaLayout = {{0.1, 30, TableLayout.FILL}, {TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -41,7 +41,7 @@ public class ReportPage extends AbstractPage implements Observer {
         final JButton exportButton = new JButton(new AbstractAction("Save Report") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final int choose = fileChooser.showOpenDialog(frame);
+                final int choose = fileChooser.showOpenDialog(f);
                 if (choose == JFileChooser.APPROVE_OPTION) {
                     Model.INSTANCE.getReportProcess().write(fileChooser.getSelectedFile().toPath());
                 }
@@ -68,12 +68,7 @@ public class ReportPage extends AbstractPage implements Observer {
             statusLabel.setText("Report not generated");
         }
 
-        if (data.isWritten()) {
-            disableCancel();
-            enableFinish();
-        } else {
-            enableCancel();
-            disableFinish();
-        }
+        setCancelEnabled(!data.isWritten());
+        setFinishEnabled(data.isWritten());
     }
 }

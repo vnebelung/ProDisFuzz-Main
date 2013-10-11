@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 05.10.13 20:30.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -22,10 +22,10 @@ public class FuzzingReconnectCallable implements Callable<Boolean> {
     private final int timeout;
 
     /**
-     * Instatntiates a new fuzzing reconnect callable.
+     * Instantiates a new callable that is responsible for reconnect to a target in ace the connection was being lost.
      *
      * @param target  the fuzzing target
-     * @param timeout the timeout to wait before canceling the connection
+     * @param timeout the timeout to wait before retrying to connect
      */
     public FuzzingReconnectCallable(final InetSocketAddress target, final int timeout) {
         this.target = target;

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -39,7 +39,7 @@ public class FuzzingRunnable extends AbstractRunnable {
     private long crashTime;
 
     /**
-     * Instantiates a new fuzzing runnable.
+     * Instantiates a new runnable responsible for handling the fuzzing activities in a separate thread.
      *
      * @param injectionMethod       the injection method
      * @param injectedProtocolParts the injected protocol parts
@@ -125,12 +125,11 @@ public class FuzzingRunnable extends AbstractRunnable {
      * error.
      *
      * @param iteration the current iteration of tries to sent a message
-     * @param message   the sent message
+     * @param b         the sent message
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    private void handleTimeout(final int iteration, final byte[] message) throws InterruptedException,
-            ExecutionException {
+    private void handleTimeout(final int iteration, final byte[] b) throws InterruptedException, ExecutionException {
         Future<Boolean> reconnectFuture = null;
         double errorInterval = Math.pow(iteration + 2, 0.75) * interval;
         final DecimalFormat decimalFormat = new DecimalFormat(",##0.0");
@@ -147,7 +146,7 @@ public class FuzzingRunnable extends AbstractRunnable {
                 case 2:
                     Model.INSTANCE.getLogger().fine("Target not reachable for 3 times in a row. Information about the" +
                             " " + "crash is being saved");
-                    savedDataFiles.add(new SavedDataFile(message, true, crashTime));
+                    savedDataFiles.add(new SavedDataFile(b, true, crashTime));
                     int count = 1;
                     do {
                         errorInterval = Math.pow(count++, 0.75) * interval;
@@ -176,37 +175,36 @@ public class FuzzingRunnable extends AbstractRunnable {
     /**
      * Checks all library files for a valid structure, that means they do not contain any empty lines.
      *
-     * @param varLibInjectedProtocolParts the variable protocol parts with data injection method LIBRARY
+     * @param parts the variable protocol parts with library-based data injection method
      * @throws InterruptedException
      */
-    private void checkLibraries(final List<InjectedProtocolPart> varLibInjectedProtocolParts) throws
-            InterruptedException, ExecutionException {
-        if (varLibInjectedProtocolParts.isEmpty()) {
+    private void checkLibraries(final List<InjectedProtocolPart> parts) throws InterruptedException,
+            ExecutionException {
+        if (parts.isEmpty()) {
             return;
         }
         Future<Boolean> checkLibraryFuture = null;
         try {
             switch (injectionMethod) {
                 case SEPARATE:
-                    for (final InjectedProtocolPart injectedProtocolPart : varLibInjectedProtocolParts) {
-                        final FuzzingCheckLibraryCallable checkLibraryCallable = new FuzzingCheckLibraryCallable
-                                (injectedProtocolPart.getLibrary());
+                    for (final InjectedProtocolPart each : parts) {
+                        final FuzzingCheckLibraryCallable checkLibraryCallable = new FuzzingCheckLibraryCallable(each
+                                .getLibrary());
                         checkLibraryFuture = AbstractThreadProcess.EXECUTOR.submit(checkLibraryCallable);
                         if (!checkLibraryFuture.get()) {
-                            Model.INSTANCE.getLogger().error("File '" + injectedProtocolPart.getLibrary().toString()
-                                    + "' " +
+                            Model.INSTANCE.getLogger().error("File '" + each.getLibrary().toString() + "' " +
                                     "contains empty lines");
                             return;
                         }
                     }
                     break;
                 case SIMULTANEOUS:
-                    final FuzzingCheckLibraryCallable checkLibraryCallable = new FuzzingCheckLibraryCallable
-                            (varLibInjectedProtocolParts.get(0).getLibrary());
+                    final FuzzingCheckLibraryCallable checkLibraryCallable = new FuzzingCheckLibraryCallable(parts
+                            .get(0).getLibrary());
                     checkLibraryFuture = AbstractThreadProcess.EXECUTOR.submit(checkLibraryCallable);
                     if (!checkLibraryFuture.get()) {
-                        Model.INSTANCE.getLogger().error("File '" + varLibInjectedProtocolParts.get(0).getLibrary()
-                                .toString() + "' contains empty lines");
+                        Model.INSTANCE.getLogger().error("File '" + parts.get(0).getLibrary().toString() + "' " +
+                                "contains empty lines");
                         return;
                     }
                     break;
@@ -219,41 +217,44 @@ public class FuzzingRunnable extends AbstractRunnable {
     }
 
     /**
-     * Filters a given list of injected protocol parts and returns only party that fulfill the requirements type is
-     * VAR and data injection mode is LIBRARY.
+     * Filters a given list of injected protocol parts and returns only variable parts with library-based data
+     * injection mode.
      *
-     * @param injectedProtocolParts the unfiltered list of injected protocol parts
+     * @param parts the unfiltered list of injected protocol parts
      * @return the filtered list of injected protocol parts
      */
-    private List<InjectedProtocolPart> filterVarLibParts(final List<InjectedProtocolPart> injectedProtocolParts) {
+    private List<InjectedProtocolPart> filterVarLibParts(final List<InjectedProtocolPart> parts) {
         final List<InjectedProtocolPart> varLibInjectedProtocolParts = new ArrayList<>();
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
-            if (injectedProtocolPart.getProtocolPart().getType() == ProtocolPart.Type.VAR && injectedProtocolPart
-                    .getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.LIBRARY) {
-                varLibInjectedProtocolParts.add(injectedProtocolPart);
+        for (final InjectedProtocolPart each : parts) {
+            if (each.getProtocolPart().getType() == ProtocolPart.Type.VAR && each.getDataInjectionMethod() ==
+                    InjectedProtocolPart.DataInjectionMethod.LIBRARY) {
+                varLibInjectedProtocolParts.add(each);
             }
         }
         return varLibInjectedProtocolParts;
     }
 
     /**
-     * Gets the duration of the runnable.
+     * Returns the duration of the running time of the runnable. If the runnable is running at the time of the method
+     * call, the current duration is returned.
      *
-     * @return the fuzzing duration in milliseconds.
+     * @return the fuzzing duration in milliseconds
      */
     public long getDuration() {
-        return endTime - startTime;
+        return finished ? endTime - startTime : System.currentTimeMillis() - startTime;
     }
 
     /**
-     * Gets the start time.
+     * Returns the time the fuzzing was started.
+     *
+     * @return the fuzzing start time in milliseconds
      */
     public long getStartTime() {
         return startTime;
     }
 
     /**
-     * Gets the saved data files with sent and received data, depending on the chosen record settings.
+     * Returns the saved data files with sent and received data, depending on the chosen record settings.
      *
      * @return the saved data files
      */

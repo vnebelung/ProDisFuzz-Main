@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -22,10 +22,10 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     /**
      * Instantiates a new protocol file.
      *
-     * @param filePath the file path
+     * @param p the file path
      */
-    public ProtocolFile(final Path filePath) {
-        this.filePath = filePath;
+    public ProtocolFile(final Path p) {
+        filePath = p;
         sha256 = "";
         try {
             sha256 = generateHash(MessageDigest.getInstance("SHA-256"));
@@ -35,11 +35,10 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     /**
-     * Generates a Hash for the file depending on the given message digest
-     * algorithm.
+     * Generates a Hash for the file depending on the given message digest algorithm.
      *
      * @param algorithm the message digest algorithm
-     * @return the hash for the file
+     * @return the file hash
      */
     private String generateHash(final MessageDigest algorithm) {
         final StringBuilder hash = new StringBuilder();
@@ -70,7 +69,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     /**
-     * Gets the file name.
+     * Returns the system file name.
      *
      * @return the file name
      */
@@ -79,7 +78,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     /**
-     * Gets the MD5 hash for the file.
+     * Returns the SHA-256 hash for the file.
      *
      * @return the hash
      */
@@ -88,50 +87,44 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     /**
-     * Gets the size of the file in the current file system.
+     * Returns the size of the file in the current file system.
      *
      * @return the file size or 0 if the file can not be read.
      */
     public long getSize() {
-        long size;
         try {
-            size = Files.size(filePath);
+            return Files.size(filePath);
         } catch (IOException e) {
-            size = 0;
+            Model.INSTANCE.getLogger().error(e);
+            return 0;
         }
-        return size;
     }
 
     /**
-     * Gets the time (in millis) the files was last modified. Can be 0 if the
-     * file can not be read.
+     * Returns the time the file was last modified (in milliseconds).
      *
-     * @return the time
+     * @return the modification time or 0 if the file can not be read
      */
     public long getLastModified() {
-        long time;
         try {
-            time = Files.getLastModifiedTime(filePath).toMillis();
+            return Files.getLastModifiedTime(filePath).toMillis();
         } catch (IOException e) {
-            time = 0;
+            Model.INSTANCE.getLogger().error(e);
+            return 0;
         }
-        return time;
     }
 
     /**
-     * Gets the file content (in bytes) or an empty array if the file can not be read or is too large.
+     * Returns the file content.
      *
-     * @return the file content
+     * @return the file content in bytes, can be empty if the file can not be read or is too large
      */
     public byte[] getContent() {
         byte[] content;
         try {
             content = Files.readAllBytes(filePath);
-        } catch (IOException e) {
-            Model.INSTANCE.getLogger().error("File '" + filePath.getFileName() + "' can not be read");
-            content = new byte[0];
-        } catch (OutOfMemoryError e) {
-            Model.INSTANCE.getLogger().error("File '" + filePath.getFileName() + "' is too large to be read");
+        } catch (IOException | OutOfMemoryError e) {
+            Model.INSTANCE.getLogger().error(e);
             content = new byte[0];
         }
         return content;

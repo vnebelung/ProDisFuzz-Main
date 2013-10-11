@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:15.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,11 +15,11 @@ import java.util.concurrent.Callable;
 
 public class LearnSelectCallable implements Callable<int[]> {
 
-    private final static int DICE_LENGTH = 3;
     private final List<List<Byte>> sequences;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable responsible for selecting two sequences from the pool of sequences. The two
+     * sequences will be chosen by their similarity to each other .
      *
      * @param sequences the input sequences
      */
@@ -63,32 +63,33 @@ public class LearnSelectCallable implements Callable<int[]> {
     }
 
     /**
-     * Gets the dice coefficient for two byte sequences.
+     * Gets the dice coefficient for two sequences.
      *
-     * @param seq1 the first sequence
-     * @param seq2 the second sequence
+     * @param s1 the first sequence
+     * @param s2 the second sequence
      * @return the dice coefficient
      */
-    private double getDiceValue(final List<Byte> seq1, final List<Byte> seq2) {
-        final Set<String> set1 = getSet(seq1);
-        final Set<String> set2 = getSet(seq2);
+    private double getDiceValue(final List<Byte> s1, final List<Byte> s2) {
+        final Set<String> set1 = getSet(s1);
+        final Set<String> set2 = getSet(s2);
         final Set<String> set3 = new HashSet<>(set1);
         set3.retainAll(set2);
         return (2.0 * set3.size()) / (set1.size() + set2.size());
     }
 
     /**
-     * Gets the set of n-grams for a given list of bytes.
+     * Gets the set of 3-grams for a given list of bytes.
      *
      * @param sequence the byte sequence
      * @return the set of string-encoded n-grams
      */
     private Set<String> getSet(final List<Byte> sequence) {
+        final int ngram = 3;
         final StringBuilder fragment = new StringBuilder();
         final Set<String> set = new HashSet<>();
-        for (int i = 0; i < sequence.size() + DICE_LENGTH - 1; i++) {
+        for (int i = 0; i < sequence.size() + ngram - 1; i++) {
             fragment.delete(0, fragment.length());
-            for (int j = i - DICE_LENGTH + 1; j <= i; j++) {
+            for (int j = i - ngram + 1; j <= i; j++) {
                 if (j < 0 || j >= sequence.size()) {
                     fragment.append(" -");
                 } else if (sequence.get(j) == null) {
@@ -124,41 +125,40 @@ public class LearnSelectCallable implements Callable<int[]> {
     }
 
     /**
-     * Gets the distance matrix with temporary calculated distance values based
-     * on the average distances of the sequences.
+     * Gets the distance matrix with temporary calculated distance values based on the average distances of the
+     * sequences.
      *
-     * @param distanceMatrix the current distance matrix
-     * @param avgDistances   the average distances for each sequence
+     * @param distances    the current distance matrix
+     * @param avgDistances the average distances for each sequence
      * @return the new calculated distance matrix
      */
-    private double[][] avgDistanceMatrix(final double[][] distanceMatrix, final double[] avgDistances) {
-        for (int i = 0; i < distanceMatrix.length; i++) {
-            for (int j = i; j < distanceMatrix[i].length; j++) {
+    private double[][] avgDistanceMatrix(final double[][] distances, final double[] avgDistances) {
+        for (int i = 0; i < distances.length; i++) {
+            for (int j = i; j < distances[i].length; j++) {
                 if (i == j) {
-                    distanceMatrix[i][j] = Double.MAX_VALUE;
+                    distances[i][j] = Double.MAX_VALUE;
                 } else {
-                    distanceMatrix[i][j] -= avgDistances[i] + avgDistances[j];
-                    distanceMatrix[j][i] = distanceMatrix[i][j];
+                    distances[i][j] -= avgDistances[i] + avgDistances[j];
+                    distances[j][i] = distances[i][j];
                 }
             }
         }
-        return distanceMatrix;
+        return distances;
     }
 
     /**
-     * Gets the two indices of the sequences that represent the two sequences
-     * with the lowest distance value.
+     * Gets the two indices of the sequences that represent the two sequences with the lowest distance value.
      *
-     * @param distanceMatrix the distance matrix
+     * @param distances the distance matrix
      * @return the indices of the two minimal sequences
      */
-    private int[] minIndices(final double[][] distanceMatrix) {
+    private int[] minIndices(final double[][] distances) {
         double minDistance = Double.MAX_VALUE;
         int[] minIndices = new int[2];
-        for (int i = 0; i < distanceMatrix.length; i++) {
-            for (int j = 0; j < distanceMatrix[i].length; j++) {
-                if (distanceMatrix[i][j] < minDistance) {
-                    minDistance = distanceMatrix[i][j];
+        for (int i = 0; i < distances.length; i++) {
+            for (int j = 0; j < distances[i].length; j++) {
+                if (distances[i][j] < minDistance) {
+                    minDistance = distances[i][j];
                     minIndices[0] = Math.min(i, j);
                     minIndices[1] = Math.max(i, j);
                 }

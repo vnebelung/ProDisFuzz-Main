@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 05.10.13 21:20.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -20,7 +20,8 @@ public class LearnAdjustCallable implements Callable<List<Byte>> {
     private final List<Byte> cleanedSequence;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable that is responsible for adjusting a sequence by cleaning it up from little
+     * inconsistencies.
      *
      * @param sequence the input sequence
      */

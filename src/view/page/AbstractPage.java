@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:37.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:13.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -24,11 +24,11 @@ public abstract class AbstractPage extends JPanel {
     private final JButton navCancel;
 
     /**
-     * Instantiates a basic version of a page.
+     * Instantiates a basic abstract page.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    AbstractPage(final Frame frame) {
+    public AbstractPage(final Frame f) {
         super();
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -47,14 +47,14 @@ public abstract class AbstractPage extends JPanel {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.reset();
-                frame.showModePage();
+                f.showModePage();
             }
         });
         navCancel.setEnabled(true);
         navPanel.add(navCancel);
         navPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
-        navNext = new JButton(nextAction(frame));
+        navNext = new JButton(nextAction(f));
         navNext.setEnabled(false);
         navPanel.add(navNext);
         navPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -63,7 +63,7 @@ public abstract class AbstractPage extends JPanel {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.reset();
-                frame.showModePage();
+                f.showModePage();
             }
         });
         navFinish.setEnabled(false);
@@ -71,45 +71,30 @@ public abstract class AbstractPage extends JPanel {
     }
 
     /**
-     * Enables the next button. Disabled by default.
+     * Enables/disables the next button. Disabled by default.
+     *
+     * @param b true if the next button should be enabled
      */
-    void enableNext() {
-        navNext.setEnabled(true);
+    protected void setNextEnabled(final boolean b) {
+        navNext.setEnabled(b);
     }
 
     /**
-     * Enables the cancel button. Enabled by default.
+     * Enables/disables the cancel button. Enabled by default.
+     *
+     * @param b true if the next button should be enabled
      */
-    void enableCancel() {
-        navCancel.setEnabled(true);
+    void setCancelEnabled(final boolean b) {
+        navCancel.setEnabled(b);
     }
 
     /**
-     * Enables the finish button. Disabled by default.
+     * Enables/disables the finish button. Disabled by default.
+     *
+     * @param b true if the next button should be enabled
      */
-    void enableFinish() {
-        navFinish.setEnabled(true);
-    }
-
-    /**
-     * Disables the next button. Disabled by default.
-     */
-    void disableNext() {
-        navNext.setEnabled(false);
-    }
-
-    /**
-     * Disables the cancel button. Enabled by default.
-     */
-    void disableCancel() {
-        navCancel.setEnabled(false);
-    }
-
-    /**
-     * Disables the finish button. Disabled by default.
-     */
-    void disableFinish() {
-        navFinish.setEnabled(false);
+    void setFinishEnabled(final boolean b) {
+        navFinish.setEnabled(b);
     }
 
     /**
@@ -125,10 +110,10 @@ public abstract class AbstractPage extends JPanel {
      * This empty implementation is provided so users don't have to implement this method if the next button has no
      * function.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      * @return the action listener
      */
-    Action nextAction(final Frame frame) {
+    Action nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:06.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -19,21 +19,20 @@ import java.util.concurrent.Callable;
 
 public class FuzzingMessageCallable implements Callable<byte[]> {
 
-    private final List<InjectedProtocolPart> injectedProtocolParts;
+    private final List<InjectedProtocolPart> parts;
     private final FuzzOptionsProcess.InjectionMethod injectionMethod;
     private int currentInjectedProtocolPart;
     private int currentLibraryLine;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable that is responsible for generating fuzzed messages.
      *
-     * @param injectedProtocolParts the injected protocol parts
-     * @param injectionMethod       the injection method
+     * @param parts the injected protocol parts that define the protocol structure
+     * @param im    the injection method the user-chosen injection method
      */
-    public FuzzingMessageCallable(final List<InjectedProtocolPart> injectedProtocolParts,
-                                  final FuzzOptionsProcess.InjectionMethod injectionMethod) {
-        this.injectedProtocolParts = injectedProtocolParts;
-        this.injectionMethod = injectionMethod;
+    public FuzzingMessageCallable(final List<InjectedProtocolPart> parts, final FuzzOptionsProcess.InjectionMethod im) {
+        this.parts = parts;
+        this.injectionMethod = im;
         currentInjectedProtocolPart = 0;
         currentLibraryLine = 0;
     }
@@ -75,14 +74,14 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts have separate random input.
+     * Generates a fuzzed message. All variable protocol parts will get separate random data.
      *
-     * @return the generated message
+     * @return the generated fuzzed message
      */
     private List<Byte> sepInfMessage() {
         final List<Byte> bytes = new ArrayList<>();
         // Generates the fuzzed string separate for every single protocol part
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
+        for (final InjectedProtocolPart injectedProtocolPart : parts) {
             switch (injectedProtocolPart.getProtocolPart().getType()) {
                 case FIX:
                     bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
@@ -108,7 +107,7 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts get the same random input.
+     * Generates a fuzzed message. All variable protocol parts will get the same random data.
      *
      * @return the generated message
      */
@@ -116,12 +115,12 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
         final List<Byte> bytes = new ArrayList<>();
         // Generate the random bytes
         int maxLength = 0;
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
+        for (final InjectedProtocolPart injectedProtocolPart : parts) {
             maxLength = Math.max(maxLength, injectedProtocolPart.getProtocolPart().getMaxLength());
         }
         final List<Byte> rndBytes = RandomPool.getInstance().nextBloatBytes(maxLength);
         // Apply the bytes for each VAR part
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
+        for (final InjectedProtocolPart injectedProtocolPart : parts) {
             switch (injectedProtocolPart.getProtocolPart().getType()) {
                 case FIX:
                     bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
@@ -137,31 +136,30 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts have separate library files.
+     * Generates a fuzzed message. All variable protocol parts will get separate data of a library file.
      *
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> sepFinMessage() {
-        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get
+        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get
                 (currentInjectedProtocolPart).getNumOfLibraryLines()) {
             currentLibraryLine = 0;
             currentInjectedProtocolPart++;
         }
-        if (currentInjectedProtocolPart >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                (injectedProtocolParts).size()) {
+        if (currentInjectedProtocolPart >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).size()) {
             return null;
         }
         final List<Byte> bytes = new ArrayList<>();
         // For every protocol part other than the current read a random line of its library file
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
+        for (final InjectedProtocolPart injectedProtocolPart : parts) {
             switch (injectedProtocolPart.getProtocolPart().getType()) {
                 case FIX:
                     bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
                     break;
                 case VAR:
                     bytes.addAll(injectedProtocolPart.equals(Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                            (injectedProtocolParts).get(currentInjectedProtocolPart)) ? injectedProtocolPart
-                            .getLibraryLine(currentLibraryLine) : injectedProtocolPart.getRandomLibraryLine());
+                            (parts).get(currentInjectedProtocolPart)) ? injectedProtocolPart.getLibraryLine
+                            (currentLibraryLine) : injectedProtocolPart.getRandomLibraryLine());
                     break;
                 default:
                     break;
@@ -172,19 +170,19 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts have the same library file.
+     * Generates a fuzzed message. All variable protocol parts will get the same data of a library file.
      *
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> simFinMessage() {
-        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get(0)
+        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get(0)
                 .getNumOfLibraryLines()) {
             return null;
         }
         final List<Byte> bytes = new ArrayList<>();
-        final List<Byte> line = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts).get(0)
-                .getLibraryLine(currentLibraryLine);
-        for (final InjectedProtocolPart injectedProtocolPart : injectedProtocolParts) {
+        final List<Byte> line = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get(0).getLibraryLine
+                (currentLibraryLine);
+        for (final InjectedProtocolPart injectedProtocolPart : parts) {
             switch (injectedProtocolPart.getProtocolPart().getType()) {
                 case FIX:
                     bytes.addAll(injectedProtocolPart.getProtocolPart().getBytes());
@@ -201,14 +199,14 @@ public class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     /**
-     * Checks whether the number of fuzzing iterations will be finite, that means all variable protocol parts are set
-     * to LIBRARY.
+     * Checks whether the number of fuzzing iterations will be finite, that means all variable protocol parts will
+     * get their data from a library file.
      *
      * @return true if all variable protocol parts use library files
      */
     private boolean finiteIterations() {
         for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                (injectedProtocolParts)) {
+                (parts)) {
             if (injectedProtocolPart.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.RANDOM) {
                 return false;
             }

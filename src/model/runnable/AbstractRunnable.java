@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 06.10.13 18:55.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -17,9 +17,9 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     protected boolean finished;
 
     /**
-     * Instantiates a new runnable.
+     * Instantiates a new abstract runnable.
      */
-    AbstractRunnable() {
+    public AbstractRunnable() {
         super();
         update = new Runnable() {
             @Override
@@ -33,7 +33,7 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     /**
      * Notifies all observers about an update and sleeps for 250 ms.
      *
-     * @throws InterruptedException thrown when the thread is interrupted while sleeping
+     * @throws InterruptedException
      */
     protected final void spreadUpdate() throws InterruptedException {
         AbstractThreadProcess.EXECUTOR.execute(update);
@@ -41,7 +41,7 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     }
 
     /**
-     * Returns whether the runnable has successfully finished
+     * Returns whether the runnable has successfully finished.
      *
      * @return true if the runnable has finished without errors or interruptions
      */

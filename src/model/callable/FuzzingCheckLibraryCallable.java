@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:01.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -22,12 +22,13 @@ public class FuzzingCheckLibraryCallable implements Callable<Boolean> {
     private final Path file;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable that is responsible for checking a given library file for a valid structure. The
+     * file is not allowed to have empty lines.
      *
-     * @param file the file path
+     * @param p the library file path
      */
-    public FuzzingCheckLibraryCallable(final Path file) {
-        this.file = file;
+    public FuzzingCheckLibraryCallable(final Path p) {
+        this.file = p;
     }
 
     @Override

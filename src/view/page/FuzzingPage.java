@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,8 +11,8 @@ package view.page;
 import info.clearthought.layout.TableLayout;
 import model.Model;
 import model.process.FuzzingProcess;
-import view.ImageRepository;
 import view.component.Frame;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -34,12 +34,12 @@ public class FuzzingPage extends AbstractPage implements Observer {
     private Timer timer;
 
     /**
-     * Instantiates a basic version of a page.
+     * Instantiates a new fuzzing page responsible for visualizing the fuzzing process.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public FuzzingPage(final Frame frame) {
-        super(frame);
+    public FuzzingPage(final Frame f) {
+        super(f);
         Model.INSTANCE.getFuzzingProcess().addObserver(this);
         final double[][] areaLayout = {{TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.FILL},
                 {TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.MINIMUM, TableLayout.MINIMUM}};
@@ -98,19 +98,13 @@ public class FuzzingPage extends AbstractPage implements Observer {
         statusIcon.setIcon(data.isRunning() ? ImageRepository.INSTANCE.getWorkingIcon() : ImageRepository.INSTANCE
                 .getOkIcon());
 
-        if (data.isRunning()) {
-            disableCancel();
-        } else {
-            enableCancel();
-        }
-
-        if (data.getNumOfRecords() > 0 && !data.isRunning()) {
-            enableNext();
-        } else {
-            disableNext();
-        }
+        setCancelEnabled(!data.isRunning());
+        setNextEnabled(data.getNumOfRecords() > 0 && !data.isRunning());
     }
 
+    /**
+     * Stops the timer displaying the fuzzing duration.
+     */
     private void stopTimer() {
         if (timer != null) {
             timer.stop();
@@ -146,6 +140,11 @@ public class FuzzingPage extends AbstractPage implements Observer {
         };
     }
 
+    /**
+     * Starts the timer displaying the fuzzing duration.
+     *
+     * @param startTime the time in milliseconds the process was started
+     */
     private void startTimer(final long startTime) {
         if (timer == null) {
             timer = new javax.swing.Timer(1000, new ActionListener() {
@@ -173,12 +172,12 @@ public class FuzzingPage extends AbstractPage implements Observer {
     }
 
     @Override
-    protected AbstractAction nextAction(final Frame frame) {
+    protected AbstractAction nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.getReportProcess().init();
-                frame.showReportPage();
+                f.showReportPage();
             }
         };
     }

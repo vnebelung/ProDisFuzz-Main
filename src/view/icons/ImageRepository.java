@@ -1,11 +1,11 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 21:34.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:13.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
-package view;
+package view.icons;
 
 import javax.swing.*;
 
@@ -18,17 +18,17 @@ public enum ImageRepository {
     private final Icon logo;
 
     /**
-     * Singelton constructor.
+     * Instantiates a new singleton image repository for managing all images and icons.
      */
     private ImageRepository() {
-        errorIcon = new ImageIcon(getClass().getResource("/icons/error.png"));
-        workingIcon = new ImageIcon(getClass().getResource("/icons/working.png"));
-        okIcon = new ImageIcon(getClass().getResource("/icons/ok.png"));
-        logo = new ImageIcon(getClass().getResource("/icons/logo.png"));
+        errorIcon = new ImageIcon(getClass().getResource("/view/icons/error.png"));
+        workingIcon = new ImageIcon(getClass().getResource("/view/icons/working.png"));
+        okIcon = new ImageIcon(getClass().getResource("/view/icons/ok.png"));
+        logo = new ImageIcon(getClass().getResource("/view/icons/logo.png"));
     }
 
     /**
-     * Gets the warning icon.
+     * Returns the warning icon.
      *
      * @return the warning icon
      */
@@ -37,7 +37,7 @@ public enum ImageRepository {
     }
 
     /**
-     * Gets the error icon.
+     * Returns the error icon.
      *
      * @return the error icon
      */
@@ -46,7 +46,7 @@ public enum ImageRepository {
     }
 
     /**
-     * Gets the ok icon.
+     * Returns the ok icon.
      *
      * @return the ok icon
      */
@@ -55,7 +55,7 @@ public enum ImageRepository {
     }
 
     /**
-     * Gets the logo.
+     * Returns the ProDisFuzz logo.
      *
      * @return the logo
      */

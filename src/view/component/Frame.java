@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -44,10 +44,10 @@ public class Frame extends JFrame implements Observer {
     /**
      * Instantiates the basic window frame.
      *
-     * @param name the frame name
+     * @param s the frame name
      */
-    public Frame(final String name) {
-        super(name);
+    public Frame(final String s) {
+        super(s);
         dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.getDefault());
         Model.INSTANCE.getLogger().addObserver(this);
 
@@ -111,13 +111,6 @@ public class Frame extends JFrame implements Observer {
         getContentPane().add(splitPane);
     }
 
-    /**
-     * Makes the frame visible.
-     */
-    public void visible() {
-        setVisible(true);
-    }
-
     @Override
     public void update(final Observable o, final Object arg) {
         final Logger update = (Logger) o;
@@ -156,7 +149,7 @@ public class Frame extends JFrame implements Observer {
             } catch (BadLocationException e) {
                 Model.INSTANCE.getLogger().error(e);
             }
-            final int diff = logArea.getText().split(System.lineSeparator()).length - Logger.MAX_ENTRIES;
+            final int diff = logArea.getText().split(System.lineSeparator()).length - 500;
             if (diff > 0) {
                 for (int i = 0; i < diff; i++) {
                     try {

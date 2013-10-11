@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 06.10.13 01:55.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,12 +21,12 @@ import java.util.*;
 public class CollectProcess extends AbstractProcess {
 
     private final List<ProtocolFile> files;
-    private Path directory;
     private final Map<ProtocolFile, Boolean> selected;
+    private Path directory;
 
 
     /**
-     * Instantiates a new collect process.
+     * Instantiates a new process responsible for collecting all files which contain protocol information.
      */
     public CollectProcess() {
         super();
@@ -36,8 +36,8 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Sets all detected files in the already defined directory. Note: The method does not notify
-     * observers about a change of the files.
+     * Sets all detected files in the already defined directory. Note: The method does not notify observers about a
+     * change of the files.
      */
     private void setFiles() {
         files.clear();
@@ -61,14 +61,14 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the directory for collecting filePaths.
+     * Sets the directory for collecting all files.
      *
-     * @param path the new directory path
+     * @param s the directory path
      */
-    public void setDirectory(final String path) {
-        final Path newPath = Paths.get(path).toAbsolutePath().normalize();
+    public void setDirectory(final String s) {
+        final Path newPath = Paths.get(s).toAbsolutePath().normalize();
         if (!newPath.equals(directory)) {
-            if (Files.isDirectory(newPath) && !path.isEmpty()) {
+            if (Files.isDirectory(newPath) && !s.isEmpty()) {
                 directory = newPath;
                 Model.INSTANCE.getLogger().info("Directory for collecting set to '" + directory.toString() + "'");
                 setFiles();
@@ -82,7 +82,7 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Gets the collected files.
+     * Returns the files of the current directory.
      *
      * @return the collected files
      */
@@ -91,9 +91,9 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Gets selected files only.
+     * Returns all files that are marked as selected by the user.
      *
-     * @return selected files
+     * @return the selected files
      */
     public List<ProtocolFile> getSelectedFiles() {
         final List<ProtocolFile> selection = new ArrayList<>();
@@ -114,13 +114,14 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the status of a protocol file to selected.
+     * Sets the status of a protocol file to the given value.
      *
-     * @param index the index of the protocol file
+     * @param index  the index of the protocol file
+     * @param select true if the file at the given index is selected
      */
-    public void setSelected(final int index) {
-        if (index < files.size() && !selected.get(files.get(index))) {
-            selected.put(files.get(index), true);
+    public void setSelected(final int index, final boolean select) {
+        if (index < files.size() && select != selected.get(files.get(index))) {
+            selected.put(files.get(index), select);
             spreadUpdate();
             if (getNumOfSelectedFiles() < 2) {
                 Model.INSTANCE.getLogger().warning("At least 2 files must be selected");
@@ -131,31 +132,14 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the status of a protocol file to unselected.
-     *
-     * @param index the index of the protocol file
-     */
-    public void setUnselected(final int index) {
-        if (index < files.size() && selected.get(files.get(index))) {
-            selected.put(files.get(index), false);
-            spreadUpdate();
-            if (getNumOfSelectedFiles() < 2) {
-                Model.INSTANCE.getLogger().warning("At least 2 files must be selected");
-            } else {
-                Model.INSTANCE.getLogger().info(getNumOfSelectedFiles() + " files selected");
-            }
-        }
-    }
-
-    /**
-     * Gets the umber of selected files.
+     * Returns the number of files selected by the user.
      *
      * @return the number of selected files
      */
     public int getNumOfSelectedFiles() {
         int numChecked = 0;
-        for (int i = 0; i < files.size(); i++) {
-            if (isSelected(i)) {
+        for (ProtocolFile each : files) {
+            if (selected.get(each)) {
                 numChecked++;
             }
         }
@@ -163,7 +147,7 @@ public class CollectProcess extends AbstractProcess {
     }
 
     /**
-     * Returns whether a protocol file is selected.
+     * Returns whether a protocol file located at the given list index is selected by the user.
      *
      * @param index the index of the protocol file
      * @return true if the file is selected

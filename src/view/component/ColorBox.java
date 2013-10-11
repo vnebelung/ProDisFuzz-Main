@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 21:51.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -17,13 +17,13 @@ class ColorBox extends JPanel {
     private final Color color;
 
     /**
-     * Instantiates a new color box.
+     * Instantiates a new color box that contains the colors for the protocol visualization.
      *
-     * @param color the fill color of the box
+     * @param c the fill color of the box
      */
-    public ColorBox(final Color color) {
+    public ColorBox(final Color c) {
         super();
-        this.color = color;
+        color = c;
     }
 
     @Override

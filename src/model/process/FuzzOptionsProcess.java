@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,6 +15,8 @@ import model.ProtocolPart;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,16 +29,16 @@ public class FuzzOptionsProcess extends AbstractProcess {
     public final static int INTERVAL_MAX = 30000;
     public final static int TIMEOUT_MIN = 50;
     public final static int TIMEOUT_MAX = 10000;
+    private final List<InjectedProtocolPart> injectedProtocolParts;
     private InjectionMethod injectionMethod;
     private InetSocketAddress target;
     private int timeout;
     private int interval;
-    private final List<InjectedProtocolPart> injectedProtocolParts;
     private CommunicationSave saveCommunication;
     private boolean targetReachable;
 
     /**
-     * Instantiates a new fuzz options process.
+     * Instantiates a new process responsible for setting all fuzz options.
      */
     public FuzzOptionsProcess() {
         super();
@@ -70,7 +72,8 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the data injection method.
+     * Returns the data injection method. The injection method specifies the mechanism data is injected into the
+     * variable protocol parts
      *
      * @return the injection method
      */
@@ -113,7 +116,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
         final List<InjectedProtocolPart> varParts = filterVarParts(injectedProtocolParts);
         for (int i = 0; i < varParts.size(); i++) {
             if (i > 0) {
-                setLibraryFile("", varParts.get(i).hashCode());
+                setLibraryFile(Paths.get(""), varParts.get(i).hashCode());
             }
         }
 
@@ -177,7 +180,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Returns whether the defined target is reachable.
+     * Returns whether the use-defined target is reachable.
      *
      * @return true if the target is reachable
      */
@@ -186,7 +189,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Gets the fuzzing target.
+     * Returns the fuzzing target.
      *
      * @return the target
      */
@@ -195,9 +198,9 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the fuzzing interval in ms.
+     * Returns the fuzzing interval, that is the pause between two fuzzing iterations.
      *
-     * @return the interval
+     * @return the interval in ms
      */
     public int getInterval() {
         return interval;
@@ -206,7 +209,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     /**
      * Sets the fuzzing interval, that is the time between two fuzzing iterations.
      *
-     * @param interval the fuzzing interval
+     * @param interval the fuzzing interval in ms
      */
     public void setInterval(final int interval) {
         if (interval == this.interval) {
@@ -219,17 +222,18 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the timeout in ms.
+     * Returns the timeout, that is the time in which a target application must react on input data before a crash
+     * occurrence is assumed.
      *
-     * @return the timeout
+     * @return the timeout in ms
      */
     public int getTimeout() {
         return timeout;
     }
 
     /**
-     * Sets the connection timeout, that is the time a target application has to react on input data before a crash
-     * occurrence is assumed.
+     * Sets the connection timeout, that is the time in which a target application must react on input data before a
+     * crash occurrence is assumed.
      *
      * @param timeout the connection timeout in ms
      */
@@ -244,7 +248,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Gets the injected protocol parts.
+     * Returns the injected protocol parts. Each part has its particular fuzz options.
      *
      * @return the injected protocol parts
      */
@@ -295,15 +299,15 @@ public class FuzzOptionsProcess extends AbstractProcess {
     /**
      * Sets the library file for a given protocol part identified through its hash code.
      *
-     * @param path the path to the library file
+     * @param p    the path to the library file
      * @param hash the hash code of the protocol part
      */
-    public void setLibraryFile(final String path, final int hash) {
+    public void setLibraryFile(final Path p, final int hash) {
         switch (injectionMethod) {
             case SEPARATE:
                 for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
                     if (injectedPart.hashCode() == hash) {
-                        injectedPart.setLibrary(path);
+                        injectedPart.setLibrary(p);
                         if (injectedPart.getLibrary() != null) {
                             Model.INSTANCE.getLogger().info("Library file of protocol part '" + Integer.toHexString
                                     (hash) +
@@ -316,7 +320,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
                 break;
             case SIMULTANEOUS:
                 for (final InjectedProtocolPart injectedPart : injectedProtocolParts) {
-                    injectedPart.setLibrary(path);
+                    injectedPart.setLibrary(p);
                 }
                 for (final InjectedProtocolPart injectedPart : filterVarParts(injectedProtocolParts)) {
                     if (injectedPart.getLibrary() != null) {

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,8 +9,8 @@
 package view.page;
 
 import info.clearthought.layout.TableLayout;
-import view.ImageRepository;
 import view.component.Frame;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -18,12 +18,12 @@ import java.awt.event.ActionEvent;
 public class ModePage extends AbstractPage {
 
     /**
-     * Instantiates the page.
+     * Instantiates a new mode page for selecting the program mode.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public ModePage(final Frame frame) {
-        super(frame);
+    public ModePage(final Frame f) {
+        super(f);
         hideButtons();
         final double[][] areaLayout = {{0.5, 20, TableLayout.FILL}, {0.3, TableLayout.FILL, 10, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -34,7 +34,7 @@ public class ModePage extends AbstractPage {
         final JButton learningButton = new JButton(new AbstractAction("Learning Mode") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                frame.showCollectPage();
+                f.showCollectPage();
             }
         });
         area.add(learningButton, "0, 1, c, b");
@@ -42,7 +42,7 @@ public class ModePage extends AbstractPage {
         final JButton fuzzingButton = new JButton(new AbstractAction("Fuzzing Mode") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                frame.showImportPage();
+                f.showImportPage();
             }
         });
         area.add(fuzzingButton, "2, 1, c, b");

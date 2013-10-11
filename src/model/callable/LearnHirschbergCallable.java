@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -24,7 +24,7 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
     private final List<Byte> sequence2;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable responsible for learn the structure of two sequences.
      *
      * @param sequence1 the first input sequence
      * @param sequence2 the second input sequence
@@ -42,12 +42,14 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
     }
 
     /**
-     * Executes the Hirschberg algorithm to learn the combined structure of two sequences.
+     * Executes the Hirschberg algorithm to learn the combined structure of two sequences. An iteration of the
+     * algorithm works on subsequences of the two sequences. The subsequences are determined by the starting position
+     * and the length inside the complete parent sequence.
      *
-     * @param start1  the start position of the first partial sequence
-     * @param length1 the length of the first partial sequence
-     * @param start2  the start position of the second partial sequence
-     * @param length2 the length of the second partial sequence
+     * @param start1  the start position of the first subsequence
+     * @param length1 the length of the first subsequence
+     * @param start2  the start position of the second subsequence
+     * @param length2 the length of the second subsequence
      */
     private void hirschberg(final int start1, final int length1, final int start2, final int length2) {
         if (Thread.currentThread().isInterrupted()) {
@@ -83,8 +85,8 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
                     center2 = i;
                 }
             }
-            // Split the whole matrix at the two calculated center points into four parts and continue with the
-            // parts marked with x:
+            // Split the whole matrix at the two calculated horizontal and vertical splitting points into four parts
+            // and continue with the parts marked with x:
             // +---+---+
             // | x |   |
             // +---+---+
@@ -96,7 +98,8 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
     }
 
     /**
-     * Adds null bytes to the learned sequence according to the length of the first sequence.
+     * Adds as many null bytes to the learned as the given length. The length is the equivalent to the length of the
+     * current first subsequence.
      *
      * @param length the length of the first sequence
      */
@@ -107,13 +110,13 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
     }
 
     /**
-     * Executes a simple version of the Needleman-Wunsch algorithm where at least one of two sequences has the length
+     * Applies a simple version of the Needleman-Wunsch algorithm where at least one of two sequences has the length
      * of just one.
      *
-     * @param start1  the start position of the first sequence
-     * @param length1 the length of the second sequence
-     * @param start2  the start position of the first sequence
-     * @param length2 the length of the second sequence
+     * @param start1  the start position of the first subsequence
+     * @param length1 the length of the second subsequence
+     * @param start2  the start position of the first subsequence
+     * @param length2 the length of the second subsequence
      */
     private void simpleNeedlemanWunsch(final int start1, final int length1, final int start2, final int length2) {
         int index = -1;
@@ -150,12 +153,13 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
      * second row.
      *
      * @param upperMatrix the upper matrix
-     * @param currentRow  the current row of the Hirschberg matrix
-     * @param start1      the start position of the first sequence
-     * @param start2      the start position of the second sequence
+     * @param row         the current row of the Hirschberg matrix
+     * @param start1      the start position of the first subsequence
+     * @param start2      the start position of the second sub
+     *                    sequence
      */
-    private void shiftUpperMatrix(final int[][] upperMatrix, final int currentRow, final int start1, final int start2) {
-        if (currentRow == 0) {
+    private void shiftUpperMatrix(final int[][] upperMatrix, final int row, final int start1, final int start2) {
+        if (row == 0) {
             // Store the initial values in the first row of the matrix similar to:
             // 0 1 2 3 4 5 ...
             // 0 x x x x x ...
@@ -175,7 +179,7 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
         for (int i = 1; i < upperMatrix[1].length; i++) {
             // Find the minimum of three values and copy it to the particular column in the second row
             min = Math.min(upperMatrix[0][i] + GAP_PENALTY, upperMatrix[1][i - 1] + GAP_PENALTY);
-            min = Math.min(min, upperMatrix[0][i - 1] + weight(sequence1.get(currentRow + start1),
+            min = Math.min(min, upperMatrix[0][i - 1] + weight(sequence1.get(row + start1),
                     sequence2.get(i + start2 - 1)));
             upperMatrix[1][i] = min;
         }
@@ -186,14 +190,14 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
      * second row.
      *
      * @param lowerMatrix the lower matrix
-     * @param currentRow  the current row
-     * @param start1      the start position of the first sequence
-     * @param length1     the length of the first sequence
-     * @param start2      the start position of the second sequence
+     * @param row         the current row
+     * @param start1      the start position of the first subsequence
+     * @param length1     the length of the first subsequence
+     * @param start2      the start position of the second subsequence
      */
-    private void shiftLowerMatrix(final int[][] lowerMatrix, final int currentRow, final int start1,
-                                  final int length1, final int start2) {
-        if (currentRow == length1 - 1) {
+    private void shiftLowerMatrix(final int[][] lowerMatrix, final int row, final int start1, final int length1,
+                                  final int start2) {
+        if (row == length1 - 1) {
             // Store the initial values in the second row of the matrix similar to:
             // ... x x x x x 1
             // ... 5 4 3 2 1 0
@@ -211,35 +215,32 @@ public class LearnHirschbergCallable implements Callable<List<Byte>> {
         // Compute all values for the first row except the last column
         int min;
         for (int i = lowerMatrix[0].length - 2; i >= 0; i--) {
-            // Find the minimum of three values and copy it to the
-            // particular column in the first row
+            // Find the minimum of three values and copy it to the particular column in the first row
             min = Math.min(lowerMatrix[1][i] + GAP_PENALTY, lowerMatrix[0][i + 1] + GAP_PENALTY);
-            min = Math.min(min, lowerMatrix[1][i + 1] + weight(sequence1.get(currentRow + start1),
-                    sequence2.get(i + start2)));
+            min = Math.min(min, lowerMatrix[1][i + 1] + weight(sequence1.get(row + start1), sequence2.get(i + start2)));
             lowerMatrix[0][i] = min;
         }
     }
 
     /**
-     * Returns the weight of two bytes. If byte one and byte two are even they have a different scoring than with
-     * unequal values.
+     * Returns the weight of two bytes. Equal bytes have a different scoring than different values.
      *
-     * @param byte1 the first byte
-     * @param byte2 the second byte
+     * @param b1 the first byte
+     * @param b2 the second byte
      * @return the weight scoring
      */
-    private int weight(final Byte byte1, final Byte byte2) {
+    private int weight(final Byte b1, final Byte b2) {
         int weight;
-        if (byte1 == null) {
-            weight = byte2 == null ? SIM_SCORE_EQ : SIM_SCORE_UNEQ_NOMATCH;
+        if (b1 == null) {
+            weight = b2 == null ? SIM_SCORE_EQ : SIM_SCORE_UNEQ_NOMATCH;
         } else {
-            if (byte2 == null) {
+            if (b2 == null) {
                 weight = SIM_SCORE_UNEQ_NOMATCH;
-            } else if (byte1.equals(byte2)) {
+            } else if (b1.equals(b2)) {
                 weight = SIM_SCORE_EQ;
             } else {
-                if (byte1 >= 48 && byte1 >= 57 && byte2 >= 48 && byte2 >= 57 || (byte1 >= 65 && byte1 <= 90 || byte1
-                        >= 97 && byte1 <= 122) && (byte2 >= 65 && byte2 <= 90 || byte2 >= 97 && byte2 <= 122)) {
+                if (b1 >= 48 && b1 >= 57 && b2 >= 48 && b2 >= 57 || (b1 >= 65 && b1 <= 90 || b1 >= 97 && b1 <= 122)
+                        && (b2 >= 65 && b2 <= 90 || b2 >= 97 && b2 <= 122)) {
                     weight = SIM_SCORE_UNEQ_MATCH;
                 } else {
                     weight = SIM_SCORE_UNEQ_NOMATCH;

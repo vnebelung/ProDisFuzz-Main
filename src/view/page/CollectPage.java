@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:13.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -32,12 +32,12 @@ public class CollectPage extends AbstractPage implements Observer {
     private final JTable filesTable;
 
     /**
-     * Instantiates the page.
+     * Instantiates the collect page responsible for visualizing the process of collecting sequence files.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public CollectPage(final Frame frame) {
-        super(frame);
+    public CollectPage(final Frame f) {
+        super(f);
         Model.INSTANCE.getCollectProcess().addObserver(this);
         final double[][] areaLayout = {{0.2, 10, TableLayout.FILL, 10, 0.2}, {0.2, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -55,7 +55,7 @@ public class CollectPage extends AbstractPage implements Observer {
         final JButton browseButton = new JButton(new AbstractAction("Browse...") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final int choose = fileChooser.showOpenDialog(frame);
+                final int choose = fileChooser.showOpenDialog(f);
                 if (choose == JFileChooser.APPROVE_OPTION) {
                     final File directory = fileChooser.getSelectedFile();
                     pathText.setText(directory.getAbsolutePath());
@@ -78,24 +78,24 @@ public class CollectPage extends AbstractPage implements Observer {
      * Creates the listener for the path text field and forwards every change to the corresponding process of the
      * model.
      *
-     * @param process the corresponding process
+     * @param p the corresponding process
      * @return the listener
      */
-    private DocumentListener pathListener(final CollectProcess process) {
+    private DocumentListener pathListener(final CollectProcess p) {
         return new DocumentListener() {
             @Override
             public void insertUpdate(final DocumentEvent e) {
-                process.setDirectory(pathText.getText());
+                p.setDirectory(pathText.getText());
             }
 
             @Override
             public void removeUpdate(final DocumentEvent e) {
-                process.setDirectory(pathText.getText());
+                p.setDirectory(pathText.getText());
             }
 
             @Override
             public void changedUpdate(final DocumentEvent e) {
-                process.setDirectory(pathText.getText());
+                p.setDirectory(pathText.getText());
             }
         };
     }
@@ -106,21 +106,17 @@ public class CollectPage extends AbstractPage implements Observer {
 
         TableColumnsSizer.optimizeWidths(filesTable);
 
-        if (data.getNumOfSelectedFiles() >= 2) {
-            enableNext();
-        } else {
-            disableNext();
-        }
+        setNextEnabled(data.getNumOfSelectedFiles() >= 2);
 
     }
 
     @Override
-    protected AbstractAction nextAction(final Frame frame) {
+    protected AbstractAction nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.getLearnProcess().init();
-                frame.showLearnPage();
+                f.showLearnPage();
             }
         };
     }

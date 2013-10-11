@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:32.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,13 +21,13 @@ public class CheckTableModel extends AbstractTableModel {
     private final String[] columnNames = {"Use", "File", "Modified", "Size (KB)", "SHA-256"};
 
     /**
-     * Instantiates a new model.
+     * Instantiates a new check table model responsible for managing the data of the table.
      *
-     * @param process the corresponding process
+     * @param p the corresponding process
      */
-    public CheckTableModel(final CollectProcess process) {
+    public CheckTableModel(final CollectProcess p) {
         super();
-        this.process = process;
+        process = p;
     }
 
     @Override
@@ -35,11 +35,7 @@ public class CheckTableModel extends AbstractTableModel {
         // setValueAt is called twice when pressing a table checkbox. To avoid conflicts with a wrong checkbox status
         // and to update the model only once the variable fire is toggled
         if (columnIndex == 0 && rowIndex < process.getFiles().size()) {
-            if (process.isSelected(rowIndex)) {
-                process.setUnselected(rowIndex);
-            } else {
-                process.setSelected(rowIndex);
-            }
+            process.setSelected(rowIndex, !process.isSelected(rowIndex));
         }
 
     }

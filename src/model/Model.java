@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 21:16.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -29,7 +29,7 @@ public enum Model {
     private AbstractModificator modificator;
 
     /**
-     * Instantiates a new singelton model.
+     * Instantiates a new singelton model responsible for managing the data and logic.
      */
     private Model() {
         collectProcess = new CollectProcess();
@@ -53,8 +53,7 @@ public enum Model {
     }
 
     /**
-     * Resets all variables and options to the default by calling the reset
-     * methods of all process classes.
+     * Resets all variables and options to the default by calling the reset methods of all process classes.
      */
     public void reset() {
         Model.INSTANCE.getLogger().reset();
@@ -67,7 +66,7 @@ public enum Model {
     }
 
     /**
-     * Gets the collect process, responsible for collecting all communication files.
+     * Returns the collect process that is responsible for collecting all communication files.
      *
      * @return the collect process
      */
@@ -76,7 +75,7 @@ public enum Model {
     }
 
     /**
-     * Gets the learn process, responsible for learning the protocol structure.
+     * Returns the learn process that is responsible for learning the protocol structure.
      *
      * @return the learn process
      */
@@ -85,7 +84,7 @@ public enum Model {
     }
 
     /**
-     * Gets the export process, responsible for exporting the learned protocol structure into a XML format.
+     * Returns the export process that is responsible for exporting the learned protocol structure into a XML format.
      *
      * @return the export process
      */
@@ -94,7 +93,7 @@ public enum Model {
     }
 
     /**
-     * Gets the import process, responsible for importing the learned protocol structure from a XML format.
+     * Returns the import process that is responsible for importing the learned protocol structure from a XML format.
      *
      * @return the import process
      */
@@ -103,7 +102,7 @@ public enum Model {
     }
 
     /**
-     * Gets the fuzz options process, responsible for setting all relevant fuzzing options.
+     * Returns the fuzz options process that is responsible for setting all relevant fuzzing options.
      *
      * @return the fuzz options process
      */
@@ -121,7 +120,7 @@ public enum Model {
     }
 
     /**
-     * Gets the fuzreportzing process, responsible for generating the final report.
+     * Returns the report process that is responsible for generating the final report.
      *
      * @return the report process
      */
@@ -130,7 +129,7 @@ public enum Model {
     }
 
     /**
-     * Gets the logging mechanism.
+     * Returns the logging mechanism that is responsible for collecting all kind of internal messages.
      *
      * @return the logger
      */

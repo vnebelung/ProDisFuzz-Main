@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:32.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -19,7 +19,7 @@ public class View {
     private final Frame frame;
 
     /**
-     * Instantiates a new view.
+     * Instantiates a new view responsible for managing all components used for displaying components.
      */
     public View() {
         JComponent.setDefaultLocale(Locale.ENGLISH);
@@ -42,6 +42,6 @@ public class View {
      */
     public void show() {
         frame.showModePage();
-        frame.visible();
+        frame.setVisible(true);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 20:59.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:01.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -17,11 +17,10 @@ import java.util.Observable;
 
 public class Logger extends Observable {
 
-    public static final int MAX_ENTRIES = 500;
     private final List<Message> log;
 
     /**
-     * Instantiates a new logger.
+     * Instantiates the logging mechanism.
      */
     public Logger() {
         super();
@@ -31,10 +30,10 @@ public class Logger extends Observable {
     /**
      * Adds an info message to the log.
      *
-     * @param message the message to be add
+     * @param s the message string to be add
      */
-    public void info(final String message) {
-        log.add(new Message(message, Message.Type.INFO));
+    public void info(final String s) {
+        log.add(new Message(s, Message.Type.INFO));
         prune();
         spreadUpdate();
     }
@@ -42,10 +41,10 @@ public class Logger extends Observable {
     /**
      * Adds a success message to the log.
      *
-     * @param message the message to be add
+     * @param s the message string to be add
      */
-    public void fine(final String message) {
-        log.add(new Message(message, Message.Type.FINE));
+    public void fine(final String s) {
+        log.add(new Message(s, Message.Type.FINE));
         prune();
         spreadUpdate();
     }
@@ -53,16 +52,16 @@ public class Logger extends Observable {
     /**
      * Adds an error message to the log.
      *
-     * @param message the message to be add
+     * @param s the message string to be add
      */
-    public void error(final String message) {
-        log.add(new Message(message, Message.Type.ERROR));
+    public void error(final String s) {
+        log.add(new Message(s, Message.Type.ERROR));
         prune();
         spreadUpdate();
     }
 
     /**
-     * Adds an error message based on an occured exception to the log.
+     * Adds an error message based on an occurred exception to the log.
      *
      * @param t the throwable
      */
@@ -79,10 +78,10 @@ public class Logger extends Observable {
     /**
      * Adds a warning message to the log.
      *
-     * @param message the message to be add
+     * @param s the message string to be add
      */
-    public void warning(final String message) {
-        log.add(new Message(message, Message.Type.WARNING));
+    public void warning(final String s) {
+        log.add(new Message(s, Message.Type.WARNING));
         prune();
         spreadUpdate();
     }
@@ -96,10 +95,10 @@ public class Logger extends Observable {
     }
 
     /**
-     * Keeps the number of entries of the log under the defined size.
+     * Keeps the number of entries of the log under the defined size of 500.
      */
     private void prune() {
-        final int oversize = log.size() - MAX_ENTRIES;
+        final int oversize = log.size() - 500;
         if (oversize > 0) {
             log.subList(0, oversize).clear();
         }

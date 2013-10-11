@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 21:02.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -26,7 +26,7 @@ public class LearnRunnable extends AbstractRunnable {
     private List<ProtocolPart> parts;
 
     /**
-     * Instantiates a new runnable that is responsible for executing callbacks.
+     * Instantiates a new runnable responsible for controlling the learning of sequences.
      *
      * @param files the protocol files
      */
@@ -131,9 +131,9 @@ public class LearnRunnable extends AbstractRunnable {
     }
 
     /**
-     * Gets the learned protocol parts.
+     * Returns the learned protocol parts that are the combination of two inout sequences.
      *
-     * @return the protocol parts
+     * @return the learned protocol parts
      */
     public List<ProtocolPart> getParts() {
         return Collections.unmodifiableList(parts);

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -30,9 +30,9 @@ public class ProtocolPane extends JTextPane {
     private int numOfBytes;
 
     /**
-     * Instantiates a new protocol pane that is responsible for visualizing the protocol structure.
+     * Instantiates a new protocol pane that is responsible for visualizing the protocol structure and its content.
      *
-     * @param bytesPerLine the number of bytes that fit into one line of the document's parent1
+     * @param bytesPerLine the number of bytes that fit into one line of the document's parent
      */
     public ProtocolPane(final int bytesPerLine) {
         super();
@@ -66,32 +66,32 @@ public class ProtocolPane extends JTextPane {
     /**
      * Colors the hex-encoded and ASCII-encoded text blocks depending on their protocol part types.
      *
-     * @param text the input text
+     * @param s the input text
      * @return the styled document containing the colored characters
      */
-    private StyledDocument colorStyledDocument(final String text) {
+    private StyledDocument colorStyledDocument(final String s) {
         final StyledDocument styledDoc = new DefaultStyledDocument();
         try {
-            styledDoc.insertString(0, text, null);
+            styledDoc.insertString(0, s, null);
         } catch (BadLocationException e) {
             Model.INSTANCE.getLogger().error(e);
         }
-        int index = text.indexOf(System.lineSeparator());
+        int index = s.indexOf(System.lineSeparator());
         while (index > 0) {
             for (int i = 0; i < bytesPerLine; i++) {
                 final int positionHex = index - 4 * bytesPerLine - SPACE.length() + i * 3;
                 final int positionAscii = index - bytesPerLine + i;
-                if (text.charAt(positionHex) == VAR_CHAR) {
-                    styledDoc.setCharacterAttributes(positionHex, text.charAt(positionHex + 3) == VAR_CHAR ? 3 : 2,
+                if (s.charAt(positionHex) == VAR_CHAR) {
+                    styledDoc.setCharacterAttributes(positionHex, s.charAt(positionHex + 3) == VAR_CHAR ? 3 : 2,
                             varStyle, true);
                     styledDoc.setCharacterAttributes(positionAscii, 1, varStyle, true);
-                } else if (isHex(text.charAt(positionHex))) {
-                    styledDoc.setCharacterAttributes(positionHex, isHex(text.charAt(positionHex + 3)) ? 3 : 2,
-                            fixStyle, true);
+                } else if (isHex(s.charAt(positionHex))) {
+                    styledDoc.setCharacterAttributes(positionHex, isHex(s.charAt(positionHex + 3)) ? 3 : 2, fixStyle,
+                            true);
                     styledDoc.setCharacterAttributes(positionAscii, 1, fixStyle, true);
                 }
             }
-            index = text.indexOf(System.lineSeparator(), index + 1);
+            index = s.indexOf(System.lineSeparator(), index + 1);
         }
         return styledDoc;
     }
@@ -114,11 +114,11 @@ public class ProtocolPane extends JTextPane {
     /**
      * Generates the ASCII block after the space block.
      *
-     * @param text the hex-encoded text with spaces
+     * @param s the hex-encoded text with spaces
      * @return the text with hex and ascii chars
      */
-    private String asciiText(final String text) {
-        final StringBuilder hexText = new StringBuilder(text);
+    private String asciiText(final String s) {
+        final StringBuilder hexText = new StringBuilder(s);
         int index = hexText.indexOf(SPACE + System.getProperty("line.separator"));
         while (index >= 0) {
             final StringBuilder ascii = new StringBuilder(bytesPerLine);
@@ -135,26 +135,26 @@ public class ProtocolPane extends JTextPane {
     /**
      * Returns an ASCII char for an string-encoded hex value.
      *
-     * @param hex the hex value
+     * @param s the hex value
      * @return the ASCII char
      */
-    private char asciiValue(final String hex) {
+    private char asciiValue(final String s) {
         try {
-            final int decimal = Integer.parseInt(hex, 16);
+            final int decimal = Integer.parseInt(s, 16);
             return decimal >= 32 && decimal <= 126 ? (char) decimal : '.';
         } catch (NumberFormatException e) {
-            return " ".equals(hex) ? ' ' : '.';
+            return " ".equals(s) ? ' ' : '.';
         }
     }
 
     /**
      * Adds spaces and line breaks into a given text.
      *
-     * @param text the text
+     * @param s the text
      * @return the text including spaces and line breaks
      */
-    private String separatorText(final String text) {
-        final StringBuilder spaceText = new StringBuilder(text);
+    private String separatorText(final String s) {
+        final StringBuilder spaceText = new StringBuilder(s);
         int position = 3 * bytesPerLine;
         while (position < spaceText.length()) {
             spaceText.insert(position, SPACE);
@@ -199,7 +199,7 @@ public class ProtocolPane extends JTextPane {
      * Returns the hex value for a given byte.
      *
      * @param b the byte
-     * @return the hex value as a sting
+     * @return the hex value as a string
      */
     private String hexValue(final byte b) {
         return String.valueOf(HEX_CHARS[(b & 0xF0) >>> 4]) + String.valueOf(HEX_CHARS[b & 0x0F]);

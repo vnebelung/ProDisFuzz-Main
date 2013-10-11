@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:28.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -23,14 +23,14 @@ public class FuzzingSendCallable implements Callable<Boolean> {
     private byte[] lastResponse;
 
     /**
-     * Instantiates a new fuzzing send callable.
+     * Instantiates a new callable that is responsible for sending a message to the fuzzing target.
      *
-     * @param message the message to send to the target
+     * @param b       the message to send to the target
      * @param target  the fuzzing target
-     * @param timeout the timeout to wait before assuming a crash
+     * @param timeout the timeout to wait before assuming a crash on target side
      */
-    public FuzzingSendCallable(final byte[] message, final InetSocketAddress target, final int timeout) {
-        this.message = message;
+    public FuzzingSendCallable(final byte[] b, final InetSocketAddress target, final int timeout) {
+        this.message = b;
         this.target = target;
         this.timeout = timeout;
         lastResponse = new byte[0];
@@ -77,7 +77,8 @@ public class FuzzingSendCallable implements Callable<Boolean> {
     }
 
     /**
-     * Gets the bytes of the last response from the target
+     * Returns the last response from the target. If the target crashed the response from the last valid request is
+     * returned.
      *
      * @return the last response
      */

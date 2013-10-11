@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 06.10.13 15:49.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -37,7 +37,7 @@ public class ExportProcess extends AbstractProcess {
     private boolean exported;
 
     /**
-     * Instantiates a new export process.
+     * Instantiates a new process responsible for exporting the protocol structure to a XML file.
      */
     public ExportProcess() {
         super();
@@ -59,12 +59,12 @@ public class ExportProcess extends AbstractProcess {
     }
 
     /**
-     * Exports the protocol structure to the given XML export path.
+     * Exports the protocol structure to the given XML file.
      *
-     * @param path the export path
+     * @param p the export file
      */
-    public void export(final Path path) {
-        Path savePath = path.toAbsolutePath().normalize();
+    public void export(final Path p) {
+        Path savePath = p.toAbsolutePath().normalize();
         if (!Files.isDirectory(savePath.getParent())) {
             Model.INSTANCE.getLogger().error("File path for saving protocol structure invalid");
             exported = false;
@@ -102,93 +102,93 @@ public class ExportProcess extends AbstractProcess {
     }
 
     /**
-     * Creates the root node with all children.
+     * Creates the XML root node with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the root node
      */
-    private Element createXMLRoot(final Document document) {
-        final Element root = document.createElement(XmlNames.ROOT);
+    private Element createXMLRoot(final Document d) {
+        final Element root = d.createElement(XmlNames.ROOT);
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
         String date = dateFormat.format(new Date());
         // The time zone is separated with a colon (standardized)
         date = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2);
         root.setAttribute("datetime", date);
         // Append the protocolParts element to the root element
-        root.appendChild(createXMLParts(document));
+        root.appendChild(createXMLParts(d));
         return root;
     }
 
     /**
-     * Creates the parts node with all children.
+     * Creates the XML parts node with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the parts node
      */
-    private Element createXMLParts(final Document document) {
+    private Element createXMLParts(final Document d) {
         // Create the protocolParts element
-        final Element parts = document.createElement(XmlNames.PARTS);
+        final Element parts = d.createElement(XmlNames.PARTS);
         // Append individual part elements to the protocolParts element
         for (final ProtocolPart protocolPart : protocolParts) {
-            parts.appendChild(createXMLPart(document, protocolPart));
+            parts.appendChild(createXMLPart(d, protocolPart));
         }
         return parts;
     }
 
     /**
-     * Creates a part node with all children.
+     * Creates a XML part node with all children.
      *
-     * @param document     the DOM document
-     * @param protocolPart the protocol part
+     * @param d the DOM document
+     * @param p the protocol part
      * @return the part node
      */
-    private Element createXMLPart(final Document document, final ProtocolPart protocolPart) {
+    private Element createXMLPart(final Document d, final ProtocolPart p) {
         Element part = null;
-        switch (protocolPart.getType()) {
+        switch (p.getType()) {
             case VAR:
-                part = document.createElement(XmlNames.PART_VAR);
+                part = d.createElement(XmlNames.PART_VAR);
                 break;
             case FIX:
-                part = document.createElement(XmlNames.PART_FIX);
+                part = d.createElement(XmlNames.PART_FIX);
                 break;
             default:
                 break;
         }
-        part.setAttribute(XmlNames.MINLENGTH, String.valueOf(protocolPart.getMinLength()));
-        part.setAttribute(XmlNames.MAXLENGTH, String.valueOf(protocolPart.getMaxLength()));
+        part.setAttribute(XmlNames.MINLENGTH, String.valueOf(p.getMinLength()));
+        part.setAttribute(XmlNames.MAXLENGTH, String.valueOf(p.getMaxLength()));
         // Append content element to the part element
-        if (protocolPart.getType() == ProtocolPart.Type.FIX) {
-            part.appendChild(createXMLContent(document, protocolPart.getBytes()));
+        if (p.getType() == ProtocolPart.Type.FIX) {
+            part.appendChild(createXMLContent(d, p.getBytes()));
         }
         return part;
     }
 
     /**
-     * Creates a content node with all children.
+     * Creates a XML content node with all children.
      *
-     * @param document the DOM document
-     * @param bytes    the byte content of a protocol part
+     * @param d     the DOM document
+     * @param bytes the byte content of a protocol part
      * @return the content node
      */
-    private Element createXMLContent(final Document document, final List<Byte> bytes) {
-        final Element content = document.createElement(XmlNames.CONTENT);
+    private Element createXMLContent(final Document d, final List<Byte> bytes) {
+        final Element content = d.createElement(XmlNames.CONTENT);
         // Append byte elements to the content element
-        for (final Byte aByte : bytes) {
-            content.appendChild(createXMLByte(document, aByte));
+        for (final Byte each : bytes) {
+            content.appendChild(createXMLByte(d, each));
         }
         return content;
     }
 
     /**
-     * Creates a byte node.
+     * Creates a XML byte node.
      *
-     * @param document the DOM document
-     * @param aByte    a byte value (can be null)
+     * @param d the DOM document
+     * @param b a byte value (can be null)
      * @return the byte node
      */
-    private Element createXMLByte(final Document document, final Byte aByte) {
-        final Element byteElement = document.createElement(XmlNames.BYTE);
-        byteElement.setTextContent(aByte.toString());
+    private Element createXMLByte(final Document d, final Byte b) {
+        final Element byteElement = d.createElement(XmlNames.BYTE);
+        byteElement.setTextContent(b.toString());
         return byteElement;
     }
 

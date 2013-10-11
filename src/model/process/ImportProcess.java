@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -29,7 +29,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,7 +39,7 @@ public class ImportProcess extends AbstractProcess {
     private boolean imported;
 
     /**
-     * Instantiates a new import process.
+     * Instantiates a new process responsible for importing the XML file to generate the protocol structure.
      */
     public ImportProcess() {
         super();
@@ -57,10 +56,10 @@ public class ImportProcess extends AbstractProcess {
     /**
      * Imports a XML file containing the protocol structure.
      *
-     * @param path the path to the XML file
+     * @param p the path to the XML file
      */
-    public void importFile(final String path) {
-        final Path file = Paths.get(path).toAbsolutePath().normalize();
+    public void importFile(final Path p) {
+        final Path file = p.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
             Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not a regular file");
             imported = false;
@@ -96,13 +95,13 @@ public class ImportProcess extends AbstractProcess {
     /**
      * Reads the XML part elements.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the protocol parts
      */
-    private List<ProtocolPart> readXMLParts(final Document document) {
-        final List<ProtocolPart> parts = new ArrayList<>();
+    private List<ProtocolPart> readXMLParts(final Document d) {
+        final List<ProtocolPart> result = new ArrayList<>();
         // Create the node list
-        final NodeList nodes = document.getElementsByTagName(XmlNames.PARTS).item(0).getChildNodes();
+        final NodeList nodes = d.getElementsByTagName(XmlNames.PARTS).item(0).getChildNodes();
         // Create for each node the particular protocol part
         for (int i = 0; i < nodes.getLength(); i++) {
             if (nodes.item(i).getNodeType() != Node.ELEMENT_NODE) {
@@ -110,37 +109,37 @@ public class ImportProcess extends AbstractProcess {
             }
             switch (nodes.item(i).getNodeName()) {
                 case XmlNames.PART_VAR:
-                    parts.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(nodes.item(i))));
+                    result.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(nodes.item(i))));
                     break;
                 case XmlNames.PART_FIX:
-                    parts.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(nodes.item(i))));
+                    result.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(nodes.item(i))));
                     break;
                 default:
                     break;
             }
         }
-        return parts;
+        return result;
     }
 
     /**
      * Reads the byte content for a given XML protocol part node.
      *
-     * @param node the protocol part node
+     * @param n the protocol part node
      * @return the byte content
      */
-    private List<Byte> readXMLContent(final Node node) {
+    private List<Byte> readXMLContent(final Node n) {
         final List<Byte> bytes = new ArrayList<>();
-        switch (node.getNodeName()) {
+        switch (n.getNodeName()) {
             case XmlNames.PART_VAR:
                 // Add as many null bytes as the maximum length attribute
-                final int maxlength = Integer.parseInt(node.getAttributes().getNamedItem(XmlNames.MAXLENGTH)
+                final int maxlength = Integer.parseInt(n.getAttributes().getNamedItem(XmlNames.MAXLENGTH)
                         .getNodeValue());
                 for (int i = 0; i < maxlength; i++) {
                     bytes.add(null);
                 }
                 break;
             case XmlNames.PART_FIX:
-                final NodeList contentNodes = node.getChildNodes();
+                final NodeList contentNodes = n.getChildNodes();
                 // Create the content of this part for each content element
                 for (int i = 0; i < contentNodes.getLength(); i++) {
                     final Node contentNode = contentNodes.item(i);
@@ -168,31 +167,31 @@ public class ImportProcess extends AbstractProcess {
     /**
      * Validates the XML file against the defined schema.
      *
-     * @param file the XML file
+     * @param p the path of the XML file
      * @return true if the XML file is validated without any errors
      * @throws IOException
      * @throws SAXException
      */
-    private boolean validate(final Path file) throws IOException, SAXException {
-        final boolean[] success = {true};
+    private boolean validate(final Path p) throws IOException, SAXException {
+        final boolean[] result = {true};
         // Initializes the error handler
         final ErrorHandler errorHandler = new ErrorHandler() {
             @Override
             public void warning(final SAXParseException e) throws SAXException {
                 Model.INSTANCE.getLogger().warning(e.getMessage());
-                success[0] = false;
+                result[0] = false;
             }
 
             @Override
             public void fatalError(final SAXParseException e) throws SAXException {
                 Model.INSTANCE.getLogger().error(e);
-                success[0] = false;
+                result[0] = false;
             }
 
             @Override
             public void error(final SAXParseException e) throws SAXException {
                 Model.INSTANCE.getLogger().error(e);
-                success[0] = false;
+                result[0] = false;
             }
         };
         // Load the XML schema
@@ -203,22 +202,22 @@ public class ImportProcess extends AbstractProcess {
             final Validator validator = schema.newValidator();
             validator.setErrorHandler(errorHandler);
             // Validate the whole XML document
-            validator.validate(new StreamSource(Files.newInputStream(file)));
+            validator.validate(new StreamSource(Files.newInputStream(p)));
         }
-        return success[0];
+        return result[0];
     }
 
     /**
      * Checks whether the protocol parts are already imported from a XML file.
      *
-     * @return true when protocol parts are successfully written to file
+     * @return true when protocol parts are successfully read from the file
      */
     public boolean isImported() {
         return imported;
     }
 
     /**
-     * Gets the imported protocol parts.
+     * Returns the protocol parts imported from a XML file.
      *
      * @return the protocol parts
      */

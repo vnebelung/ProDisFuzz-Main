@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:25.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:11.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,7 +21,7 @@ public class LearnPartsCallable implements Callable<List<ProtocolPart>> {
     private final List<ProtocolPart> parts;
 
     /**
-     * Instantiates a new callable.
+     * Instantiates a new callable responsible for creating protocol parts out of the learned sequence.
      *
      * @param sequence the input sequence
      */
@@ -52,13 +52,13 @@ public class LearnPartsCallable implements Callable<List<ProtocolPart>> {
 
     /**
      * Returns the type of a given byte based on its value: null is considered as a variable part,
-     * a valid value is considered as a fix part.
+     * other values are considered as a fix part.
      *
-     * @param aByte a single byte
+     * @param b a single byte
      * @return the type of the byte
      */
-    private ProtocolPart.Type getType(final Byte aByte) {
-        return aByte == null ? ProtocolPart.Type.VAR : ProtocolPart.Type.FIX;
+    private ProtocolPart.Type getType(final Byte b) {
+        return b == null ? ProtocolPart.Type.VAR : ProtocolPart.Type.FIX;
     }
 
 }

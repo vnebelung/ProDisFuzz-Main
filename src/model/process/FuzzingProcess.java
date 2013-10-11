@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -37,7 +37,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
     private Future fuzzingFuture;
 
     /**
-     * Instantiates a new fuzzing process.
+     * Instantiates a new process responsible for controlling the fuzzing.
      */
     public FuzzingProcess() {
         super();
@@ -144,17 +144,17 @@ public class FuzzingProcess extends AbstractThreadProcess {
     }
 
     /**
-     * Calculates the amount of work for the SEPARATE injection method.
+     * Calculates the amount of work for separate data injections.
      *
-     * @return the number of work steps
+     * @return the number of work steps, -1 for infinite work
      */
     private int calcWorkTotalSeparate() {
-        int work = 1;
+        int result = 1;
         for (final InjectedProtocolPart injectedProtocolPart : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
                 (injectedProtocolParts)) {
             switch (injectedProtocolPart.getDataInjectionMethod()) {
                 case LIBRARY:
-                    work += injectedProtocolPart.getNumOfLibraryLines();
+                    result += injectedProtocolPart.getNumOfLibraryLines();
                     break;
                 case RANDOM:
                     return -1;
@@ -162,13 +162,13 @@ public class FuzzingProcess extends AbstractThreadProcess {
                     return 0;
             }
         }
-        return work;
+        return result;
     }
 
     /**
-     * Calculates the amount of work for the SIMULTANEOUS injection method.
+     * Calculates the amount of work for simultaneous data injections.
      *
-     * @return the number of work steps
+     * @return the number of work steps, -1 for infinite work
      */
     private int calcWorkTotalSimultaneous() {
         final InjectedProtocolPart injectedProtocolPart = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts

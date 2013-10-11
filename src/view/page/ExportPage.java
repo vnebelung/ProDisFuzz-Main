@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:04.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:13.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,8 +11,8 @@ package view.page;
 import info.clearthought.layout.TableLayout;
 import model.Model;
 import model.process.ExportProcess;
-import view.ImageRepository;
 import view.component.Frame;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,14 +27,14 @@ public class ExportPage extends AbstractPage implements Observer {
     private final JLabel statusLabel;
 
     /**
-     * Instantiates a basic version of a page.
+     * Instantiates a basic abstract page.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public ExportPage(final Frame frame) {
-        super(frame);
-        disableNext();
-        enableFinish();
+    public ExportPage(final Frame f) {
+        super(f);
+        setNextEnabled(false);
+        setFinishEnabled(true);
         Model.INSTANCE.getExportProcess().addObserver(this);
         final double[][] areaLayout = {{0.1, 30, TableLayout.FILL}, {TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -47,7 +47,7 @@ public class ExportPage extends AbstractPage implements Observer {
         final JButton exportButton = new JButton(new AbstractAction("Export") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final int choose = fileChooser.showSaveDialog(frame);
+                final int choose = fileChooser.showSaveDialog(f);
                 if (choose == JFileChooser.APPROVE_OPTION) {
                     Model.INSTANCE.getExportProcess().export(fileChooser.getSelectedFile().toPath());
                 }
@@ -74,10 +74,6 @@ public class ExportPage extends AbstractPage implements Observer {
             statusLabel.setText("Protocol structure not saved");
         }
 
-        if (data.isExported()) {
-            enableFinish();
-        } else {
-            disableFinish();
-        }
+        setFinishEnabled(data.isExported());
     }
 }

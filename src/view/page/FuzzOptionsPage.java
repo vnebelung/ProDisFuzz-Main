@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -13,10 +13,10 @@ import model.InjectedProtocolPart;
 import model.Model;
 import model.ProtocolPart;
 import model.process.FuzzOptionsProcess;
-import view.ImageRepository;
 import view.component.Frame;
 import view.component.InjectionPanel;
 import view.component.ProtocolPane;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -44,23 +44,23 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
     private final ProtocolPane sourceInjectionPane;
     private final JTextField targetAddressText;
     private final JSpinner targetPortSpinner;
-    private Timer targetTimer;
-    private Timer timeoutTimer;
-    private Timer intervalTimer;
     private final JSpinner intervalSpinner;
     private final JSpinner timeoutSpinner;
     private final List<InjectionPanel> partPanels;
-    private int lastProtocolHash;
     private final Frame frame;
+    private Timer targetTimer;
+    private Timer timeoutTimer;
+    private Timer intervalTimer;
+    private int lastProtocolHash;
 
     /**
-     * Instantiates a new fuzz options page.
+     * Instantiates a new fuzz options page responsible for visualizing the fuzz options process.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public FuzzOptionsPage(final Frame frame) {
-        super(frame);
-        this.frame = frame;
+    public FuzzOptionsPage(final Frame f) {
+        super(f);
+        this.frame = f;
         Model.INSTANCE.getFuzzOptionsProcess().addObserver(this);
         final double[][] areaLayout = {{TableLayout.FILL}, {TableLayout.MINIMUM, 2 * Frame.SPACE,
                 TableLayout.MINIMUM, 2 * Frame.SPACE, TableLayout.FILL}};
@@ -336,20 +336,16 @@ public class FuzzOptionsPage extends AbstractPage implements Observer {
                 break;
             }
         }
-        if (next) {
-            enableNext();
-        } else {
-            disableNext();
-        }
+        setNextEnabled(next);
     }
 
     @Override
-    protected Action nextAction(final Frame frame) {
+    protected Action nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.getFuzzingProcess().init();
-                frame.showFuzzingPage();
+                f.showFuzzingPage();
             }
         };
     }

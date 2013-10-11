@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 19:50.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,6 +21,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -30,12 +31,12 @@ public class ImportPage extends AbstractPage implements Observer {
     private final ProtocolPane protocolPane;
 
     /**
-     * Instantiates the page.
+     * Instantiates a new import page responsible for visualizing the import process.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public ImportPage(final Frame frame) {
-        super(frame);
+    public ImportPage(final Frame f) {
+        super(f);
         Model.INSTANCE.getImportProcess().addObserver(this);
         final double[][] areaLayout = {{0.2, 10, TableLayout.FILL, 10, 0.2}, {0.1, 0.2, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -55,7 +56,7 @@ public class ImportPage extends AbstractPage implements Observer {
         final JButton browseButton = new JButton(new AbstractAction("Browse...") {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                final int choose = fileChooser.showOpenDialog(frame);
+                final int choose = fileChooser.showOpenDialog(f);
                 if (choose == JFileChooser.APPROVE_OPTION) {
                     final File directory = fileChooser.getSelectedFile();
                     pathText.setText(directory.getAbsolutePath());
@@ -84,17 +85,17 @@ public class ImportPage extends AbstractPage implements Observer {
         return new DocumentListener() {
             @Override
             public void insertUpdate(final DocumentEvent e) {
-                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(Paths.get(pathText.getText()));
             }
 
             @Override
             public void removeUpdate(final DocumentEvent e) {
-                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(Paths.get(pathText.getText()));
             }
 
             @Override
             public void changedUpdate(final DocumentEvent e) {
-                Model.INSTANCE.getImportProcess().importFile(pathText.getText());
+                Model.INSTANCE.getImportProcess().importFile(Paths.get(pathText.getText()));
             }
         };
     }
@@ -107,20 +108,16 @@ public class ImportPage extends AbstractPage implements Observer {
             protocolPane.addProtocolText(data.getProtocolParts());
         }
 
-        if (data.isImported()) {
-            enableNext();
-        } else {
-            disableNext();
-        }
+        setNextEnabled(data.isImported());
     }
 
     @Override
-    protected Action nextAction(final Frame frame) {
+    protected Action nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.getFuzzOptionsProcess().init();
-                frame.showFuzzOptionsPage();
+                f.showFuzzOptionsPage();
             }
         };
     }

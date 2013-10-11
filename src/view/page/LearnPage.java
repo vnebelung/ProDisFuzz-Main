@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,10 +11,10 @@ package view.page;
 import info.clearthought.layout.TableLayout;
 import model.Model;
 import model.process.LearnProcess;
-import view.ImageRepository;
 import view.component.CaptionPanel;
 import view.component.Frame;
 import view.component.ProtocolPane;
+import view.icons.ImageRepository;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -32,12 +32,12 @@ public class LearnPage extends AbstractPage implements Observer {
     private final ProtocolPane protocolPane;
 
     /**
-     * Instantiates the page.
+     * Instantiates a new learn page responsible for visualizing the learn process.
      *
-     * @param frame the parent frame
+     * @param f the parent frame
      */
-    public LearnPage(final Frame frame) {
-        super(frame);
+    public LearnPage(final Frame f) {
+        super(f);
         Model.INSTANCE.getLearnProcess().addObserver(this);
         final double[][] areaLayout = {{0.1, 30, TableLayout.FILL}, {0.1, 0.1, 0.1, 0.2, TableLayout.FILL}};
         area.setLayout(new TableLayout(areaLayout));
@@ -95,17 +95,8 @@ public class LearnPage extends AbstractPage implements Observer {
             protocolPane.addProtocolText(data.getProtocolParts());
         }
 
-        if (data.isRunning()) {
-            disableCancel();
-        } else {
-            enableCancel();
-        }
-
-        if (data.getWorkTotal() == data.getWorkProgress()) {
-            enableNext();
-        } else {
-            disableNext();
-        }
+        setCancelEnabled(!data.isRunning());
+        setNextEnabled(data.getWorkTotal() == data.getWorkProgress());
     }
 
     /**
@@ -137,12 +128,12 @@ public class LearnPage extends AbstractPage implements Observer {
     }
 
     @Override
-    protected AbstractAction nextAction(final Frame frame) {
+    protected AbstractAction nextAction(final Frame f) {
         return new AbstractAction("Next >") {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 Model.INSTANCE.getExportProcess().init();
-                frame.showExportPage();
+                f.showExportPage();
             }
         };
     }

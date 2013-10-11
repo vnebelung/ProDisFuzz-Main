@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 11.10.13 21:51.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,14 +15,15 @@ import java.nio.file.Paths;
 
 public class SavedDataFile {
 
+    private static final String PREFIX = "prodisfuzz_";
     private final long time;
     private final boolean crash;
     private Path filePath;
     private Path outputPath;
-    private static final String PREFIX = "prodisfuzz_";
 
     /**
-     * Instantiates a new recorded data.
+     * Instantiates a new data file responsible for saving exchanged fuzzing data. The file will be located in the
+     * system defined temp directory.
      *
      * @param content the saved data
      * @param crash   true if the data lead to a crash
@@ -42,7 +43,7 @@ public class SavedDataFile {
     }
 
     /**
-     * Gets the file path.
+     * Returns the file path located in the system's temp directory.
      *
      * @return the file path
      */
@@ -51,25 +52,25 @@ public class SavedDataFile {
     }
 
     /**
-     * Tests whether the recorded data lead to a crash.
+     * Checks whether the recorded data led to a crash during fuzzing.
      *
-     * @return true, if this data lead to a crash
+     * @return true, if this data led to a crash
      */
     public boolean isCrash() {
         return crash;
     }
 
     /**
-     * Gets the time the file was recorded.
+     * Returns the time the file was generated.
      *
-     * @return the time in milliseconds
+     * @return the generation time in milliseconds
      */
     public long getSavedTime() {
         return time;
     }
 
     /**
-     * Gets the output path.
+     * Returns the output path, that is the path the temporary file will be copied to for permanent saving.
      *
      * @return the output path
      */
@@ -78,12 +79,14 @@ public class SavedDataFile {
     }
 
     /**
-     * Sets the output path.
+     * Sets the output path, that is the path the temporary file will be copied to for permanent saving.
      *
-     * @param outputPath the new output path
+     * @param p the output path
      */
-    public void setOutputPath(final String outputPath) {
-        this.outputPath = Paths.get(outputPath).toAbsolutePath().normalize();
+    public void setOutputPath(final Path p) {
+        if (p != null) {
+            outputPath = p.toAbsolutePath().normalize();
+        }
     }
 
 }

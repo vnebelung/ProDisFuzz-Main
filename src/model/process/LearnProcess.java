@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:24.
+ * This file is part of ProDisFuzz, modified on 06.10.13 18:55.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -28,7 +28,7 @@ public class LearnProcess extends AbstractThreadProcess {
     private Future learnFuture;
 
     /**
-     * Instantiates a new learn process.
+     * Instantiates a new process responsible for learning the protocol structure.
      */
     public LearnProcess() {
         super();
@@ -57,7 +57,7 @@ public class LearnProcess extends AbstractThreadProcess {
     }
 
     /**
-     * Gets the learned protocol parts.
+     * Returns the learned protocol parts.
      *
      * @return the protocol parts
      */

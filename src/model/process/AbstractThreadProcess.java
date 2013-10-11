@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.10.13 23:27.
+ * This file is part of ProDisFuzz, modified on 05.10.13 23:22.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -18,7 +18,8 @@ public abstract class AbstractThreadProcess extends AbstractProcess implements O
     protected int workTotal;
 
     /**
-     * Increases the work progress counter so that every finished step of the thread can be noticed.
+     * Increases the work progress counter by one so that every finished step of the thread can be noticed by
+     * observers.
      */
     public void increaseWorkProgress() {
         workProgress++;
@@ -35,9 +36,9 @@ public abstract class AbstractThreadProcess extends AbstractProcess implements O
     }
 
     /**
-     * Gets the total amount of work executed by the thread or -1 if the amount can not be determined.
+     * Gets the total amount of work executed by the thread.
      *
-     * @return total amount of thread work
+     * @return total amount of thread work or -1 if infinite
      */
     public int getWorkTotal() {
         return workTotal;

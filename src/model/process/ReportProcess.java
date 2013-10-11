@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.10.13 22:25.
+ * This file is part of ProDisFuzz, modified on 11.10.13 22:35.
  * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -50,7 +50,7 @@ public class ReportProcess extends AbstractProcess {
     private boolean written;
 
     /**
-     * Instantiates a new report process.
+     * Instantiates a new process responsible for generating the final report with all fuzzing results.
      */
     public ReportProcess() {
         super();
@@ -65,10 +65,10 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Writes the final report to the given path.
      *
-     * @param path the output path
+     * @param p the output path
      */
-    public void write(final Path path) {
-        final Path outputPath = path.toAbsolutePath().normalize();
+    public void write(final Path p) {
+        final Path outputPath = p.toAbsolutePath().normalize();
         if (!Files.isDirectory(outputPath)) {
             Model.INSTANCE.getLogger().error("File path for saving final report invalid");
             written = false;
@@ -126,31 +126,31 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Creates the html node with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the html node
      */
-    private Element createHtml(final Document document) {
-        final Element html = document.createElement("html");
+    private Element createHtml(final Document d) {
+        final Element html = d.createElement("html");
         html.setAttribute("xmlns", "http://www.w3.org/1999/xhtml");
         html.setAttribute("xml:lang", "en");
-        html.appendChild(createHead(document));
-        html.appendChild(createBody(document));
+        html.appendChild(createHead(d));
+        html.appendChild(createBody(d));
         return html;
     }
 
     /**
      * Creates the head node with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the head node
      */
-    private Element createHead(final Document document) {
-        final Element head = document.createElement("head");
-        final Element title = document.createElement("title");
-        title.appendChild(document.createTextNode("ProDisFuzz Results"));
+    private Element createHead(final Document d) {
+        final Element head = d.createElement("head");
+        final Element title = d.createElement("title");
+        title.appendChild(d.createTextNode("ProDisFuzz Results"));
         head.appendChild(title);
         // Create the meta element with the date of the generation
-        final Element metaDate = document.createElement("meta");
+        final Element metaDate = d.createElement("meta");
         metaDate.setAttribute("name", "date");
         final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
         String date = dateFormat.format(new Date());
@@ -158,62 +158,62 @@ public class ReportProcess extends AbstractProcess {
         date = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2);
         metaDate.setAttribute("content", date);
         head.appendChild(metaDate);
-        head.appendChild(createCSS(document));
+        head.appendChild(createCSS(d));
         return head;
     }
 
     /**
      * Creates the CSS elements.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the CSS node
      */
-    private Element createCSS(final Document document) {
-        final Element style = document.createElement("style");
+    private Element createCSS(final Document d) {
+        final Element style = d.createElement("style");
         style.setAttribute("type", "text/css");
-        style.appendChild(document.createTextNode("body { font-family: sans-serif; background-color: #ffffff; color: " +
+        style.appendChild(d.createTextNode("body { font-family: sans-serif; background-color: #ffffff; color: " +
                 "" + "#000000; }"));
-        style.appendChild(document.createTextNode(" th, td { padding: 0.2em 1em; text-align: left; }"));
-        style.appendChild(document.createTextNode(" h1 span { color: #4526ae; }"));
-        style.appendChild(document.createTextNode(" h2, h3 { background-color: #4526ae; color: #ffffff; padding: 0" +
-                ".2em; }"));
-        style.appendChild(document.createTextNode(" .crash { background-color: #ffc0c0; }"));
-        style.appendChild(document.createTextNode(" .right { text-align: right; }"));
+        style.appendChild(d.createTextNode(" th, td { padding: 0.2em 1em; text-align: left; }"));
+        style.appendChild(d.createTextNode(" h1 span { color: #4526ae; }"));
+        style.appendChild(d.createTextNode(" h2, h3 { background-color: #4526ae; color: #ffffff; padding: 0" + ".2em;" +
+                " }"));
+        style.appendChild(d.createTextNode(" .crash { background-color: #ffc0c0; }"));
+        style.appendChild(d.createTextNode(" .right { text-align: right; }"));
         return style;
     }
 
     /**
      * Creates the body element with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the body node
      */
-    private Element createBody(final Document document) {
-        final Element body = document.createElement("body");
-        final Element heading = document.createElement("h1");
-        heading.appendChild(document.createTextNode("Pro"));
-        final Element span = document.createElement("span");
-        span.appendChild(document.createTextNode("Dis"));
+    private Element createBody(final Document d) {
+        final Element body = d.createElement("body");
+        final Element heading = d.createElement("h1");
+        heading.appendChild(d.createTextNode("Pro"));
+        final Element span = d.createElement("span");
+        span.appendChild(d.createTextNode("Dis"));
         heading.appendChild(span);
-        heading.appendChild(document.createTextNode("Fuzz Results"));
+        heading.appendChild(d.createTextNode("Fuzz Results"));
         body.appendChild(heading);
-        final Element summaryHeading = document.createElement("h2");
-        summaryHeading.appendChild(document.createTextNode("Summary"));
+        final Element summaryHeading = d.createElement("h2");
+        summaryHeading.appendChild(d.createTextNode("Summary"));
         body.appendChild(summaryHeading);
-        body.appendChild(createSummary(document));
-        final Element structureHeading = document.createElement("h2");
-        structureHeading.appendChild(document.createTextNode("Protocol Structure"));
+        body.appendChild(createSummary(d));
+        final Element structureHeading = d.createElement("h2");
+        structureHeading.appendChild(d.createTextNode("Protocol Structure"));
         body.appendChild(structureHeading);
-        body.appendChild(createStructure(document));
-        final Element crashesHeading = document.createElement("h2");
-        crashesHeading.appendChild(document.createTextNode("Crashes"));
+        body.appendChild(createStructure(d));
+        final Element crashesHeading = d.createElement("h2");
+        crashesHeading.appendChild(d.createTextNode("Crashes"));
         body.appendChild(crashesHeading);
-        body.appendChild(createCrashes(document));
+        body.appendChild(createCrashes(d));
         if (saveCommunication == FuzzOptionsProcess.CommunicationSave.ALL) {
-            final Element communicationHeading = document.createElement("h2");
-            communicationHeading.appendChild(document.createTextNode("Complete Communication"));
+            final Element communicationHeading = d.createElement("h2");
+            communicationHeading.appendChild(d.createTextNode("Complete Communication"));
             body.appendChild(communicationHeading);
-            body.appendChild(createCommunication(document));
+            body.appendChild(createCommunication(d));
         }
         return body;
     }
@@ -221,25 +221,25 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Creates the communication elements with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the communication elements
      */
-    private Element createCommunication(final Document document) {
-        final Element table = document.createElement("table");
+    private Element createCommunication(final Document d) {
+        final Element table = d.createElement("table");
         Element[] trs = new Element[numOfIterations() + 1];
         // Create all tr elements
         for (int i = 0; i < trs.length; i++) {
-            trs[i] = document.createElement("tr");
+            trs[i] = d.createElement("tr");
         }
         Element[] ths = new Element[4];
         // Create all th elements and fill them with values
         for (int i = 0; i < ths.length; i++) {
-            ths[i] = document.createElement("th");
+            ths[i] = d.createElement("th");
         }
-        ths[0].appendChild(document.createTextNode("#"));
-        ths[1].appendChild(document.createTextNode("Bytes sent"));
-        ths[2].appendChild(document.createTextNode("Bytes received"));
-        ths[3].appendChild(document.createTextNode("Time"));
+        ths[0].appendChild(d.createTextNode("#"));
+        ths[1].appendChild(d.createTextNode("Bytes sent"));
+        ths[2].appendChild(d.createTextNode("Bytes received"));
+        ths[3].appendChild(d.createTextNode("Time"));
         // Append all th elements to the first tr element
         for (final Element th : ths) {
             trs[0].appendChild(th);
@@ -248,38 +248,37 @@ public class ReportProcess extends AbstractProcess {
         // Create all td elements
         for (int i = 0; i < tds.length; i++) {
             for (int j = 0; j < tds[i].length; j++) {
-                tds[i][j] = document.createElement("td");
+                tds[i][j] = d.createElement("td");
             }
         }
         final Element[] as = new Element[savedDataFiles.size()];
         // Create all a elements
         for (int i = 0; i < as.length; i++) {
-            as[i] = document.createElement("a");
+            as[i] = d.createElement("a");
         }
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         int count = 0;
         // For each crash fill the particular td and a elements with values
         for (int i = 0; i < savedDataFiles.size(); i++) {
-            tds[count][0].appendChild(document.createTextNode(String.valueOf(count + 1)));
+            tds[count][0].appendChild(d.createTextNode(String.valueOf(count + 1)));
             // This is the link to the sent bytes file
             as[i].setAttribute("href", savedDataFiles.get(i).getOutputPath().toString());
-            as[i].appendChild(document.createTextNode(savedDataFiles.get(i).getOutputPath().getFileName().toString()));
+            as[i].appendChild(d.createTextNode(savedDataFiles.get(i).getOutputPath().getFileName().toString()));
             // Append the a element to the first td element
             tds[count][1].appendChild(as[i]);
             if (savedDataFiles.get(i).isCrash()) {
                 for (int j = 0; j < tds[count].length; j++) {
                     tds[count][j].setAttribute("class", "crash");
                 }
-                tds[count][2].appendChild(document.createTextNode("CRASHED"));
+                tds[count][2].appendChild(d.createTextNode("CRASHED"));
             } else {
                 i++;
                 as[i].setAttribute("href", savedDataFiles.get(i).getOutputPath().toString());
-                as[i].appendChild(document.createTextNode(savedDataFiles.get(i).getOutputPath().getFileName()
-                        .toString()));
+                as[i].appendChild(d.createTextNode(savedDataFiles.get(i).getOutputPath().getFileName().toString()));
                 tds[count][2].appendChild(as[i]);
             }
-            tds[count][3].appendChild(document.createTextNode(dateFormat.format(new Date(savedDataFiles.get(i)
-                    .getSavedTime()))));
+            tds[count][3].appendChild(d.createTextNode(dateFormat.format(new Date(savedDataFiles.get(i).getSavedTime
+                    ()))));
             count++;
         }
         // Append all td elements to the tr elements
@@ -296,43 +295,43 @@ public class ReportProcess extends AbstractProcess {
     }
 
     /**
-     * Gets the number of iterations, that is half the number of recorded files +1 for each recorded crash.
+     * Returns the number of fuzzing iterations, that is half the number of recorded files +1 for each recorded crash.
      *
      * @return the number of iterations
      */
     private int numOfIterations() {
-        int num = 0;
+        int result = 0;
         for (final SavedDataFile file : savedDataFiles) {
-            num++;
+            result++;
             if (file.isCrash()) {
-                num++;
+                result++;
             }
         }
-        return num / 2;
+        return result / 2;
     }
 
     /**
      * Creates the crash overview elements with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the crashes overview elements
      */
-    private Element createCrashes(final Document document) {
+    private Element createCrashes(final Document d) {
         final List<SavedDataFile> crashes = filterCrashes(savedDataFiles);
-        final Element table = document.createElement("table");
+        final Element table = d.createElement("table");
         Element[] trs = new Element[crashes.size() + 1];
         // Create all tr elements
         for (int i = 0; i < trs.length; i++) {
-            trs[i] = document.createElement("tr");
+            trs[i] = d.createElement("tr");
         }
         Element[] ths = new Element[3];
         // Create all th elements and fill them with values
         for (int i = 0; i < ths.length; i++) {
-            ths[i] = document.createElement("th");
+            ths[i] = d.createElement("th");
         }
-        ths[0].appendChild(document.createTextNode("# Crash"));
-        ths[1].appendChild(document.createTextNode("Time"));
-        ths[2].appendChild(document.createTextNode("Message"));
+        ths[0].appendChild(d.createTextNode("# Crash"));
+        ths[1].appendChild(d.createTextNode("Time"));
+        ths[2].appendChild(d.createTextNode("Message"));
         // Append all th elements to the first tr element
         for (final Element th : ths) {
             trs[0].appendChild(th);
@@ -341,22 +340,22 @@ public class ReportProcess extends AbstractProcess {
         // Create all td elements
         for (int i = 0; i < tds.length; i++) {
             for (int j = 0; j < tds[i].length; j++) {
-                tds[i][j] = document.createElement("td");
+                tds[i][j] = d.createElement("td");
             }
         }
         final Element[] as = new Element[crashes.size()];
         // Create all a elements
         for (int i = 0; i < as.length; i++) {
-            as[i] = document.createElement("a");
+            as[i] = d.createElement("a");
         }
         final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         // For each crash fill the particular td and a elements with values
         for (int i = 0; i < crashes.size(); i++) {
-            tds[i][0].appendChild(document.createTextNode(String.valueOf(i + 1)));
-            tds[i][1].appendChild(document.createTextNode(dateFormat.format(new Date(crashes.get(i).getSavedTime()))));
+            tds[i][0].appendChild(d.createTextNode(String.valueOf(i + 1)));
+            tds[i][1].appendChild(d.createTextNode(dateFormat.format(new Date(crashes.get(i).getSavedTime()))));
             // This is the link to the crash file
             as[i].setAttribute("href", crashes.get(i).getOutputPath().toString());
-            as[i].appendChild(document.createTextNode(crashes.get(i).getOutputPath().getFileName().toString()));
+            as[i].appendChild(d.createTextNode(crashes.get(i).getOutputPath().getFileName().toString()));
             // Append the a element to the third td element
             tds[i][2].appendChild(as[i]);
         }
@@ -393,25 +392,25 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Creates the protocol structure elements with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the structure elements
      */
-    private Element createStructure(final Document document) {
-        final Element table = document.createElement("table");
+    private Element createStructure(final Document d) {
+        final Element table = d.createElement("table");
         final Element[] trs = new Element[protocolParts.size() + 1];
         // Create all tr elements
         for (int i = 0; i < trs.length; i++) {
-            trs[i] = document.createElement("tr");
+            trs[i] = d.createElement("tr");
         }
         final Element[] ths = new Element[4];
         // Create all th elements
         for (int i = 0; i < ths.length; i++) {
-            ths[i] = document.createElement("th");
+            ths[i] = d.createElement("th");
         }
-        ths[0].appendChild(document.createTextNode("#"));
-        ths[1].appendChild(document.createTextNode("Type"));
-        ths[2].appendChild(document.createTextNode("Minimum Length"));
-        ths[3].appendChild(document.createTextNode("Maximum Length"));
+        ths[0].appendChild(d.createTextNode("#"));
+        ths[1].appendChild(d.createTextNode("Type"));
+        ths[2].appendChild(d.createTextNode("Minimum Length"));
+        ths[3].appendChild(d.createTextNode("Maximum Length"));
         // Append the th elements to the first tr element
         for (final Element th : ths) {
             trs[0].appendChild(th);
@@ -420,17 +419,17 @@ public class ReportProcess extends AbstractProcess {
         // Create all td elements
         for (int i = 0; i < tds.length; i++) {
             for (int j = 0; j < tds[i].length; j++) {
-                tds[i][j] = document.createElement("td");
+                tds[i][j] = d.createElement("td");
             }
         }
         // For each part fill the td elements with values
         for (int i = 0; i < protocolParts.size(); i++) {
-            tds[i][0].appendChild(document.createTextNode(String.valueOf(i + 1)));
-            tds[i][1].appendChild(document.createTextNode(protocolParts.get(i).getProtocolPart().getType().toString()));
-            tds[i][2].appendChild(document.createTextNode(String.valueOf(protocolParts.get(i).getProtocolPart()
-                    .getMinLength())));
-            tds[i][3].appendChild(document.createTextNode(String.valueOf(protocolParts.get(i).getProtocolPart()
-                    .getMaxLength())));
+            tds[i][0].appendChild(d.createTextNode(String.valueOf(i + 1)));
+            tds[i][1].appendChild(d.createTextNode(protocolParts.get(i).getProtocolPart().getType().toString()));
+            tds[i][2].appendChild(d.createTextNode(String.valueOf(protocolParts.get(i).getProtocolPart().getMinLength
+                    ())));
+            tds[i][3].appendChild(d.createTextNode(String.valueOf(protocolParts.get(i).getProtocolPart().getMaxLength
+                    ())));
         }
         // Append all td elements to the particular tr element
         for (int i = 0; i < tds.length; i++) {
@@ -448,27 +447,27 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Creates the summary elements with all children.
      *
-     * @param document the DOM document
+     * @param d the DOM document
      * @return the summary node
      */
-    private Element createSummary(final Document document) {
-        final Element table = document.createElement("table");
+    private Element createSummary(final Document d) {
+        final Element table = d.createElement("table");
         final Element[] trs = new Element[2];
         // Create all tr elements
         for (int i = 0; i < trs.length; i++) {
-            trs[i] = document.createElement("tr");
+            trs[i] = d.createElement("tr");
         }
         final Element[] ths = new Element[6];
         // Create all th elements that contain the heading cells
         for (int i = 0; i < ths.length; i++) {
-            ths[i] = document.createElement("th");
+            ths[i] = d.createElement("th");
         }
-        ths[0].appendChild(document.createTextNode("Destination"));
-        ths[1].appendChild(document.createTextNode("Timeout in ms"));
-        ths[2].appendChild(document.createTextNode("Interval in ms"));
-        ths[3].appendChild(document.createTextNode("# Crashes"));
-        ths[4].appendChild(document.createTextNode("# Iterations"));
-        ths[5].appendChild(document.createTextNode("Duration"));
+        ths[0].appendChild(d.createTextNode("Destination"));
+        ths[1].appendChild(d.createTextNode("Timeout in ms"));
+        ths[2].appendChild(d.createTextNode("Interval in ms"));
+        ths[3].appendChild(d.createTextNode("# Crashes"));
+        ths[4].appendChild(d.createTextNode("# Iterations"));
+        ths[5].appendChild(d.createTextNode("Duration"));
         // Append the th elements to the first tr element
         for (final Element th : ths) {
             trs[0].appendChild(th);
@@ -476,20 +475,20 @@ public class ReportProcess extends AbstractProcess {
         final Element[] tds = new Element[6];
         // Create all td elements that contain the data
         for (int i = 0; i < tds.length; i++) {
-            tds[i] = document.createElement("td");
+            tds[i] = d.createElement("td");
             if (i > 0) {
                 tds[i].setAttribute("class", "right");
             }
         }
         // Fill the td elements with their values
-        tds[0].appendChild(document.createTextNode(target.getHostString() + ":" + target.getPort()));
-        tds[1].appendChild(document.createTextNode(String.valueOf(timeout)));
-        tds[2].appendChild(document.createTextNode(String.valueOf(interval)));
-        tds[3].appendChild(document.createTextNode(String.valueOf(numOfCrashes())));
-        tds[4].appendChild(document.createTextNode(workProgress + "/" + (workTotal == -1 ? "inf" : workTotal)));
+        tds[0].appendChild(d.createTextNode(target.getHostString() + ":" + target.getPort()));
+        tds[1].appendChild(d.createTextNode(String.valueOf(timeout)));
+        tds[2].appendChild(d.createTextNode(String.valueOf(interval)));
+        tds[3].appendChild(d.createTextNode(String.valueOf(numOfCrashes())));
+        tds[4].appendChild(d.createTextNode(workProgress + "/" + (workTotal == -1 ? "inf" : workTotal)));
         final DecimalFormat timeFormat = new DecimalFormat("00");
-        tds[5].appendChild(document.createTextNode(timeFormat.format(duration.getHours()) + ":" + timeFormat.format
-                (duration.getMinutes()) + ":" + timeFormat.format(duration.getSeconds())));
+        tds[5].appendChild(d.createTextNode(timeFormat.format(duration.getHours()) + ":" + timeFormat.format(duration
+                .getMinutes()) + ":" + timeFormat.format(duration.getSeconds())));
         // Append the td elements to the second tr element
         for (final Element td : tds) {
             trs[1].appendChild(td);
@@ -502,34 +501,34 @@ public class ReportProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the number of written crashes.
+     * Returns the number of registered crashes during the whole fuzzing process.
      *
      * @return the number of crashes
      */
     private int numOfCrashes() {
-        int crashes = 0;
+        int result = 0;
         for (final SavedDataFile savedDataFile : savedDataFiles) {
             if (savedDataFile.isCrash()) {
-                crashes++;
+                result++;
             }
         }
-        return crashes;
+        return result;
     }
 
     /**
-     * Finds an output name for the file and directory, that is not already in use.
+     * Finds an output name for the report file and directory, that is not already in use.
      *
      * @return the name of the file and directory
      */
-    private String findOutputName(final Path outputPath) {
+    private String findOutputName(final Path p) {
         String outputName;
         int postfix = 0;
         Path file;
         Path directory;
         do {
             outputName = postfix == 0 ? "results" : "results(" + postfix + ")";
-            file = outputPath.resolve(outputName + ".html");
-            directory = outputPath.resolve(outputName + DIR_POSTFIX);
+            file = p.resolve(outputName + ".html");
+            directory = p.resolve(outputName + DIR_POSTFIX);
             postfix++;
         } while (Files.exists(file) || Files.isDirectory(directory));
         return outputName;
@@ -538,16 +537,17 @@ public class ReportProcess extends AbstractProcess {
     /**
      * Sets the output path of every written data file.
      *
-     * @param outputPath the output path
+     * @param p the output path
+     * @param s the user-defined output name
      */
-    private void setOutputPath(final String outputName, final Path outputPath) {
+    private void setOutputPath(final String s, final Path p) {
         // Set the file path for each detected crash
         int messageIteration = 0;
         int messageCount = 0;
         for (final SavedDataFile savedDataFile : savedDataFiles) {
-            final Path path = outputPath.resolve(outputName + DIR_POSTFIX).resolve("record" + messageIteration + "-" +
+            final Path path = p.resolve(s + DIR_POSTFIX).resolve("record" + messageIteration + "-" +
                     messageCount + ".bytes");
-            savedDataFile.setOutputPath(path.toString());
+            savedDataFile.setOutputPath(path);
             if (savedDataFile.isCrash() == (messageCount == 0)) {
                 messageIteration++;
                 messageCount = 0;

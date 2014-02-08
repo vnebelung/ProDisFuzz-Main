@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.10.13 23:01.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 08.02.14 23:31.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -32,7 +32,7 @@ public class Logger extends Observable {
      *
      * @param s the message string to be add
      */
-    public void info(final String s) {
+    public void info(String s) {
         log.add(new Message(s, Message.Type.INFO));
         prune();
         spreadUpdate();
@@ -43,7 +43,7 @@ public class Logger extends Observable {
      *
      * @param s the message string to be add
      */
-    public void fine(final String s) {
+    public void fine(String s) {
         log.add(new Message(s, Message.Type.FINE));
         prune();
         spreadUpdate();
@@ -54,7 +54,7 @@ public class Logger extends Observable {
      *
      * @param s the message string to be add
      */
-    public void error(final String s) {
+    public void error(String s) {
         log.add(new Message(s, Message.Type.ERROR));
         prune();
         spreadUpdate();
@@ -65,13 +65,14 @@ public class Logger extends Observable {
      *
      * @param t the throwable
      */
-    public void error(final Throwable t) {
+    public void error(Throwable t) {
         try (StringWriter sw = new StringWriter()) {
             try (PrintWriter pw = new PrintWriter(sw)) {
                 t.printStackTrace(pw);
                 error(sw.toString());
             }
         } catch (IOException e) {
+            // Should not happen
         }
     }
 
@@ -80,7 +81,7 @@ public class Logger extends Observable {
      *
      * @param s the message string to be add
      */
-    public void warning(final String s) {
+    public void warning(String s) {
         log.add(new Message(s, Message.Type.WARNING));
         prune();
         spreadUpdate();
@@ -98,7 +99,7 @@ public class Logger extends Observable {
      * Keeps the number of entries of the log under the defined size of 500.
      */
     private void prune() {
-        final int oversize = log.size() - 500;
+        int oversize = log.size() - 500;
         if (oversize > 0) {
             log.subList(0, oversize).clear();
         }

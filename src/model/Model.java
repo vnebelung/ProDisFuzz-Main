@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 21:16.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 04.02.14 19:29.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -12,7 +12,13 @@ import model.connector.AbstractConnector;
 import model.logger.ExceptionHandler;
 import model.logger.Logger;
 import model.modificator.AbstractModificator;
-import model.process.*;
+import model.process.collect.CollectProcess;
+import model.process.export.ExportProcess;
+import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzing.FuzzingProcess;
+import model.process.import_.ImportProcess;
+import model.process.learn.LearnProcess;
+import model.process.report.ReportProcess;
 
 public enum Model {
 
@@ -29,7 +35,7 @@ public enum Model {
     private AbstractModificator modificator;
 
     /**
-     * Instantiates a new singelton model responsible for managing the data and logic.
+     * Instantiates a new singleton model responsible for managing the data and logic.
      */
     private Model() {
         collectProcess = new CollectProcess();
@@ -41,15 +47,6 @@ public enum Model {
         reportProcess = new ReportProcess();
         logger = new Logger();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
-    }
-
-    /**
-     * Returns the current memory usage of ProDisFuzz.
-     *
-     * @return the current memory usage in bytes
-     */
-    public long getMemoryUsage() {
-        return Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
     }
 
     /**

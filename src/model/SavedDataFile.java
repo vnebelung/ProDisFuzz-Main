@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 21:51.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 07.02.14 00:21.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -29,7 +29,7 @@ public class SavedDataFile {
      * @param crash   true if the data lead to a crash
      * @param time    the system time the data was created
      */
-    public SavedDataFile(final byte[] content, final boolean crash, final long time) {
+    public SavedDataFile(byte[] content, boolean crash, long time) {
         this.crash = crash;
         this.time = time;
         try {
@@ -83,7 +83,7 @@ public class SavedDataFile {
      *
      * @param p the output path
      */
-    public void setOutputPath(final Path p) {
+    public void setOutputPath(Path p) {
         if (p != null) {
             outputPath = p.toAbsolutePath().normalize();
         }

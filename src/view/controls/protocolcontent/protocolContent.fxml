@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ This file is part of ProDisFuzz, modified on 26.01.14 18:11.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<?importjavafx.scene.control.TextArea?><?importjavafx.scene.shape.Rectangle?><?import javafx.geometry.Insets?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextArea?><?import javafx.scene.layout.*?><?import javafx.scene.shape.Rectangle?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolGridPane" hgap="5" vgap="5">
+    <children>
+        <Rectangle fill="#e0c0ff" height="10" width="10" GridPane.columnIndex="0" GridPane.halignment="RIGHT"
+                   GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+        <Label text="Variable Data" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+        <Rectangle fill="#c0e0ff" height="10.0" width="10" GridPane.columnIndex="2" GridPane.halignment="RIGHT"
+                   GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+        <Label text="Fixed Data" GridPane.columnIndex="3" GridPane.rowIndex="0" />
+        <TextArea fx:id="protocolTextArea" editable="false" wrapText="false" GridPane.columnIndex="0"
+                  GridPane.columnSpan="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+    </children>
+    <columnConstraints>
+        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" />
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+        <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" />
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" />
+    </columnConstraints>
+    <padding>
+        <Insets />
+    </padding>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER" />
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+</fx:root>

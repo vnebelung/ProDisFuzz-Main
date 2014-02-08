@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:47.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -29,7 +29,7 @@ public class InjectedProtocolPart {
      *
      * @param protocolPart the protocol part
      */
-    public InjectedProtocolPart(final ProtocolPart protocolPart) {
+    public InjectedProtocolPart(ProtocolPart protocolPart) {
         this.protocolPart = protocolPart;
         if (protocolPart.getType() == ProtocolPart.Type.VAR) {
             dataInjectionMethod = DataInjectionMethod.RANDOM;
@@ -61,7 +61,7 @@ public class InjectedProtocolPart {
      *
      * @param p the path to the library file
      */
-    public void setLibrary(final Path p) {
+    public void setLibrary(Path p) {
         if (protocolPart.getType() != ProtocolPart.Type.VAR) {
             return;
         }
@@ -69,7 +69,7 @@ public class InjectedProtocolPart {
             library = null;
             return;
         }
-        final Path newLibrary = p.toAbsolutePath().normalize();
+        Path newLibrary = p.toAbsolutePath().normalize();
         // Update only if the path is a file
         if (!Files.isRegularFile(newLibrary)) {
             Model.INSTANCE.getLogger().error("'" + newLibrary.toString() + "' is not a regular file");
@@ -87,28 +87,24 @@ public class InjectedProtocolPart {
 
     /**
      * Sets the injection data to library-based, that means the injected data is read from a file.
-     *
-     * @return true if the injection method has changed
      */
-    public boolean setLibraryInjection() {
+    public void setLibraryInjection() {
         if (protocolPart.getType() != ProtocolPart.Type.VAR || dataInjectionMethod == DataInjectionMethod.LIBRARY) {
-            return false;
+            return;
         }
         dataInjectionMethod = DataInjectionMethod.LIBRARY;
-        return true;
+        library = null;
     }
 
     /**
      * Sets the injection data to random-based, that means the injected data is randomly generated.
-     *
-     * @return true if the injection method has changed
      */
-    public boolean setRandomInjection() {
+    public void setRandomInjection() {
         if (protocolPart.getType() != ProtocolPart.Type.VAR || dataInjectionMethod == DataInjectionMethod.RANDOM) {
-            return false;
+            return;
         }
         dataInjectionMethod = DataInjectionMethod.RANDOM;
-        return true;
+        library = null;
     }
 
     /**
@@ -135,7 +131,6 @@ public class InjectedProtocolPart {
                 Charset.forName("UTF-8")))) {
             lineNumberReader.skip(Integer.MAX_VALUE);
             numOfLines = lineNumberReader.getLineNumber() + 1;
-
         } catch (IOException e) {
             Model.INSTANCE.getLogger().error(e);
         }
@@ -148,15 +143,18 @@ public class InjectedProtocolPart {
      * @param lineNo the line number to return
      * @return the library line or null in case of an error
      */
-    public List<Byte> getLibraryLine(final int lineNo) {
-        final List<Byte> bytes = new ArrayList<>();
+    public List<Byte> getLibraryLine(int lineNo) {
+        List<Byte> bytes = new ArrayList<>();
         try (LineNumberReader lineNumberReader = new LineNumberReader(Files.newBufferedReader(library,
                 Charset.forName("UTF-8")))) {
             for (int i = 0; i < lineNo; i++) {
                 lineNumberReader.readLine();
             }
-            final String line = lineNumberReader.readLine();
-            for (final byte each : line.getBytes()) {
+            String line = lineNumberReader.readLine();
+            if (line == null) { //TODO: Remove workaround. Last line can be empty -> null
+                return bytes;
+            }
+            for (byte each : line.getBytes()) {
                 bytes.add(each);
             }
             return bytes;
@@ -172,7 +170,7 @@ public class InjectedProtocolPart {
      * @return the random library line or null in case of an error
      */
     public List<Byte> getRandomLibraryLine() {
-        final int rnd = RandomPool.getInstance().nextInt(getNumOfLibraryLines());
+        int rnd = RandomPool.getInstance().nextInt(getNumOfLibraryLines());
         return getLibraryLine(rnd);
     }
 

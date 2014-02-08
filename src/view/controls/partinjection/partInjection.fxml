@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ This file is part of ProDisFuzz, modified on 31.01.14 23:15.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolGridPane" hgap="5" vgap="5">
+    <fx:define>
+        <ToggleGroup fx:id="injectionSourceGroup" />
+    </fx:define>
+    <children>
+        <RadioButton fx:id="randomRadioButton" onAction="#injectionSource" text="Random" GridPane.columnIndex="0"
+                     GridPane.rowIndex="0" toggleGroup="$injectionSourceGroup" />
+        <RadioButton fx:id="libraryRadioButton" onAction="#injectionSource" text="File:" GridPane.columnIndex="1"
+                     GridPane.rowIndex="0" toggleGroup="$injectionSourceGroup" />
+        <TextField fx:id="libraryTextField" editable="false" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS"
+                   GridPane.rowIndex="0" />
+        <Button fx:id="browseButton" onAction="#browse" text="Browse …" GridPane.columnIndex="3"
+                GridPane.rowIndex="0" />
+    </children>
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="NEVER" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="NEVER" />
+    </rowConstraints>
+</fx:root>

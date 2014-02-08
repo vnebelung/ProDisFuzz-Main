@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 04.10.13 00:26.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -11,7 +11,7 @@ package main;
 import model.Model;
 import view.View;
 
-public final class ProDisFuzz {
+final class ProDisFuzz {
 
     private final Model model;
     private final View view;
@@ -30,8 +30,8 @@ public final class ProDisFuzz {
      *
      * @param args the arguments
      */
-    public static void main(final String[] args) {
-        final ProDisFuzz app = new ProDisFuzz();
+    public static void main(String[] args) {
+        ProDisFuzz app = new ProDisFuzz();
         app.init();
     }
 

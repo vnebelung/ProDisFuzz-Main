@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.10.13 23:15.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 08.02.14 23:31.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -22,7 +22,7 @@ public class Message {
      * @param s the message text
      * @param t the message type
      */
-    public Message(final String s, final Type t) {
+    public Message(String s, Type t) {
         this.text = s;
         this.type = t;
         time = new Date();
@@ -43,7 +43,7 @@ public class Message {
      * @return the message time
      */
     public Date getTime() {
-        return time;
+        return new Date(time.getTime());
     }
 
     /**

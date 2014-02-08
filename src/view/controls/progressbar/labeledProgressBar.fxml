@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ This file is part of ProDisFuzz, modified on 01.02.14 17:20.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<?import javafx.scene.control.Label?><?import javafx.scene.control.ProgressBar?><?import javafx.scene.layout.StackPane?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.StackPane">
+    <children>
+        <ProgressBar fx:id="progressBar" maxWidth="Infinity" minHeight="24.0" progress="0" />
+        <Label fx:id="label" StackPane.alignment="CENTER" />
+    </children>
+    <stylesheets>
+        <URL value="@labeledProgressBar.css" />
+    </stylesheets>
+</fx:root>

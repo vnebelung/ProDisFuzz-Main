@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.10.13 22:40.
- * Copyright (c) 2013 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 07.02.14 00:21.
+ * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -24,7 +24,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      *
      * @param p the file path
      */
-    public ProtocolFile(final Path p) {
+    public ProtocolFile(Path p) {
         filePath = p;
         sha256 = "";
         try {
@@ -40,16 +40,16 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      * @param algorithm the message digest algorithm
      * @return the file hash
      */
-    private String generateHash(final MessageDigest algorithm) {
-        final StringBuilder hash = new StringBuilder();
+    private String generateHash(MessageDigest algorithm) {
+        StringBuilder hash = new StringBuilder();
         algorithm.reset();
         byte[] bytes;
         try {
             bytes = Files.readAllBytes(filePath);
             algorithm.update(bytes, 0, bytes.length);
-            final byte[] digest = algorithm.digest();
+            byte[] digest = algorithm.digest();
             String hex;
-            for (final byte each : digest) {
+            for (byte each : digest) {
                 hex = Integer.toHexString(0xff & each);
                 if (hex.length() == 1) {
                     hash.append('0');
@@ -82,7 +82,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      *
      * @return the hash
      */
-    public String getSHA256() {
+    public String getSha256() {
         return sha256;
     }
 
@@ -131,7 +131,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     }
 
     @Override
-    public int compareTo(final ProtocolFile otherFile) {
+    public int compareTo(ProtocolFile otherFile) {
         // Custom comparison by comparing the name of the particular files
         return getName().compareTo(otherFile.getName());
     }

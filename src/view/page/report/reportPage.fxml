@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ This file is part of ProDisFuzz, modified on 04.02.14 00:18.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.*?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" hgap="5.0" vgap="5.0">
+    <children>
+        <Label text="Save report to:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <TextField fx:id="fileTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                   maxWidth="Infinity" />
+        <Button fx:id="browseButton" defaultButton="false" onAction="#browse" text="Browse..." GridPane.columnIndex="2"
+                GridPane.rowIndex="0" />
+    </children>
+    <columnConstraints>
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="ALWAYS" />
+        <ColumnConstraints hgrow="NEVER" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS" />
+    </rowConstraints>
+</fx:root>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<!--
+  ~ This file is part of ProDisFuzz, modified on 19.01.14 14:46.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="operationMode" hgap="10" vgap="10">
+    <children>
+        <Label text="This mode is used to fuzz a destination with the protocol structure gained in the learning mode. Depending on the structure different fuzzed messages are generated and sent to the destination. Crashes are detected automatically and can be exported in a final report."
+               wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Button fx:id="learnButton" onAction="#learnButtonAction" text="Learn Protocol" GridPane.columnIndex="0"
+                GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Button fx:id="fuzzingButton" onAction="#fuzzingButtonAction" text="Fuzzing" GridPane.columnIndex="1"
+                GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+        <Label text="This mode is used to learn the protocol structure of an unknown protocol. To collect the messages between two systems, ProDisFuzz can watch a specific folder for communication files created by for example a proxy server."
+               wrapText="true" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label id="title" text="ProDisFuzz" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="0"
+               GridPane.halignment="CENTER" />
+    </children>
+    <columnConstraints>
+        <ColumnConstraints fillWidth="true" halignment="CENTER" hgrow="ALWAYS" percentWidth="50" />
+        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="50" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints percentHeight="50" valignment="CENTER" vgrow="ALWAYS" />
+        <RowConstraints valignment="CENTER" vgrow="NEVER" />
+        <RowConstraints percentHeight="50" valignment="TOP" vgrow="ALWAYS" />
+    </rowConstraints>
+    <stylesheets>
+        <URL value="@operationMode.css" />
+    </stylesheets>
+</fx:root>

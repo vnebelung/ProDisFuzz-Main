@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
-  ~ This file is part of ProDisFuzz, modified on 01.03.14 10:47.
+  ~ This file is part of ProDisFuzz, modified on 01.03.14 12:36.
   ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://prodisfuzz.net"
-           elementFormDefault="qualified" xmlns:pdf="http://prodisfuzz.net"
-           xmlns:sig="http://www.w3.org/2000/09/xmldsig#">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pdf="http://prodisfuzz.net"
+           xmlns:sig="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://prodisfuzz.net"
+           elementFormDefault="qualified">
     <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd" />
     <xs:element name="update" type="pdf:updateType" />
 

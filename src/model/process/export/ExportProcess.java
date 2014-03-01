@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 11.02.14 22:13.
+ * This file is part of ProDisFuzz, modified on 01.03.14 15:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,20 +12,13 @@ import model.Model;
 import model.ProtocolPart;
 import model.helper.Constants;
 import model.helper.Hex;
+import model.helper.XmlExchange;
 import model.process.AbstractProcess;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,73 +56,50 @@ public class ExportProcess extends AbstractProcess {
     /**
      * Exports the protocol structure to the given XML file.
      *
-     * @param p the export file
+     * @param path the export file
      */
-    public void exportXML(Path p) {
-        Path savePath = p.toAbsolutePath().normalize();
-        if (!Files.isDirectory(savePath.getParent())) {
-            Model.INSTANCE.getLogger().error("File path for saving protocol structure invalid");
-            exported = false;
-            spreadUpdate();
-            return;
-        }
-        if (!Files.isWritable(savePath.getParent())) {
-            Model.INSTANCE.getLogger().error("File path for saving protocol structure not writable");
-            exported = false;
-            spreadUpdate();
-            return;
-        }
+    public void exportXML(Path path) {
         try {
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             document.appendChild(createXMLRoot(document));
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(Files.newOutputStream(savePath));
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            // Indent the elements in the XML structure by 2 spaces
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-            // Transform the DOM TO XML
-            transformer.transform(source, result);
-            exported = true;
-            spreadUpdate();
-            Model.INSTANCE.getLogger().info("XML file saved to '" + savePath.toString() + "'");
-        } catch (ParserConfigurationException | TransformerException | IOException e) {
-            exported = false;
-            spreadUpdate();
+            exported = XmlExchange.exportXML(document, path);
+        } catch (ParserConfigurationException e) {
             Model.INSTANCE.getLogger().error(e);
+            exported = false;
         }
+        spreadUpdate();
     }
 
     /**
      * Creates the XML root node with all children.
      *
-     * @param d the DOM document
+     * @param document the DOM document
      * @return the root node
      */
-    private Element createXMLRoot(Document d) {
-        Element result = d.createElement(Constants.XML_PROTOCOL_ROOT);
+    private Element createXMLRoot(Document document) {
+        Element result = document.createElement(Constants.XML_PROTOCOL_ROOT);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
         String date = dateFormat.format(new Date());
         // The time zone is separated with a colon (standardized)
         date = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2);
         result.setAttribute("datetime", date);
         // Append the protocolParts element to the root element
-        result.appendChild(createXMLParts(d));
+        result.appendChild(createXMLParts(document));
         return result;
     }
 
     /**
      * Creates the XML parts node with all children.
      *
-     * @param d the DOM document
+     * @param document the DOM document
      * @return the parts node
      */
-    private Element createXMLParts(Document d) {
+    private Element createXMLParts(Document document) {
         // Create the protocolParts element
-        Element result = d.createElement(Constants.XML_PROTOCOL_PARTS);
+        Element result = document.createElement(Constants.XML_PROTOCOL_PARTS);
         // Append individual part elements to the protocolParts element
         for (ProtocolPart each : protocolParts) {
-            result.appendChild(createXMLPart(d, each));
+            result.appendChild(createXMLPart(document, each));
         }
         return result;
     }
@@ -137,28 +107,28 @@ public class ExportProcess extends AbstractProcess {
     /**
      * Creates a XML part node with all children.
      *
-     * @param d the DOM document
-     * @param p the protocol part
+     * @param document     the DOM document
+     * @param protocolPart the protocol part
      * @return the part node
      */
-    private Element createXMLPart(Document d, ProtocolPart p) {
+    private Element createXMLPart(Document document, ProtocolPart protocolPart) {
         Element result = null;
-        switch (p.getType()) {
+        switch (protocolPart.getType()) {
             case VAR:
-                result = d.createElement(Constants.XML_PROTOCOL_PART_VAR);
+                result = document.createElement(Constants.XML_PROTOCOL_PART_VAR);
                 break;
             case FIX:
-                result = d.createElement(Constants.XML_PROTOCOL_PART_FIX);
+                result = document.createElement(Constants.XML_PROTOCOL_PART_FIX);
                 break;
             default:
                 // Should not happen
                 break;
         }
-        result.setAttribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(p.getMinLength()));
-        result.setAttribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(p.getMaxLength()));
+        result.setAttribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(protocolPart.getMinLength()));
+        result.setAttribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(protocolPart.getMaxLength()));
         // Append content element to the part element
-        if (p.getType() == ProtocolPart.Type.FIX) {
-            result.appendChild(createXMLContent(d, p.getBytes()));
+        if (protocolPart.getType() == ProtocolPart.Type.FIX) {
+            result.appendChild(createXMLContent(document, protocolPart.getBytes()));
         }
         return result;
     }

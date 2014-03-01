@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:31.
+ * This file is part of ProDisFuzz, modified on 01.03.14 15:31.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -19,12 +19,12 @@ public class Message {
     /**
      * Instantiates a new message entry.
      *
-     * @param s the message text
-     * @param t the message type
+     * @param text the message text
+     * @param type the message type
      */
-    public Message(String s, Type t) {
-        this.text = s;
-        this.type = t;
+    public Message(String text, Type type) {
+        this.text = text;
+        this.type = type;
         time = new Date();
     }
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 01.03.14 14:49.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,7 +10,7 @@ package view.controls.textfield;
 
 import javafx.scene.control.TextField;
 
-class NumericTextField extends TextField {
+public class NumericTextField extends TextField {
 
     @Override
     public void replaceText(int start, int end, String text) {

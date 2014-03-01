@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 22:39.
+ * This file is part of ProDisFuzz, modified on 10.02.14 22:42.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,7 +8,7 @@
 
 package model.helper;
 
-public class Hex {
+public abstract class Hex {
 
     private final static char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 

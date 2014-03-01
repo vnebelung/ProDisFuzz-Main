@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 01.03.14 01:04.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -18,7 +18,7 @@ import java.util.TimerTask;
 class MemoryTimer {
 
     private final Label label;
-    private Timer timer;
+    private final Timer timer;
 
     /**
      * Instantiates a new timer for displaying the current memory consumption in periodic intervals.

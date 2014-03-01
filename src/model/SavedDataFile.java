@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 07.02.14 00:21.
+ * This file is part of ProDisFuzz, modified on 28.02.14 22:01.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,6 +8,8 @@
 
 package model;
 
+import model.helper.Constants;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +17,6 @@ import java.nio.file.Paths;
 
 public class SavedDataFile {
 
-    private static final String PREFIX = "prodisfuzz_";
     private final long time;
     private final boolean crash;
     private Path filePath;
@@ -33,7 +34,7 @@ public class SavedDataFile {
         this.crash = crash;
         this.time = time;
         try {
-            filePath = Files.createTempFile(PREFIX, null);
+            filePath = Files.createTempFile(Constants.FILE_PREFIX, null);
             // Write the bytes into the file
             Files.write(filePath, content);
         } catch (IOException e) {

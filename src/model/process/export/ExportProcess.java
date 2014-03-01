@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:31.
+ * This file is part of ProDisFuzz, modified on 11.02.14 22:13.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,9 +10,9 @@ package model.process.export;
 
 import model.Model;
 import model.ProtocolPart;
+import model.helper.Constants;
 import model.helper.Hex;
 import model.process.AbstractProcess;
-import model.xml.XmlNames;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -107,7 +107,7 @@ public class ExportProcess extends AbstractProcess {
      * @return the root node
      */
     private Element createXMLRoot(Document d) {
-        Element result = d.createElement(XmlNames.PROTOCOL_ROOT);
+        Element result = d.createElement(Constants.XML_PROTOCOL_ROOT);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault());
         String date = dateFormat.format(new Date());
         // The time zone is separated with a colon (standardized)
@@ -126,7 +126,7 @@ public class ExportProcess extends AbstractProcess {
      */
     private Element createXMLParts(Document d) {
         // Create the protocolParts element
-        Element result = d.createElement(XmlNames.PROTOCOL_PARTS);
+        Element result = d.createElement(Constants.XML_PROTOCOL_PARTS);
         // Append individual part elements to the protocolParts element
         for (ProtocolPart each : protocolParts) {
             result.appendChild(createXMLPart(d, each));
@@ -145,17 +145,17 @@ public class ExportProcess extends AbstractProcess {
         Element result = null;
         switch (p.getType()) {
             case VAR:
-                result = d.createElement(XmlNames.PROTOCOL_PART_VAR);
+                result = d.createElement(Constants.XML_PROTOCOL_PART_VAR);
                 break;
             case FIX:
-                result = d.createElement(XmlNames.PROTOCOL_PART_FIX);
+                result = d.createElement(Constants.XML_PROTOCOL_PART_FIX);
                 break;
             default:
                 // Should not happen
                 break;
         }
-        result.setAttribute(XmlNames.PROTOCOL_MINLENGTH, String.valueOf(p.getMinLength()));
-        result.setAttribute(XmlNames.PROTOCOL_MAXLENGTH, String.valueOf(p.getMaxLength()));
+        result.setAttribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(p.getMinLength()));
+        result.setAttribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(p.getMaxLength()));
         // Append content element to the part element
         if (p.getType() == ProtocolPart.Type.FIX) {
             result.appendChild(createXMLContent(d, p.getBytes()));
@@ -171,7 +171,7 @@ public class ExportProcess extends AbstractProcess {
      * @return the content node
      */
     private Element createXMLContent(Document d, List<Byte> bytes) {
-        Element result = d.createElement(XmlNames.PROTOCOL_CONTENT);
+        Element result = d.createElement(Constants.XML_PROTOCOL_CONTENT);
         // Append byte elements to the content element
         StringBuilder content = new StringBuilder(bytes.size() * 2);
         for (Byte each : bytes) {

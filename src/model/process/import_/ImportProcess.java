@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,25 +10,15 @@ package model.process.import_;
 
 import model.Model;
 import model.ProtocolPart;
+import model.helper.Constants;
 import model.helper.Hex;
+import model.helper.XmlExchange;
 import model.process.AbstractProcess;
-import model.xml.XmlNames;
+import model.xml.XmlSchemaValidator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.Schema;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -74,24 +64,21 @@ public class ImportProcess extends AbstractProcess {
             spreadUpdate();
             return;
         }
-        try {
-            if (!validate(file)) {
-                imported = false;
-                spreadUpdate();
-                return;
-            }
-            DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-            docBuilderFactory.setNamespaceAware(true);
-            Document document = docBuilderFactory.newDocumentBuilder().parse(Files.newInputStream(file));
-            protocolParts = readXMLParts(document);
-            imported = true;
-            spreadUpdate();
-            Model.INSTANCE.getLogger().info("XML file successfully imported");
-        } catch (IOException | SAXException | ParserConfigurationException e) {
-            Model.INSTANCE.getLogger().error(e);
+        if (!XmlSchemaValidator.validateProtocol(file)) {
             imported = false;
             spreadUpdate();
+            return;
         }
+        Document document = XmlExchange.importXml(file);
+        if (document == null) {
+            imported = false;
+            spreadUpdate();
+            return;
+        }
+        protocolParts = readXMLParts(document);
+        imported = true;
+        spreadUpdate();
+        Model.INSTANCE.getLogger().info("XML file successfully imported");
     }
 
     /**
@@ -103,17 +90,17 @@ public class ImportProcess extends AbstractProcess {
     private List<ProtocolPart> readXMLParts(Document d) {
         List<ProtocolPart> result = new ArrayList<>();
         // Create the node list
-        NodeList nodes = d.getElementsByTagName(XmlNames.PROTOCOL_PARTS).item(0).getChildNodes();
+        NodeList nodes = d.getElementsByTagName(Constants.XML_PROTOCOL_PARTS).item(0).getChildNodes();
         // Create for each node the particular protocol part
         for (int i = 0; i < nodes.getLength(); i++) {
             if (nodes.item(i).getNodeType() != Node.ELEMENT_NODE) {
                 continue;
             }
             switch (nodes.item(i).getNodeName()) {
-                case XmlNames.PROTOCOL_PART_VAR:
+                case Constants.XML_PROTOCOL_PART_VAR:
                     result.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(nodes.item(i))));
                     break;
-                case XmlNames.PROTOCOL_PART_FIX:
+                case Constants.XML_PROTOCOL_PART_FIX:
                     result.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(nodes.item(i))));
                     break;
                 default:
@@ -132,21 +119,21 @@ public class ImportProcess extends AbstractProcess {
     private List<Byte> readXMLContent(Node n) {
         List<Byte> result = new ArrayList<>();
         switch (n.getNodeName()) {
-            case XmlNames.PROTOCOL_PART_VAR:
+            case Constants.XML_PROTOCOL_PART_VAR:
                 // Add as many null bytes as the maximum length attribute
-                int maxLength = Integer.parseInt(n.getAttributes().getNamedItem(XmlNames.PROTOCOL_MAXLENGTH)
+                int maxLength = Integer.parseInt(n.getAttributes().getNamedItem(Constants.XML_PROTOCOL_MAXLENGTH)
                         .getNodeValue());
                 for (int i = 0; i < maxLength; i++) {
                     result.add(null);
                 }
                 break;
-            case XmlNames.PROTOCOL_PART_FIX:
+            case Constants.XML_PROTOCOL_PART_FIX:
                 NodeList nodes = n.getChildNodes();
                 // Create the content of this part for each content element
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Node node = nodes.item(i);
-                    if (node.getNodeType() != Node.ELEMENT_NODE || !node.getNodeName().equals(XmlNames
-                            .PROTOCOL_CONTENT)) {
+                    if (node.getNodeType() != Node.ELEMENT_NODE || !node.getNodeName().equals(Constants
+                            .XML_PROTOCOL_CONTENT)) {
                         continue;
                     }
                     // Create the content out of all byte elements
@@ -160,49 +147,6 @@ public class ImportProcess extends AbstractProcess {
                 break;
         }
         return result;
-    }
-
-    /**
-     * Validates the XML file against the defined schema.
-     *
-     * @param p the path of the XML file
-     * @return true if the XML file is validated without any errors
-     * @throws IOException
-     * @throws SAXException
-     */
-    private boolean validate(Path p) throws IOException, SAXException {
-        final boolean[] result = {true};
-        // Initializes the error handler
-        ErrorHandler errorHandler = new ErrorHandler() {
-            @Override
-            public void warning(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().warning(e.getMessage());
-                result[0] = false;
-            }
-
-            @Override
-            public void fatalError(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().error(e);
-                result[0] = false;
-            }
-
-            @Override
-            public void error(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().error(e);
-                result[0] = false;
-            }
-        };
-        // Load the XML schema
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        try (InputStream stream = getClass().getClassLoader().getResourceAsStream("model/xml/protocol.xsd")) {
-            Schema schema = schemaFactory.newSchema(new StreamSource(stream));
-            // Attach schema to validator
-            Validator validator = schema.newValidator();
-            validator.setErrorHandler(errorHandler);
-            // Validate the whole XML document
-            validator.validate(new StreamSource(Files.newInputStream(p)));
-        }
-        return result[0];
     }
 
     /**

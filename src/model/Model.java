@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 04.02.14 19:29.
+ * This file is part of ProDisFuzz, modified on 11.02.14 22:12.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -19,6 +19,7 @@ import model.process.fuzzing.FuzzingProcess;
 import model.process.import_.ImportProcess;
 import model.process.learn.LearnProcess;
 import model.process.report.ReportProcess;
+import model.updater.UpdateCheck;
 
 public enum Model {
 
@@ -31,6 +32,7 @@ public enum Model {
     private final FuzzingProcess fuzzingProcess;
     private final ReportProcess reportProcess;
     private final Logger logger;
+    private final UpdateCheck updateCheck;
     private AbstractConnector connector;
     private AbstractModificator modificator;
 
@@ -46,6 +48,7 @@ public enum Model {
         fuzzingProcess = new FuzzingProcess();
         reportProcess = new ReportProcess();
         logger = new Logger();
+        updateCheck = new UpdateCheck();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
     }
 
@@ -132,5 +135,14 @@ public enum Model {
      */
     public Logger getLogger() {
         return logger;
+    }
+
+    /**
+     * Returns the update check that is responsible for checking for new releases of ProDisFuzz at prodisfuzz.net.
+     *
+     * @return the update check
+     */
+    public UpdateCheck getUpdateCheck() {
+        return updateCheck;
     }
 }

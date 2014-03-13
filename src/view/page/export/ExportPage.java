@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 22:54.
+ * This file is part of ProDisFuzz, modified on 02.03.14 00:25.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,12 +10,12 @@ package view.page.export;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.Model;
 import model.process.export.ExportProcess;
 import view.page.Page;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 import view.window.Navigation;
 
 import java.io.File;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.util.Observable;
 import java.util.Observer;
 
-public class ExportPage extends GridPane implements Observer, Page {
+public class ExportPage extends VBox implements Observer, Page {
 
     private Navigation navigation;
     @FXML
@@ -36,7 +36,7 @@ public class ExportPage extends GridPane implements Observer, Page {
      */
     public ExportPage(Navigation n) {
         super();
-        ConnectionHelper.connect(getClass().getResource("exportPage.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("exportPage.fxml"), this);
         Model.INSTANCE.getExportProcess().addObserver(this);
         navigation = n;
     }

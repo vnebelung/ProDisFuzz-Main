@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:09.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -22,12 +22,9 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     protected AbstractRunnable() {
         workTotal = -1;
         finished = false;
-        updateRunnable = new Runnable() {
-            @Override
-            public void run() {
-                setChanged();
-                notifyObservers();
-            }
+        updateRunnable = () -> {
+            setChanged();
+            notifyObservers();
         };
     }
 
@@ -80,8 +77,8 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     }
 
     /**
-     * Notifies all observers about an update and sleeps for 250 ms to give observers time to update themselves
-     * before proceeding.
+     * Notifies all observers about an update and sleeps for 250 ms to give observers time to update themselves before
+     * proceeding.
      *
      * @throws InterruptedException
      */

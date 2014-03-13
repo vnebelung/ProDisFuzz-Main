@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 23.12.13 22:58.
+ * This file is part of ProDisFuzz, modified on 02.03.14 00:25.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -14,7 +14,7 @@ import model.Model;
 import java.io.IOException;
 import java.net.URL;
 
-public class ConnectionHelper {
+public class FxmlConnection {
 
     /**
      * Connect a given object to a FXML file defined by the given URL.

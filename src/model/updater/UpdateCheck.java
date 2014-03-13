@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -78,7 +78,7 @@ public class UpdateCheck {
         Collections.reverse(releaseInformation);
         boolean result = releaseInformation.size() > 0;
         if (result) {
-            Model.INSTANCE.getLogger().warning("ProDisFuzz update available. Please update.");
+            Model.INSTANCE.getLogger().warning("ProDisFuzz update available. Please go to 'http://prodisfuzz.net'");
         } else {
             Model.INSTANCE.getLogger().fine("ProDisFuzz is up to date.");
         }

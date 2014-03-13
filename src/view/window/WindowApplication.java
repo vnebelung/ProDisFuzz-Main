@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:09.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,37 +9,33 @@
 package view.window;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 
 public class WindowApplication extends Application {
 
-    private Window window;
-
-    /**
-     * Instantiates a new window responsible for handling the basic JavaFX window.
-     */
-    public WindowApplication() {
-        super();
-        initControllers();
-    }
-
     @Override
     public void start(Stage stage) {
-        Scene scene = new Scene(window);
+        Window window = new Window();
+
+        Scene scene = new Scene(new Window());
         stage.setScene(scene);
         stage.setTitle("ProDisFuzz");
-        stage.show();
-        UpdateTimer updateTimer = new UpdateTimer(stage);
-        updateTimer.start();
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent windowEvent) {
-                window.onClose();
-            }
+        stage.setOnCloseRequest(windowEvent -> {
+            window.onClose();
         });
+        stage.show();
+
+        initUpdateCheck(stage);
+    }
+
+    /**
+     * Starts the check for an update of ProDisFuzz.
+     *
+     * @param stage the stage
+     */
+    private void initUpdateCheck(Stage stage) {
+        new UpdateTimer(stage).start();
     }
 
     /**
@@ -47,12 +43,5 @@ public class WindowApplication extends Application {
      */
     public void show() {
         launch();
-    }
-
-    /**
-     * Initializes the window.
-     */
-    private void initControllers() {
-        window = new Window();
     }
 }

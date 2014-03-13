@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 17:37.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:09.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,7 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 
 public class LabeledProgressBar extends StackPane {
 
@@ -26,16 +26,16 @@ public class LabeledProgressBar extends StackPane {
      */
     public LabeledProgressBar() {
         super();
-        ConnectionHelper.connect(getClass().getResource("labeledProgressBar.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("labeledProgressBar.fxml"), this);
     }
 
     /**
-     * Updates the labeled progress bar. The update includes setting the visual progress of the progress bar and
-     * setting the textual label to display the progress percentage.
+     * Updates the labeled progress bar. The update includes setting the visual progress of the progress bar and setting
+     * the textual label to display the progress percentage.
      *
      * @param progress the absolute progress. A negative value for progress indicates that the progress is
-     *                 indeterminate. A positive value between 0 and 1 indicates the percentage of progress where 0
-     *                 is 0% and 1 is 100%. Any value greater than 1 is interpreted as 100%.
+     *                 indeterminate. A positive value between 0 and 1 indicates the percentage of progress where 0 is
+     *                 0% and 1 is 100%. Any value greater than 1 is interpreted as 100%.
      * @param running  true, if the process that is visualized through this progress bar is active
      */
     public void update(double progress, boolean running) {

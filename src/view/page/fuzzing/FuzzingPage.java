@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,12 +12,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import model.Model;
 import model.process.fuzzing.FuzzingProcess;
 import view.controls.progressbar.LabeledProgressBar;
 import view.page.Page;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 import view.window.Navigation;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -29,7 +29,7 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class FuzzingPage extends GridPane implements Observer, Page {
+public class FuzzingPage extends VBox implements Observer, Page {
 
     private Navigation navigationPage;
     @FXML
@@ -45,7 +45,7 @@ public class FuzzingPage extends GridPane implements Observer, Page {
      */
     public FuzzingPage(Navigation n) {
         super();
-        ConnectionHelper.connect(getClass().getResource("fuzzingPage.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("fuzzingPage.fxml"), this);
         Model.INSTANCE.getFuzzingProcess().addObserver(this);
 
         navigationPage = n;
@@ -55,27 +55,34 @@ public class FuzzingPage extends GridPane implements Observer, Page {
     public void update(Observable o, Object arg) {
         final FuzzingProcess process = (FuzzingProcess) o;
 
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                startStopButton.setText(process.isRunning() ? "Stop" : "Start");
+        Platform.runLater(() -> {
+            startStopButton.setText(process.isRunning() ? "Stop" : "Start");
 
-                double progress = process.getWorkTotal() == 0 ? 0 : 1.0 * process.getWorkProgress() / process
-                        .getWorkTotal();
-                labeledProgressBar.update(progress, process.isRunning());
-
-                if (process.isRunning()) {
-                    startTimer(process.getStartTime());
-                } else {
-                    stopTimer();
-                    if (process.getWorkProgress() == 0) {
-                        timeLabel.setText("00:00:00");
-                    }
-                }
-
-                navigationPage.setCancelable(!process.isRunning(), FuzzingPage.this);
-                navigationPage.setFinishable(process.getWorkTotal() > 0 && !process.isRunning(), FuzzingPage.this);
+            double progress;
+            switch (process.getWorkTotal()) {
+                case 0:
+                    progress = 0;
+                    break;
+                case -1:
+                    progress = process.isRunning() ? -1 : 0;
+                    break;
+                default:
+                    progress = 1.0 * process.getWorkProgress() / process.getWorkTotal();
+                    break;
             }
+            labeledProgressBar.update(progress, process.isRunning());
+
+            if (process.isRunning()) {
+                startTimer(process.getStartTime());
+            } else {
+                stopTimer();
+                if (process.getWorkProgress() == 0) {
+                    timeLabel.setText("00:00:00");
+                }
+            }
+
+            navigationPage.setCancelable(!process.isRunning(), FuzzingPage.this);
+            navigationPage.setFinishable(process.getWorkProgress() > 0 && !process.isRunning(), FuzzingPage.this);
         });
     }
 
@@ -109,12 +116,9 @@ public class FuzzingPage extends GridPane implements Observer, Page {
                 try {
                     final Duration duration = DatatypeFactory.newInstance().newDuration(System.currentTimeMillis() -
                             time);
-                    Platform.runLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            timeLabel.setText(timeFormat.format(duration.getHours()) + ":" + timeFormat.format
-                                    (duration.getMinutes()) + ":" + timeFormat.format(duration.getSeconds()));
-                        }
+                    Platform.runLater(() -> {
+                        timeLabel.setText(timeFormat.format(duration.getHours()) + ":" + timeFormat.format(duration
+                                .getMinutes()) + ":" + timeFormat.format(duration.getSeconds()));
                     });
                 } catch (DatatypeConfigurationException e) {
                     Model.INSTANCE.getLogger().error(e);

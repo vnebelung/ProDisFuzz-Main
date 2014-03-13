@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:31.
+ * This file is part of ProDisFuzz, modified on 02.03.14 00:25.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,19 +11,19 @@ package view.page.learn;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import model.Model;
 import model.process.learn.LearnProcess;
 import view.controls.progressbar.LabeledProgressBar;
 import view.controls.protocolcontent.ProtocolContent;
 import view.page.Page;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 import view.window.Navigation;
 
 import java.util.Observable;
 import java.util.Observer;
 
-public class LearnPage extends GridPane implements Observer, Page {
+public class LearnPage extends VBox implements Observer, Page {
 
     @FXML
     private LabeledProgressBar labeledProgressBar;
@@ -38,7 +38,7 @@ public class LearnPage extends GridPane implements Observer, Page {
      */
     public LearnPage(Navigation n) {
         super();
-        ConnectionHelper.connect(getClass().getResource("learnPage.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("learnPage.fxml"), this);
         Model.INSTANCE.getLearnProcess().addObserver(this);
         navigation = n;
     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 13.03.14 20:11.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -32,7 +32,7 @@ class LearnConvertCallable implements Callable<List<List<Byte>>> {
         List<List<Byte>> result = new ArrayList<>(files.size());
         for (ProtocolFile eachFile : files) {
             if (eachFile.getContent().length > 0 && !Thread.currentThread().isInterrupted()) {
-                result.add(new ArrayList<Byte>(eachFile.getContent().length));
+                result.add(new ArrayList<>(eachFile.getContent().length));
                 for (byte eachByte : eachFile.getContent()) {
                     result.get(result.size() - 1).add(eachByte);
                 }

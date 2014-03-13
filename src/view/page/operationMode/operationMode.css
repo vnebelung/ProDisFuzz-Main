@@ -1,3 +1,6 @@
+#operationMode {
+    -fx-background-color: transparent;
+}
 
 #title {
     -fx-font-size: 40px;

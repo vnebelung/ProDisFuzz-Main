@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 01:04.
+ * This file is part of ProDisFuzz, modified on 13.03.14 20:09.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -41,11 +41,8 @@ class MemoryTimer {
                 final String totalMemory = numberFormat.format(Runtime.getRuntime().totalMemory() / 1024 / 1024);
                 final String usedMemory = numberFormat.format((Runtime.getRuntime().totalMemory() - Runtime
                         .getRuntime().freeMemory()) / 1024 / 1024);
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        label.setText(usedMemory + "/" + totalMemory + " MB");
-                    }
+                Platform.runLater(() -> {
+                    label.setText(usedMemory + "/" + totalMemory + " MB");
                 });
             }
         }, 2000, 2000);

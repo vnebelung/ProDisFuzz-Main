@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -16,7 +16,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import model.InjectedProtocolPart;
 import model.Model;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 
 import java.io.File;
 
@@ -34,20 +34,20 @@ public class PartInjection extends GridPane {
     private Button browseButton;
 
     /**
-     * Instantiates a new part injection module responsible for displaying all GUI components for one fuzzable
-     * protocol part.
+     * Instantiates a new part injection module responsible for displaying all GUI components for one fuzzable protocol
+     * part.
      *
      * @param index the index of the corresponding protocol part
      */
     public PartInjection(int index) {
         super();
-        ConnectionHelper.connect(getClass().getResource("partInjection.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("partInjection.fxml"), this);
         protocolPartIndex = index;
     }
 
     /**
-     * Handles the action of the radio buttons by updating the model with the chosen option for the injection method
-     * of a protocol part.
+     * Handles the action of the radio buttons by updating the model with the chosen option for the injection method of
+     * a protocol part.
      */
     @FXML
     private void injectionSource() {
@@ -59,8 +59,8 @@ public class PartInjection extends GridPane {
     }
 
     /**
-     * Handles the action of the browse button by displaying a window where the user can choose a file that contains
-     * the fuzz strings for the corresponding protocol part.
+     * Handles the action of the browse button by displaying a window where the user can choose a file that contains the
+     * fuzz strings for the corresponding protocol part.
      */
     @FXML
     private void browse() {

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -54,15 +54,13 @@ class LearnRunnable extends AbstractRunnable {
                 sequences.remove(minIndices[1]);
                 sequences.remove(minIndices[0]);
                 // Generate new protocol parts
-                protocolParts.clear();
-                protocolParts.addAll(generateProtocolParts(sequences.get(sequences.size() - 1)));
+                generateProtocolParts(sequences.get(sequences.size() - 1));
             }
             // Adjust the last remaining sequence
             sequences.add(adjust(sequences.get(0)));
             sequences.remove(0);
             // Generate new protocol parts
-            protocolParts.clear();
-            protocolParts.addAll(generateProtocolParts(sequences.get(0)));
+            generateProtocolParts(sequences.get(0));
             setFinished(true);
         } catch (InterruptedException e) {
             // Nothing to do here
@@ -155,19 +153,16 @@ class LearnRunnable extends AbstractRunnable {
      * parts, each indicating whether it is a variable or fixed data block.
      *
      * @param sequence the sequence to generate the protocol parts from
-     * @return the learned protocol parts
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    private List<ProtocolPart> generateProtocolParts(List<Byte> sequence) throws InterruptedException,
-            ExecutionException {
+    private void generateProtocolParts(List<Byte> sequence) throws InterruptedException, ExecutionException {
         LearnPartsCallable partsCallable = new LearnPartsCallable(sequence);
         Future<List<ProtocolPart>> partsFuture = AbstractThreadProcess.EXECUTOR.submit(partsCallable);
         try {
-            List<ProtocolPart> result = partsFuture.get();
+            protocolParts = partsFuture.get();
             Model.INSTANCE.getLogger().info("Temporary protocol structure generated");
             increaseWorkProgress();
-            return result;
         } catch (InterruptedException e) {
             partsFuture.cancel(true);
             throw e;

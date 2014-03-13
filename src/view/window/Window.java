@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 22:54.
+ * This file is part of ProDisFuzz, modified on 13.03.14 20:16.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,7 +12,7 @@ import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import model.Model;
 import view.controls.control.ControlBar;
@@ -26,7 +26,7 @@ import view.page.learn.LearnPage;
 import view.page.operationMode.OperationMode;
 import view.page.report.ReportPage;
 
-public class Window extends GridPane implements NavigationControl, Navigation {
+public class Window extends VBox implements NavigationControl, Navigation {
 
     @FXML
     private ScrollPane mainScrollPane;
@@ -40,7 +40,7 @@ public class Window extends GridPane implements NavigationControl, Navigation {
      */
     public Window() {
         super();
-        ConnectionHelper.connect(getClass().getResource("window.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("window.fxml"), this);
         controlArea.setNavigationControl(this);
         operationMode = new OperationMode(this);
 
@@ -94,8 +94,8 @@ public class Window extends GridPane implements NavigationControl, Navigation {
     }
 
     /**
-     * Fades in a given page node, that means increasing its opacity from 0 to 1 in a specific time interval. If a
-     * page is existing in mainScrollPane, this page is faded out before the given node is faded in.
+     * Fades in a given page node, that means increasing its opacity from 0 to 1 in a specific time interval. If a page
+     * is existing in mainScrollPane, this page is faded out before the given node is faded in.
      *
      * @param n the page node to fade in
      */

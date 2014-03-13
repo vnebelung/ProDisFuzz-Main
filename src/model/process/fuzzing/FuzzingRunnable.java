@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -221,6 +221,7 @@ class FuzzingRunnable extends AbstractRunnable {
                     Model.INSTANCE.getLogger().fine("Target not reachable for 3 times in a row. Information about the" +
                             " " + "crash is being saved");
                     savedDataFiles.add(new SavedDataFile(b, true, crashTime));
+                    increaseWorkProgress();
                     int count = 1;
                     do {
                         errorInterval = Math.pow(count++, 0.75) * interval;

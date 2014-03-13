@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,12 +8,11 @@
 
 package view.page.fuzzOptions;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import model.InjectedProtocolPart;
 import model.Model;
@@ -22,12 +21,12 @@ import model.process.fuzzOptions.FuzzOptionsProcess;
 import view.controls.partinjection.PartInjection;
 import view.controls.protocolcontent.ProtocolContent;
 import view.page.Page;
-import view.window.ConnectionHelper;
+import view.window.FxmlConnection;
 import view.window.Navigation;
 
 import java.util.*;
 
-public class FuzzOptionsPage extends GridPane implements Observer, Page {
+public class FuzzOptionsPage extends VBox implements Observer, Page {
 
     private Navigation navigation;
     @FXML
@@ -53,14 +52,14 @@ public class FuzzOptionsPage extends GridPane implements Observer, Page {
     private VBox partInjections;
 
     /**
-     * Instantiates a new fuzz options area responsible for visualizing the process of setting the fuzz options used
-     * for fuzzing.
+     * Instantiates a new fuzz options area responsible for visualizing the process of setting the fuzz options used for
+     * fuzzing.
      *
      * @param n the navigation interface
      */
     public FuzzOptionsPage(Navigation n) {
         super();
-        ConnectionHelper.connect(getClass().getResource("fuzzOptionsPage.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("fuzzOptionsPage.fxml"), this);
         Model.INSTANCE.getFuzzOptionsProcess().addObserver(this);
         navigation = n;
 
@@ -73,69 +72,77 @@ public class FuzzOptionsPage extends GridPane implements Observer, Page {
     @Override
     public void update(Observable o, Object arg) {
         FuzzOptionsProcess process = (FuzzOptionsProcess) o;
-
-        targetPortTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
-        targetAddressTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
-        if (process.isTargetReachable()) {
-            targetPortTextField.getStyleClass().add("text-field-success");
-            targetAddressTextField.getStyleClass().add("text-field-success");
-        } else {
-            targetPortTextField.getStyleClass().add("text-field-fail");
-            targetAddressTextField.getStyleClass().add("text-field-fail");
-        }
-
-        timeoutTextField.setText(String.valueOf(process.getTimeout()));
-
-        intervalTextField.setText(String.valueOf(process.getInterval()));
-
-        simultaneousRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess.InjectionMethod
-                .SIMULTANEOUS);
-        separateRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess.InjectionMethod.SEPARATE);
-
-        criticalRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess.CommunicationSave
-                .CRITICAL);
-        allRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess.CommunicationSave.ALL);
-
-        synchronized (this) {
-            List<ProtocolPart> parts = new ArrayList<>(process.getInjectedProtocolParts().size());
-            for (InjectedProtocolPart each : process.getInjectedProtocolParts()) {
-                parts.add(each.getProtocolPart());
-            }
-            protocolContent.addProtocolText(parts);
-        }
-
-        List<InjectedProtocolPart> injectedProtocolParts = process.getInjectedProtocolParts();
-        List<InjectedProtocolPart> injectedVariableProtocolParts = process.filterVarParts(injectedProtocolParts);
-        // Update the part injections section only if the number of current part injection modules is different from
-        // the number of variable injected protocol parts
-        if (process.filterVarParts(injectedProtocolParts).size() != partInjections.getChildren().size()) {
-            partInjections.getChildren().clear();
-            // Create new part injection modules for every variable protocol part
-            for (int i = 0; i < injectedProtocolParts.size(); i++) {
-                if (injectedProtocolParts.get(i).getProtocolPart().getType() == ProtocolPart.Type.VAR) {
-                    partInjections.getChildren().add(new PartInjection(i));
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                targetPortTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+                targetAddressTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+                if (process.isTargetReachable()) {
+                    targetPortTextField.getStyleClass().add("text-field-success");
+                    targetAddressTextField.getStyleClass().add("text-field-success");
+                } else {
+                    targetPortTextField.getStyleClass().add("text-field-fail");
+                    targetAddressTextField.getStyleClass().add("text-field-fail");
                 }
-            }
-        }
 
-        for (int i = 0; i < injectedVariableProtocolParts.size(); i++) {
-            InjectedProtocolPart.DataInjectionMethod dataInjectionMethod = injectedVariableProtocolParts.get(i)
-                    .getDataInjectionMethod();
-            boolean enabled = (process.getInjectionMethod() != FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS || i
-                    == 0);
-            boolean validLibrary = injectedVariableProtocolParts.get(i).getLibrary() != null;
-            ((PartInjection) partInjections.getChildren().get(i)).update(dataInjectionMethod, enabled, validLibrary);
-        }
+                timeoutTextField.setText(String.valueOf(process.getTimeout()));
 
-        boolean finishable = process.isTargetReachable();
-        for (InjectedProtocolPart each : injectedProtocolParts) {
-            if (each.getProtocolPart().getType() == ProtocolPart.Type.VAR && each.getDataInjectionMethod() ==
-                    InjectedProtocolPart.DataInjectionMethod.LIBRARY && each.getLibrary() == null) {
-                finishable = false;
-                break;
+                intervalTextField.setText(String.valueOf(process.getInterval()));
+
+                simultaneousRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess
+                        .InjectionMethod.SIMULTANEOUS);
+                separateRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess.InjectionMethod
+                        .SEPARATE);
+
+                criticalRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess
+                        .CommunicationSave.CRITICAL);
+                allRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess.CommunicationSave.ALL);
+
+                synchronized (this) {
+                    List<ProtocolPart> parts = new ArrayList<>(process.getInjectedProtocolParts().size());
+                    for (InjectedProtocolPart each : process.getInjectedProtocolParts()) {
+                        parts.add(each.getProtocolPart());
+                    }
+                    protocolContent.addProtocolText(parts);
+                }
+
+                List<InjectedProtocolPart> injectedProtocolParts = process.getInjectedProtocolParts();
+                List<InjectedProtocolPart> injectedVariableProtocolParts = process.filterVarParts
+                        (injectedProtocolParts);
+                // Update the part injections section only if the number of current part injection modules is
+                // different from
+                // the number of variable injected protocol parts
+                if (process.filterVarParts(injectedProtocolParts).size() != partInjections.getChildren().size()) {
+                    partInjections.getChildren().clear();
+                    // Create new part injection modules for every variable protocol part
+                    for (int i = 0; i < injectedProtocolParts.size(); i++) {
+                        if (injectedProtocolParts.get(i).getProtocolPart().getType() == ProtocolPart.Type.VAR) {
+                            partInjections.getChildren().add(new PartInjection(i));
+                        }
+                    }
+                }
+
+                for (int i = 0; i < injectedVariableProtocolParts.size(); i++) {
+                    InjectedProtocolPart.DataInjectionMethod dataInjectionMethod = injectedVariableProtocolParts.get
+                            (i).getDataInjectionMethod();
+                    boolean enabled = (process.getInjectionMethod() != FuzzOptionsProcess.InjectionMethod
+                            .SIMULTANEOUS || i == 0);
+                    boolean validLibrary = injectedVariableProtocolParts.get(i).getLibrary() != null;
+                    ((PartInjection) partInjections.getChildren().get(i)).update(dataInjectionMethod, enabled,
+                            validLibrary);
+                }
+
+                boolean finishable = process.isTargetReachable();
+                for (InjectedProtocolPart each : injectedProtocolParts) {
+                    if (each.getProtocolPart().getType() == ProtocolPart.Type.VAR && each.getDataInjectionMethod() ==
+                            InjectedProtocolPart.DataInjectionMethod.LIBRARY && each.getLibrary() == null) {
+                        finishable = false;
+                        break;
+                    }
+                }
+                navigation.setFinishable(finishable, FuzzOptionsPage.this);
             }
-        }
-        navigation.setFinishable(finishable, this);
+        });
     }
 
     @FXML
@@ -148,17 +155,14 @@ public class FuzzOptionsPage extends GridPane implements Observer, Page {
     }
 
     /**
-     * Creates the listener for the target address and port. Every change will start a timer so that the user has
-     * time to finish his changes before the input is processed.
+     * Creates the listener for the target address and port. Every change will start a timer so that the user has time
+     * to finish his changes before the input is processed.
      *
      * @return the change listener
      */
     private ChangeListener<String> targetListener() {
-        return new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                targetTimer();
-            }
+        return (observableValue, s, s2) -> {
+            targetTimer();
         };
     }
 
@@ -168,15 +172,12 @@ public class FuzzOptionsPage extends GridPane implements Observer, Page {
      * @return the change listener
      */
     private ChangeListener<String> timeoutListener() {
-        return new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                try {
-                    int timeout = Integer.parseInt(timeoutTextField.getText());
-                    Model.INSTANCE.getFuzzOptionsProcess().setTimeout(timeout);
-                } catch (NumberFormatException e) {
-                    // Nothing to do here
-                }
+        return (observableValue, s, s2) -> {
+            try {
+                int timeout = Integer.parseInt(timeoutTextField.getText());
+                Model.INSTANCE.getFuzzOptionsProcess().setTimeout(timeout);
+            } catch (NumberFormatException e) {
+                // Nothing to do here
             }
         };
     }
@@ -187,15 +188,12 @@ public class FuzzOptionsPage extends GridPane implements Observer, Page {
      * @return the change listener
      */
     private ChangeListener<String> intervalListener() {
-        return new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String s2) {
-                try {
-                    int interval = Integer.parseInt(intervalTextField.getText());
-                    Model.INSTANCE.getFuzzOptionsProcess().setInterval(interval);
-                } catch (NumberFormatException e) {
-                    // Nothing to do here
-                }
+        return (observableValue, s, s2) -> {
+            try {
+                int interval = Integer.parseInt(intervalTextField.getText());
+                Model.INSTANCE.getFuzzOptionsProcess().setInterval(interval);
+            } catch (NumberFormatException e) {
+                // Nothing to do here
             }
         };
     }

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 15:36.
+ * This file is part of ProDisFuzz, modified on 13.03.14 20:16.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -7,8 +7,6 @@
  */
 
 package model.process.fuzzing;
-
-import model.Model;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -56,7 +54,11 @@ class FuzzingSendCallable implements Callable<Boolean> {
                 } catch (SocketTimeoutException ignored) {
                 }
                 // Send fuzzed message
-                out.write(message);
+                try {
+                    out.write(message);
+                } catch (SocketException e) {
+                    return false;
+                }
                 out.flush();
                 // If target is reacting, great
                 try {
@@ -75,9 +77,6 @@ class FuzzingSendCallable implements Callable<Boolean> {
                 return lastResponse.length != 0;
             }
         } catch (SocketTimeoutException e) {
-            return false;
-        } catch (SocketException e) {
-            Model.INSTANCE.getLogger().error(e);
             return false;
         }
     }

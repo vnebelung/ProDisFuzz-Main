@@ -1,4 +1,15 @@
-#log {
-    -fx-background-color: transparent;
-    -fx-text-fill: white;
+.warning {
+    -fx-fill: #c0c040;
+}
+
+.error {
+    -fx-fill: #c02020;
+}
+
+.info {
+    -fx-fill: white;
+}
+
+.success {
+    -fx-fill: #20c020;
 }

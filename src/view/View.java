@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 07.12.13 21:44.
+ * This file is part of ProDisFuzz, modified on 23.03.14 09:39.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,7 +8,7 @@
 
 package view;
 
-import view.window.WindowApplication;
+import view.application.WindowApplication;
 
 import java.util.Locale;
 

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:09.
+ * This file is part of ProDisFuzz, modified on 26.03.14 20:50.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import model.Model;
 import model.updater.ReleaseInformation;
+import org.controlsfx.dialog.Dialogs;
 
 import java.util.List;
 import java.util.Timer;
@@ -50,21 +51,22 @@ public class UpdateTimer {
                     StringBuilder updates = new StringBuilder();
                     for (ReleaseInformation eachRelease : releaseInformation) {
                         updates.append(System.lineSeparator());
-                        updates.append(eachRelease.getDate()).append(" - Version ").append(eachRelease.getNumber())
+                        updates.append(eachRelease.getDate()).append(", Version ").append(eachRelease.getNumber())
                                 .append(" \"").append(eachRelease.getName()).append("\":").append(System
                                 .lineSeparator());
                         updates.append("(").append(eachRelease.getRequirements()).append(")").append(System
                                 .lineSeparator());
-                        updates.append(System.lineSeparator());
                         for (String eachInformation : eachRelease.getInformation()) {
                             updates.append("- ").append(eachInformation).append(System.lineSeparator());
                         }
-                        updates.append(System.lineSeparator());
                     }
-                    // TODO: Enable on Java 8
-                    //        Dialogs.create().owner(stage).title("You do want dialogs right?").masthead
-                    //                ("Just Checkin'").message("I was a bit worried that you might not want " +
-                    //                "them, so I wanted to double check.").showConfirm();
+                    Dialogs dialog = Dialogs.create();
+                    dialog.lightweight();
+                    dialog.owner(stage);
+                    dialog.title("Update Available");
+                    dialog.masthead(updates.toString());
+                    dialog.message("Download the new version at http://prodisfuzz.net.");
+                    dialog.showInformation();
                 });
             }
         }, 2000);

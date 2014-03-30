@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
+ * This file is part of ProDisFuzz, modified on 28.03.14 18:39.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,9 +15,9 @@ import model.helper.Hex;
 import model.helper.XmlExchange;
 import model.process.AbstractProcess;
 import model.xml.XmlSchemaValidator;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -84,24 +84,23 @@ public class ImportProcess extends AbstractProcess {
     /**
      * Reads the XML part elements.
      *
-     * @param d the DOM document
+     * @param document the DOM document
      * @return the protocol parts
      */
-    private List<ProtocolPart> readXMLParts(Document d) {
+    private List<ProtocolPart> readXMLParts(Document document) {
         List<ProtocolPart> result = new ArrayList<>();
         // Create the node list
-        NodeList nodes = d.getElementsByTagName(Constants.XML_PROTOCOL_PARTS).item(0).getChildNodes();
+
+        Elements elements = document.getRootElement().getChildElements(Constants.XML_PROTOCOL_PARTS).get(0)
+                .getChildElements();
         // Create for each node the particular protocol part
-        for (int i = 0; i < nodes.getLength(); i++) {
-            if (nodes.item(i).getNodeType() != Node.ELEMENT_NODE) {
-                continue;
-            }
-            switch (nodes.item(i).getNodeName()) {
+        for (int i = 0; i < elements.size(); i++) {
+            switch (elements.get(i).getLocalName()) {
                 case Constants.XML_PROTOCOL_PART_VAR:
-                    result.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(nodes.item(i))));
+                    result.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(elements.get(i))));
                     break;
                 case Constants.XML_PROTOCOL_PART_FIX:
-                    result.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(nodes.item(i))));
+                    result.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(elements.get(i))));
                     break;
                 default:
                     break;
@@ -113,31 +112,28 @@ public class ImportProcess extends AbstractProcess {
     /**
      * Reads the byte content for a given XML protocol part node.
      *
-     * @param n the protocol part node
+     * @param element the protocol part XML element
      * @return the byte content
      */
-    private List<Byte> readXMLContent(Node n) {
+    private List<Byte> readXMLContent(Element element) {
         List<Byte> result = new ArrayList<>();
-        switch (n.getNodeName()) {
+        switch (element.getLocalName()) {
             case Constants.XML_PROTOCOL_PART_VAR:
                 // Add as many null bytes as the maximum length attribute
-                int maxLength = Integer.parseInt(n.getAttributes().getNamedItem(Constants.XML_PROTOCOL_MAXLENGTH)
-                        .getNodeValue());
+                int maxLength = Integer.parseInt(element.getAttribute(Constants.XML_PROTOCOL_MAXLENGTH).getValue());
                 for (int i = 0; i < maxLength; i++) {
                     result.add(null);
                 }
                 break;
             case Constants.XML_PROTOCOL_PART_FIX:
-                NodeList nodes = n.getChildNodes();
+                Elements elements = element.getChildElements();
                 // Create the content of this part for each content element
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Node node = nodes.item(i);
-                    if (node.getNodeType() != Node.ELEMENT_NODE || !node.getNodeName().equals(Constants
-                            .XML_PROTOCOL_CONTENT)) {
+                for (int i = 0; i < elements.size(); i++) {
+                    if (!elements.get(i).getLocalName().equals(Constants.XML_PROTOCOL_CONTENT)) {
                         continue;
                     }
                     // Create the content out of all byte elements
-                    String bytes = node.getTextContent();
+                    String bytes = elements.get(i).getValue();
                     for (int j = 0; j < bytes.length(); j = j + 2) {
                         result.add(Hex.hex2Byte(bytes.substring(j, j + 2)));
                     }

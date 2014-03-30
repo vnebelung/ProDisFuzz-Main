@@ -1,9 +1,9 @@
 .warning {
-    -fx-fill: #c0c040;
+    -fx-fill: yellow;
 }
 
 .error {
-    -fx-fill: #c02020;
+    -fx-fill: red;
 }
 
 .info {
@@ -11,5 +11,5 @@
 }
 
 .success {
-    -fx-fill: #20c020;
+    -fx-fill: green;
 }

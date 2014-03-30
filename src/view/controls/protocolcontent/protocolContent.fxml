@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ This file is part of ProDisFuzz, modified on 12.03.14 00:23.
+  ~ This file is part of ProDisFuzz, modified on 30.03.14 15:19.
   ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,10 +12,10 @@
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolGridPane" hgap="10"
          vgap="20">
     <children>
-        <Rectangle fill="#e0c0ff" height="10" width="10" GridPane.columnIndex="0" GridPane.halignment="LEFT"
+        <Rectangle fill="#e0a0ff" height="10" width="10" GridPane.columnIndex="0" GridPane.halignment="LEFT"
                    GridPane.rowIndex="0" GridPane.valignment="CENTER" />
         <Label text="Variable Data" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="RIGHT" />
-        <Rectangle fill="#c0e0ff" height="10.0" width="10" GridPane.columnIndex="3" GridPane.halignment="RIGHT"
+        <Rectangle fill="#a0e0ff" height="10.0" width="10" GridPane.columnIndex="3" GridPane.halignment="RIGHT"
                    GridPane.rowIndex="0" GridPane.valignment="CENTER" />
         <Label text="Fixed Data" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="LEFT" />
         <TextFlow fx:id="protocolTextFlow" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.hgrow="ALWAYS"

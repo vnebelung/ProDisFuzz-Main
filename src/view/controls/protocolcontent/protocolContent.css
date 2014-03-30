@@ -10,11 +10,11 @@
 }
 
 .var {
-    -fx-fill: #e0c0ff;
+    -fx-fill: #e0a0ff;
     -fx-font-family: 'monospace';
 }
 
 .fix {
-    -fx-fill: #c0e0ff;
+    -fx-fill: #a0e0ff;
     -fx-font-family: 'monospace';
 }

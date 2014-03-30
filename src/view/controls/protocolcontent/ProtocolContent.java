@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 09.03.14 22:03.
+ * This file is part of ProDisFuzz, modified on 30.03.14 15:17.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,7 +21,8 @@ import java.util.List;
 
 public class ProtocolContent extends GridPane {
 
-    private final static char VAR_CHAR = '.';
+    private final static char VAR_CHAR = '*';
+    private final static char NON_READABLE_CHAR = '.';
     private int lastHashCode;
     @FXML
     private TextFlow protocolTextFlow;
@@ -137,7 +138,7 @@ public class ProtocolContent extends GridPane {
                 stringBuilder.append(VAR_CHAR);
             } else {
                 int decimal = Integer.parseInt(Hex.byte2Hex(each), 16);
-                stringBuilder.append(decimal >= 32 && decimal <= 126 ? (char) decimal : VAR_CHAR);
+                stringBuilder.append(decimal >= 32 && decimal <= 126 ? (char) decimal : NON_READABLE_CHAR);
             }
         }
         stringBuilder.append(System.lineSeparator());

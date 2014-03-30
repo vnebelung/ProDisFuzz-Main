@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
+ * This file is part of ProDisFuzz, modified on 30.03.14 17:49.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -13,15 +13,21 @@ import model.helper.Constants;
 import model.helper.Keys;
 import model.helper.XmlExchange;
 import model.xml.XmlSchemaValidator;
-import org.w3c.dom.Document;
+import nu.xom.Document;
+import nu.xom.Element;
+import nu.xom.Elements;
+import nu.xom.converters.DOMConverter;
+import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -32,12 +38,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class UpdateCheck {
 
-    private List<ReleaseInformation> releaseInformation;
+    private ReleaseInformation[] releaseInformation;
 
     /**
      * Checks whether the remote server prodisfuzz.net has a newer version available for download.
@@ -74,9 +80,8 @@ public class UpdateCheck {
             return false;
         }
         releaseInformation = readNewReleases(document);
-        Collections.sort(releaseInformation);
-        Collections.reverse(releaseInformation);
-        boolean result = releaseInformation.size() > 0;
+        Arrays.sort(releaseInformation);
+        boolean result = releaseInformation.length > 0;
         if (result) {
             Model.INSTANCE.getLogger().warning("ProDisFuzz update available. Please go to 'http://prodisfuzz.net'");
         } else {
@@ -85,17 +90,36 @@ public class UpdateCheck {
         return result;
     }
 
-    private List<ReleaseInformation> readNewReleases(Document document) {
+    /**
+     * Returns information about all releases found in the XML document that are newer than the current release of
+     * ProDisFuzz.
+     *
+     * @param document the XOM document
+     * @return the information about all newer releases
+     */
+    private ReleaseInformation[] readNewReleases(Document document) {
         List<ReleaseInformation> result = new ArrayList<>();
-        NodeList releaseNodes = document.getElementsByTagName("release");
-        NodeList numberNodes = document.getElementsByTagName("number");
-        for (int i = 0; i < numberNodes.getLength(); i++) {
-            int number = Integer.parseInt(numberNodes.item(i).getFirstChild().getNodeValue());
-            if (number > Constants.RELEASE_NUMBER) {
-                result.add(new ReleaseInformation(releaseNodes.item(i)));
+        Elements elements = document.getRootElement().getChildElements("release", Constants.XML_NAMESPACE_PRODISFUZZ);
+        for (int i = 0; i < elements.size(); i++) {
+            Element element = elements.get(i);
+            int number = Integer.parseInt(element.getFirstChildElement("number", Constants.XML_NAMESPACE_PRODISFUZZ)
+                    .getValue());
+            if (number <= Constants.RELEASE_NUMBER) {
+                continue;
             }
+            String name = element.getFirstChildElement("name", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            String date = element.getFirstChildElement("date", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            String requirements = element.getFirstChildElement("requirements", Constants.XML_NAMESPACE_PRODISFUZZ)
+                    .getValue();
+            Elements items = element.getFirstChildElement("information", Constants.XML_NAMESPACE_PRODISFUZZ)
+                    .getChildElements("item", Constants.XML_NAMESPACE_PRODISFUZZ);
+            String[] information = new String[items.size()];
+            for (int j = 0; j < items.size(); j++) {
+                information[j] = items.get(j).getValue();
+            }
+            result.add(new ReleaseInformation(number, name, date, requirements, information));
         }
-        return result;
+        return result.toArray(new ReleaseInformation[result.size()]);
     }
 
     /**
@@ -110,12 +134,17 @@ public class UpdateCheck {
             return false;
         }
         try {
-            Node signatureNode = document.getElementsByTagName("Signature").item(0);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            documentBuilderFactory.setNamespaceAware(true);
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            DOMImplementation domImplementation = documentBuilder.getDOMImplementation();
+            org.w3c.dom.Document domDocument = DOMConverter.convert(document, domImplementation);
+            Node signatureNode = domDocument.getElementsByTagName("Signature").item(0);
             DOMValidateContext valContext = new DOMValidateContext(publicKey, signatureNode);
             XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
             XMLSignature signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
             return signature.validate(valContext);
-        } catch (MarshalException | XMLSignatureException e) {
+        } catch (MarshalException | XMLSignatureException | ParserConfigurationException e) {
             Model.INSTANCE.getLogger().error(e);
             return false;
         }
@@ -146,10 +175,10 @@ public class UpdateCheck {
      *
      * @return the information about all newer available releases
      */
-    public List<ReleaseInformation> getReleaseInformation() {
+    public ReleaseInformation[] getReleaseInformation() {
         if (releaseInformation == null) {
             return null;
         }
-        return Collections.unmodifiableList(releaseInformation);
+        return releaseInformation.clone();
     }
 }

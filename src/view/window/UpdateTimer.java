@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 26.03.14 20:50.
+ * This file is part of ProDisFuzz, modified on 30.03.14 17:49.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -14,7 +14,6 @@ import model.Model;
 import model.updater.ReleaseInformation;
 import org.controlsfx.dialog.Dialogs;
 
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,8 +45,7 @@ public class UpdateTimer {
                     if (!Model.INSTANCE.getUpdateCheck().hasUpdate()) {
                         return;
                     }
-                    List<ReleaseInformation> releaseInformation = Model.INSTANCE.getUpdateCheck()
-                            .getReleaseInformation();
+                    ReleaseInformation[] releaseInformation = Model.INSTANCE.getUpdateCheck().getReleaseInformation();
                     StringBuilder updates = new StringBuilder();
                     for (ReleaseInformation eachRelease : releaseInformation) {
                         updates.append(System.lineSeparator());

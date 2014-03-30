@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 20:09.
+ * This file is part of ProDisFuzz, modified on 30.03.14 17:49.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -20,7 +20,6 @@ import view.window.FxmlConnection;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -61,35 +60,31 @@ public class Log extends ScrollPane implements Observer {
      * @param message the log message
      * @return the styled text
      */
-    private List<Text> styleText(Message message) {
-        List<Text> result = new ArrayList<>(3);
+    private Text styleText(Message message) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Text result = new Text();
         DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        Text time = new Text('[' + dateFormat.format(message.getTime()) + "] ");
-        time.getStyleClass().add("info");
-        result.add(time);
-        Text type = new Text();
+        stringBuilder.append('[' + dateFormat.format(message.getTime()) + "] ");
         switch (message.getType()) {
             case ERROR:
-                type.getStyleClass().add("error");
-                type.setText("[ERROR] ");
+                result.getStyleClass().add("error");
+                stringBuilder.append("[ERROR] ");
                 break;
             case WARNING:
-                type.getStyleClass().add("warning");
-                type.setText("[WARNING] ");
+                result.getStyleClass().add("warning");
+                stringBuilder.append("[WARNING] ");
                 break;
             case FINE:
-                type.getStyleClass().add("success");
-                type.setText("[SUCCESS] ");
+                result.getStyleClass().add("success");
+                stringBuilder.append("[SUCCESS] ");
                 break;
             default:
-                type.getStyleClass().add("info");
-                type.setText("[INFO] ");
+                result.getStyleClass().add("info");
+                stringBuilder.append("[INFO] ");
                 break;
         }
-        result.add(type);
-        Text text = new Text(message.getText() + System.lineSeparator());
-        text.getStyleClass().add("info");
-        result.add(text);
+        stringBuilder.append(message.getText() + System.lineSeparator());
+        result.setText(stringBuilder.toString());
         return result;
     }
 

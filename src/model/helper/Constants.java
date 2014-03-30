@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.02.14 22:01.
+ * This file is part of ProDisFuzz, modified on 29.03.14 10:44.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -21,4 +21,5 @@ public abstract class Constants {
     public final static String XML_PROTOCOL_CONTENT = "content";
     public final static String XML_PROTOCOL_MAXLENGTH = "maxlength";
     public final static String XML_PROTOCOL_MINLENGTH = "minlength";
+    public final static String XML_NAMESPACE_PRODISFUZZ = "http://prodisfuzz.net";
 }

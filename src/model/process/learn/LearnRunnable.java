@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,12 +10,11 @@ package model.process.learn;
 
 import model.Model;
 import model.ProtocolFile;
-import model.ProtocolPart;
 import model.process.AbstractRunnable;
 import model.process.AbstractThreadProcess;
+import model.protocol.ProtocolStructure;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,7 +22,7 @@ import java.util.concurrent.Future;
 class LearnRunnable extends AbstractRunnable {
 
     private final List<ProtocolFile> files;
-    private List<ProtocolPart> protocolParts;
+    private ProtocolStructure protocolStructure;
 
     /**
      * Instantiates a new runnable responsible for controlling the learning of sequences.
@@ -39,7 +38,7 @@ class LearnRunnable extends AbstractRunnable {
 
     @Override
     public void run() {
-        protocolParts = new ArrayList<>();
+        protocolStructure = new ProtocolStructure();
         try {
             resetWorkProgress();
             setFinished(false);
@@ -157,14 +156,14 @@ class LearnRunnable extends AbstractRunnable {
      * @throws ExecutionException
      */
     private void generateProtocolParts(List<Byte> sequence) throws InterruptedException, ExecutionException {
-        LearnPartsCallable partsCallable = new LearnPartsCallable(sequence);
-        Future<List<ProtocolPart>> partsFuture = AbstractThreadProcess.EXECUTOR.submit(partsCallable);
+        LearnStructureCallable structureCallable = new LearnStructureCallable(sequence);
+        Future<ProtocolStructure> structureFuture = AbstractThreadProcess.EXECUTOR.submit(structureCallable);
         try {
-            protocolParts = partsFuture.get();
+            protocolStructure = structureFuture.get();
             Model.INSTANCE.getLogger().info("Temporary protocol structure generated");
             increaseWorkProgress();
         } catch (InterruptedException e) {
-            partsFuture.cancel(true);
+            structureFuture.cancel(true);
             throw e;
         }
     }
@@ -192,12 +191,12 @@ class LearnRunnable extends AbstractRunnable {
     }
 
     /**
-     * Returns the learned protocol parts that are the combination of two inout sequences.
+     * Returns the learned protocol structure that is the combination of the input sequences.
      *
-     * @return the learned protocol parts
+     * @return the learned protocol structure
      */
-    public List<ProtocolPart> getProtocolParts() {
-        return Collections.unmodifiableList(protocolParts);
+    public ProtocolStructure getProtocolStructure() {
+        return protocolStructure;
     }
 
 }

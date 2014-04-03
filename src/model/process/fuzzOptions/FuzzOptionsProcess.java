@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,10 +8,11 @@
 
 package model.process.fuzzOptions;
 
-import model.InjectedProtocolPart;
 import model.Model;
-import model.ProtocolPart;
 import model.process.AbstractProcess;
+import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolStructure;
+import model.protocol.ProtocolStructure;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
@@ -20,9 +21,6 @@ import java.net.Socket;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class FuzzOptionsProcess extends AbstractProcess {
 
@@ -30,7 +28,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     private final static int INTERVAL_MAX = 30000;
     private final static int TIMEOUT_MIN = 50;
     private final static int TIMEOUT_MAX = 10000;
-    private final List<InjectedProtocolPart> injectedProtocolParts;
+    private final InjectedProtocolStructure injectedProtocolStructure;
     private InjectionMethod injectionMethod;
     private InetSocketAddress target;
     private int timeout;
@@ -43,13 +41,14 @@ public class FuzzOptionsProcess extends AbstractProcess {
      */
     public FuzzOptionsProcess() {
         super();
-        injectedProtocolParts = new ArrayList<>();
+        injectedProtocolStructure = new InjectedProtocolStructure();
     }
 
     @Override
     public void init() {
-        for (ProtocolPart each : Model.INSTANCE.getImportProcess().getProtocolParts()) {
-            injectedProtocolParts.add(new InjectedProtocolPart(each));
+        ProtocolStructure protocolStructure = Model.INSTANCE.getImportProcess().getProtocolStructure();
+        for (int i = 0; i < protocolStructure.getSize(); i++) {
+            injectedProtocolStructure.addBlock(protocolStructure.getBytes(i));
         }
         timeout = 5 * TIMEOUT_MIN;
         interval = 5 * INTERVAL_MIN;
@@ -61,7 +60,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
 
     @Override
     public void reset() {
-        injectedProtocolParts.clear();
+        injectedProtocolStructure.clear();
         timeout = 5 * TIMEOUT_MIN;
         interval = 5 * INTERVAL_MIN;
         injectionMethod = FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS;
@@ -90,7 +89,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the data injection method to insert the same values into all fuzzable protocol parts in one fuzzing
+     * Sets the data injection method to insert the same values into all fuzzable protocol blocks in one fuzzing
      * iteration.
      */
     public void setSimultaneousInjectionMode() {
@@ -100,16 +99,15 @@ public class FuzzOptionsProcess extends AbstractProcess {
         injectionMethod = FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS;
         Model.INSTANCE.getLogger().info("Injection mode set to " + FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS
                 .toString());
-        int index = findFirstVarPart();
-        switch (injectedProtocolParts.get(index).getDataInjectionMethod()) {
+        switch (injectedProtocolStructure.getVarBlock(0).getDataInjectionMethod()) {
             case LIBRARY:
-                for (int i = index; i < injectedProtocolParts.size(); i++) {
+                for (int i = 1; i < injectedProtocolStructure.getVarSize(); i++) {
                     setLibraryInjection(i);
-                    setLibrary(injectedProtocolParts.get(index).getLibrary(), i);
+                    setLibrary(injectedProtocolStructure.getVarBlock(0).getLibrary(), i);
                 }
                 break;
             case RANDOM:
-                for (int i = index; i < injectedProtocolParts.size(); i++) {
+                for (int i = 1; i < injectedProtocolStructure.getVarSize(); i++) {
                     setRandomInjection(i);
                 }
                 break;
@@ -121,22 +119,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Finds the fist element in injected protocol parts that is of type VAR and returns the index.
-     *
-     * @return the index of the first variable injected protocol part or -1 if there are no variable parts
-     */
-    private int findFirstVarPart() {
-        for (int i = 0; i < injectedProtocolParts.size(); i++) {
-            if (injectedProtocolParts.get(i).getProtocolPart().getType() == ProtocolPart.Type.VAR) {
-                return i;
-            }
-        }
-        // Should not happen
-        return -1;
-    }
-
-    /**
-     * Sets the data injection method to insert different values into all fuzzable protocol parts in one fuzzing
+     * Sets the data injection method to insert different values into all fuzzable protocol blocks in one fuzzing
      * iteration.
      */
     public void setSeparateInjectionMode() {
@@ -146,16 +129,15 @@ public class FuzzOptionsProcess extends AbstractProcess {
         injectionMethod = FuzzOptionsProcess.InjectionMethod.SEPARATE;
         Model.INSTANCE.getLogger().info("Injection mode set to " + FuzzOptionsProcess.InjectionMethod.SEPARATE
                 .toString());
-        int index = findFirstVarPart();
-        for (int i = index + 1; i < injectedProtocolParts.size(); i++) {
+        for (int i = 1; i < injectedProtocolStructure.getVarSize(); i++) {
             setRandomInjection(i);
         }
         spreadUpdate();
     }
 
     /**
-     * All communication exchanged between ProDisFuzz and the target will be saved,
-     * no matter whether the data triggers a crash.
+     * All communication exchanged between ProDisFuzz and the target will be saved, no matter whether the data triggers
+     * a crash.
      */
     public void setSaveAllCommunication() {
         if (saveCommunication == CommunicationSave.ALL) {
@@ -284,33 +266,32 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the injected protocol parts. Each part has its particular fuzz options.
+     * Returns the injected protocol structure. Each part has its particular fuzz options.
      *
-     * @return the injected protocol parts
+     * @return the injected protocol structure
      */
-    public List<InjectedProtocolPart> getInjectedProtocolParts() {
-        return Collections.unmodifiableList(injectedProtocolParts);
+    public InjectedProtocolStructure getInjectedProtocolStructure() {
+        return injectedProtocolStructure;
     }
 
     /**
-     * Sets the data injection to library-based for a given variable protocol part identified through its
-     * index.
+     * Sets the data injection to library-based for a given variable protocol block identified through its index.
      *
-     * @param index the index of the protocol part
+     * @param index the index of the variable protocol block
      */
     public void setLibraryInjection(int index) {
-        if (injectedProtocolParts.get(index).getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod
-                .LIBRARY) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == InjectedProtocolBlock
+                .DataInjectionMethod.LIBRARY) {
             return;
         }
-        if (injectedProtocolParts.get(index).getDataInjectionMethod() == null) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == null) {
             return;
         }
-        injectedProtocolParts.get(index).setLibraryInjection();
-        Model.INSTANCE.getLogger().info("Data Injection method of protocol part '" + index + "' " +
-                "set to " + InjectedProtocolPart.DataInjectionMethod.LIBRARY);
+        injectedProtocolStructure.getVarBlock(index).setLibraryInjection();
+        Model.INSTANCE.getLogger().info("Data Injection method of variable protocol block '" + index + "' set to " +
+                InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
         if (injectionMethod == InjectionMethod.SIMULTANEOUS) {
-            for (int i = index + 1; i < injectedProtocolParts.size(); i++) {
+            for (int i = index + 1; i < injectedProtocolStructure.getVarSize(); i++) {
                 setLibraryInjection(i);
             }
         }
@@ -318,27 +299,27 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the library file path for the injected protocol part identified through the given index to the given
-     * value. All other protocol parts library will be set according to the current injection method.
+     * Sets the library file path for the injected protocol block identified through the given index to the given value.
+     * All other protocol parts library will be set according to the current injection method.
      *
      * @param path  the path to the library file
-     * @param index the index of the target protocol part
+     * @param index the index of the variable target protocol block
      */
     public void setLibrary(Path path, int index) {
-        if (path == injectedProtocolParts.get(index).getLibrary()) {
+        if (path == injectedProtocolStructure.getVarBlock(index).getLibrary()) {
             return;
         }
         Path newPath = path;
         if (!checkLibrary(newPath)) {
             newPath = null;
         }
-        injectedProtocolParts.get(index).setLibrary(newPath);
-        if (injectedProtocolParts.get(index).getLibrary() != null) {
-            Model.INSTANCE.getLogger().info("Library file of protocol part '" + index + "' set to '" +
-                    injectedProtocolParts.get(index).getLibrary().toString() + "'");
+        injectedProtocolStructure.getVarBlock(index).setLibrary(newPath);
+        if (injectedProtocolStructure.getVarBlock(index).getLibrary() != null) {
+            Model.INSTANCE.getLogger().info("Library file of variable protocol block '" + index + "' set to '" +
+                    injectedProtocolStructure.getVarBlock(index).getLibrary().toString() + "'");
         }
         if (injectionMethod == InjectionMethod.SIMULTANEOUS) {
-            for (int i = index + 1; i < injectedProtocolParts.size(); i++) {
+            for (int i = index + 1; i < injectedProtocolStructure.getVarSize(); i++) {
                 setLibrary(newPath, i);
             }
         }
@@ -346,44 +327,28 @@ public class FuzzOptionsProcess extends AbstractProcess {
     }
 
     /**
-     * Sets the data injection method to random-based for a given protocol part identified through its index in the
-     * list of protocol parts.
+     * Sets the data injection method to random-based for a given protocol block identified through its index in the
+     * list of variable protocol blocks.
      *
-     * @param index the index of the protocol part
+     * @param index the index of the variable protocol block
      */
     public void setRandomInjection(int index) {
-        if (injectedProtocolParts.get(index).getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod
-                .RANDOM) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == InjectedProtocolBlock
+                .DataInjectionMethod.RANDOM) {
             return;
         }
-        if (injectedProtocolParts.get(index).getDataInjectionMethod() == null) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == null) {
             return;
         }
-        injectedProtocolParts.get(index).setRandomInjection();
-        Model.INSTANCE.getLogger().info("Data Injection method of protocol part '" + index + "' set to " +
-                InjectedProtocolPart.DataInjectionMethod.RANDOM);
+        injectedProtocolStructure.getVarBlock(index).setRandomInjection();
+        Model.INSTANCE.getLogger().info("Data Injection method of variable protocol block '" + index + "' set to " +
+                InjectedProtocolBlock.DataInjectionMethod.RANDOM);
         if (injectionMethod == InjectionMethod.SIMULTANEOUS) {
-            for (int i = index; i < injectedProtocolParts.size(); i++) {
+            for (int i = index; i < injectedProtocolStructure.getVarSize(); i++) {
                 setRandomInjection(i);
             }
         }
         spreadUpdate();
-    }
-
-    /**
-     * Filters all non-variable protocol parts out of a list of injected protocol parts.
-     *
-     * @param parts the input injected protocol parts
-     * @return the variable injected protocol parts
-     */
-    public List<InjectedProtocolPart> filterVarParts(List<InjectedProtocolPart> parts) {
-        List<InjectedProtocolPart> varParts = new ArrayList<>(parts);
-        for (int i = parts.size() - 1; i >= 0; i--) {
-            if (varParts.get(i).getProtocolPart().getType() != ProtocolPart.Type.VAR) {
-                varParts.remove(i);
-            }
-        }
-        return varParts;
     }
 
     /**

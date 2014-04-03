@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:13.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,38 +8,40 @@
 
 package model.process.fuzzing;
 
-import model.InjectedProtocolPart;
-import model.Model;
 import model.RandomPool;
 import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolStructure;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 class FuzzingMessageCallable implements Callable<byte[]> {
 
-    private final List<InjectedProtocolPart> parts;
+    private final InjectedProtocolStructure injectedProtocolStructure;
     private final FuzzOptionsProcess.InjectionMethod injectionMethod;
-    private int currentInjectedProtocolPart;
+    private int currentBlock;
     private int currentLibraryLine;
 
     /**
      * Instantiates a new callable that is responsible for generating fuzzed messages.
      *
-     * @param parts the injected protocol parts that define the protocol structure
-     * @param im    the injection method the user-chosen injection method
+     * @param injectedProtocolStructure the injected protocol blocks that define the protocol structure
+     * @param injectionMethod           the injection method the user-chosen injection method
      */
-    public FuzzingMessageCallable(List<InjectedProtocolPart> parts, FuzzOptionsProcess.InjectionMethod im) {
-        this.parts = parts;
-        this.injectionMethod = im;
-        currentInjectedProtocolPart = 0;
+    public FuzzingMessageCallable(InjectedProtocolStructure injectedProtocolStructure,
+                                  FuzzOptionsProcess.InjectionMethod injectionMethod) {
+        this.injectedProtocolStructure = injectedProtocolStructure;
+        this.injectionMethod = injectionMethod;
+        currentBlock = 0;
         currentLibraryLine = 0;
     }
 
     @Override
     public byte[] call() throws Exception {
-        List<Byte> bytes = null;
+        List<Byte> bytes = new ArrayList<>();
         if (finiteIterations()) {
             switch (injectionMethod) {
                 case SEPARATE:
@@ -63,37 +65,34 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                     break;
             }
         }
-        if (bytes == null) {
-            return null;
-        }
-        byte[] message = new byte[bytes.size()];
+        byte[] result = new byte[bytes.size()];
         for (int i = 0; i < bytes.size(); i++) {
-            message[i] = bytes.get(i);
+            result[i] = bytes.get(i);
         }
-        return message;
+        return result;
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts will get separate random data.
+     * Generates a fuzzed message. All variable protocol blocks will get separate random data.
      *
      * @return the generated fuzzed message
      */
     private List<Byte> sepInfMessage() {
-        List<Byte> bytes = new ArrayList<>();
+        List<Byte> result = new ArrayList<>();
         // Generates the fuzzed string separate for every single protocol part
-        for (InjectedProtocolPart each : parts) {
-            switch (each.getProtocolPart().getType()) {
+        for (int i = 0; i < injectedProtocolStructure.getSize(); i++) {
+            switch (injectedProtocolStructure.getBlock(i).getType()) {
                 case FIX:
-                    bytes.addAll(each.getProtocolPart().getBytes());
+                    result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                     break;
                 case VAR:
-                    switch (each.getDataInjectionMethod()) {
+                    switch (injectedProtocolStructure.getBlock(i).getDataInjectionMethod()) {
                         case LIBRARY:
-                            bytes.addAll(each.getRandomLibraryLine());
+                            result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                             break;
                         case RANDOM:
-                            bytes.addAll(RandomPool.getInstance().nextBloatBytes(each.getProtocolPart().getMaxLength
-                                    ()));
+                            result.addAll(RandomPool.getInstance().nextBloatBytes(injectedProtocolStructure.getBlock
+                                    (i).getMaxLength()));
                             break;
                         default:
                             break;
@@ -103,110 +102,116 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                     break;
             }
         }
-        return bytes;
+        return result;
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts will get the same random data.
+     * Generates a fuzzed message. All variable protocol blocks will get the same random data.
      *
      * @return the generated message
      */
     private List<Byte> simInfMessage() {
-        List<Byte> bytes = new ArrayList<>();
+        List<Byte> result = new ArrayList<>();
         // Generate the random bytes
         int maxLength = 0;
-        for (InjectedProtocolPart each : parts) {
-            maxLength = Math.max(maxLength, each.getProtocolPart().getMaxLength());
+        for (int i = 0; i < injectedProtocolStructure.getSize(); i++) {
+            maxLength = Math.max(maxLength, injectedProtocolStructure.getBlock(i).getMaxLength());
         }
         List<Byte> rndBytes = RandomPool.getInstance().nextBloatBytes(maxLength);
         // Apply the bytes for each VAR part
-        for (InjectedProtocolPart each : parts) {
-            switch (each.getProtocolPart().getType()) {
+        for (int i = 0; i < injectedProtocolStructure.getSize(); i++) {
+            switch (injectedProtocolStructure.getBlock(i).getType()) {
                 case FIX:
-                    bytes.addAll(each.getProtocolPart().getBytes());
+                    result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                     break;
                 case VAR:
-                    bytes.addAll(rndBytes);
+                    result.addAll(rndBytes);
                     break;
                 default:
                     break;
             }
         }
-        return bytes;
+        return result;
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts will get separate data of a library file.
+     * Generates a fuzzed message. All variable protocol blocks will get separate data of a library file.
      *
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> sepFinMessage() {
-        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get
-                (currentInjectedProtocolPart).getNumOfLibraryLines()) {
+        if (currentLibraryLine >= injectedProtocolStructure.getVarBlock(currentBlock).getNumOfLibraryLines()) {
             currentLibraryLine = 0;
-            currentInjectedProtocolPart++;
+            currentBlock++;
         }
-        if (currentInjectedProtocolPart >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).size()) {
+        if (currentBlock >= injectedProtocolStructure.getVarSize()) {
             return null;
         }
-        List<Byte> bytes = new ArrayList<>();
+        List<Byte> result = new ArrayList<>();
         // For every protocol part other than the current read a random line of its library file
-        for (InjectedProtocolPart each : parts) {
-            switch (each.getProtocolPart().getType()) {
+        for (int i = 0; i < injectedProtocolStructure.getSize(); i++) {
+            switch (injectedProtocolStructure.getBlock(i).getType()) {
                 case FIX:
-                    bytes.addAll(each.getProtocolPart().getBytes());
+                    result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                     break;
                 case VAR:
-                    bytes.addAll(each.equals(Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get
-                            (currentInjectedProtocolPart)) ? each.getLibraryLine(currentLibraryLine) : each
-                            .getRandomLibraryLine());
+                    if (i == currentBlock) {
+                        for (byte each : injectedProtocolStructure.getBlock(i).getLibraryLine(currentLibraryLine)) {
+                            result.add(each);
+                        }
+                    } else {
+                        for (byte each : injectedProtocolStructure.getBlock(i).getRandomLibraryLine()) {
+                            result.add(each);
+                        }
+                    }
                     break;
                 default:
                     break;
             }
         }
         currentLibraryLine++;
-        return bytes;
+        return result;
     }
 
     /**
-     * Generates a fuzzed message. All variable protocol parts will get the same data of a library file.
+     * Generates a fuzzed message. All variable protocol blocks will get the same data of a library file.
      *
      * @return the generated message or null if all iterations are done
      */
     private List<Byte> simFinMessage() {
-        if (currentLibraryLine >= Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get(0)
-                .getNumOfLibraryLines()) {
+        if (currentLibraryLine >= injectedProtocolStructure.getVarBlock(0).getNumOfLibraryLines()) {
             return null;
         }
-        List<Byte> bytes = new ArrayList<>();
-        List<Byte> line = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts).get(0).getLibraryLine
-                (currentLibraryLine);
-        for (InjectedProtocolPart each : parts) {
-            switch (each.getProtocolPart().getType()) {
+        List<Byte> result = new ArrayList<>();
+        byte[] line = injectedProtocolStructure.getVarBlock(0).getLibraryLine(currentLibraryLine);
+        for (int i = 0; i < injectedProtocolStructure.getSize(); i++) {
+            switch (injectedProtocolStructure.getBlock(i).getType()) {
                 case FIX:
-                    bytes.addAll(each.getProtocolPart().getBytes());
+                    result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                     break;
                 case VAR:
-                    bytes.addAll(line);
+                    for (byte each : line) {
+                        result.add(each);
+                    }
                     break;
                 default:
                     break;
             }
         }
         currentLibraryLine++;
-        return bytes;
+        return result;
     }
 
     /**
-     * Checks whether the number of fuzzing iterations will be finite, that means all variable protocol parts will
-     * get their data from a library file.
+     * Checks whether the number of fuzzing iterations will be finite, that means all variable protocol blocks will get
+     * their data from a library file.
      *
-     * @return true if all variable protocol parts use library files
+     * @return true if all variable protocol blocks use library files
      */
     private boolean finiteIterations() {
-        for (InjectedProtocolPart each : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(parts)) {
-            if (each.getDataInjectionMethod() == InjectedProtocolPart.DataInjectionMethod.RANDOM) {
+        for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
+            if (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == InjectedProtocolBlock
+                    .DataInjectionMethod.RANDOM) {
                 return false;
             }
         }

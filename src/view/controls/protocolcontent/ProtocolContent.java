@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 30.03.14 15:17.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:25.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,11 +12,12 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import model.ProtocolPart;
 import model.helper.Hex;
+import model.protocol.ProtocolStructure;
 import view.window.FxmlConnection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ProtocolContent extends GridPane {
@@ -37,33 +38,25 @@ public class ProtocolContent extends GridPane {
     }
 
     /**
-     * Updates the protocol text depending on the given protocol parts. If the given protocol parts are identical to the
-     * current ones, no update will be done.
+     * Updates the protocol text depending on the given protocol structure. If the given protocol structure is identical
+     * to the current one, no update will be done.
      *
-     * @param protocolParts the protocol parts
+     * @param protocolStructure the protocol structure
      */
-    public void addProtocolText(List<ProtocolPart> protocolParts) {
-        if (protocolParts.hashCode() == lastHashCode) {
+    public void addProtocolText(ProtocolStructure protocolStructure) {
+        if (protocolStructure.hashCode() == lastHashCode) {
             return;
         }
-        lastHashCode = protocolParts.hashCode();
+        lastHashCode = protocolStructure.hashCode();
         List<Text> newTexts = new ArrayList<>();
         newTexts.add(createHeader());
-        if (protocolParts.size() == 0) {
+        if (protocolStructure.getSize() == 0) {
             newTexts.add(createPlaceholder());
         } else {
-            newTexts.addAll(createText(protocolParts));
+            newTexts.addAll(createText(protocolStructure));
         }
         protocolTextFlow.getChildren().clear();
         protocolTextFlow.getChildren().addAll(newTexts);
-    }
-
-    private List<Byte> partsToBytes(List<ProtocolPart> protocolParts) {
-        List<Byte> result = new ArrayList<>();
-        for (ProtocolPart each : protocolParts) {
-            result.addAll(each.getBytes());
-        }
-        return result;
     }
 
     /**
@@ -96,20 +89,20 @@ public class ProtocolContent extends GridPane {
     }
 
     /**
-     * returns the text for the hex view. The data of the text depends on the given protocol parts. Each line contains
-     * the incrementing offset, 16 hex values, and the ASCII representation of this 16 bytes.
+     * Returns the text for the hex view. The data of the text depends on the given protocol structure. Each line
+     * contains the incrementing offset, 16 hex values, and the ASCII representation of this 16 bytes.
      *
-     * @param protocolParts the protocol parts
+     * @param protocolStructure the protocol structure
      * @return the text containing the offset, the hex representation and the ASCII representation
      */
-    private List<Text> createText(List<ProtocolPart> protocolParts) {
-        List<Byte> bytes = partsToBytes(protocolParts);
+    private List<Text> createText(ProtocolStructure protocolStructure) {
+        Byte[] bytes = protocolStructure.getBytes();
         List<Text> result = new ArrayList<>();
-        int totalLines = (int) Math.ceil(bytes.size() / 16.0);
+        int totalLines = (int) Math.ceil(bytes.length / 16.0);
         for (int i = 0; i < totalLines; i++) {
             result.add(createOffset(i));
-            int toIndex = Math.min((i + 1) * 16, bytes.size());
-            List<Byte> line = bytes.subList(i * 16, toIndex);
+            int toIndex = Math.min((i + 1) * 16, bytes.length);
+            Byte[] line = Arrays.copyOfRange(bytes, i * 16, toIndex);
             result.addAll(createHex(line));
             result.addAll(createAscii(line));
         }
@@ -122,10 +115,10 @@ public class ProtocolContent extends GridPane {
      * @param bytes the input bytes
      * @return the text containing the ASCII representation plus a linebreak at the end
      */
-    private List<Text> createAscii(List<Byte> bytes) {
+    private List<Text> createAscii(Byte[] bytes) {
         List<Text> result = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        boolean isPreByteNull = bytes.get(0) == null;
+        boolean isPreByteNull = bytes[0] == null;
         for (Byte each : bytes) {
             if (isPreByteNull != (each == null)) {
                 Text text = new Text(stringBuilder.toString());
@@ -172,10 +165,10 @@ public class ProtocolContent extends GridPane {
      * @param bytes the input bytes
      * @return the text containing the hex representation plus two additional spaces at the end
      */
-    private List<Text> createHex(List<Byte> bytes) {
+    private List<Text> createHex(Byte[] bytes) {
         List<Text> result = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
-        boolean isPreByteNull = bytes.get(0) == null;
+        boolean isPreByteNull = bytes[0] == null;
         for (Byte each : bytes) {
             if (isPreByteNull != (each == null)) {
                 Text text = new Text(stringBuilder.toString());
@@ -191,7 +184,7 @@ public class ProtocolContent extends GridPane {
                 stringBuilder.append(Hex.byte2Hex(each));
             }
         }
-        for (int i = 0; i < 16 - bytes.size(); i++) {
+        for (int i = 0; i < 16 - bytes.length; i++) {
             stringBuilder.append("   ");
         }
         stringBuilder.append("  ");

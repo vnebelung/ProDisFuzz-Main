@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,12 +8,13 @@
 
 package model.process.fuzzing;
 
-import model.InjectedProtocolPart;
 import model.Model;
 import model.SavedDataFile;
 import model.process.AbstractRunnable;
 import model.process.AbstractThreadProcess;
 import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolStructure;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -31,7 +32,7 @@ class FuzzingRunnable extends AbstractRunnable {
     private final int interval;
     private final List<SavedDataFile> savedDataFiles;
     private final FuzzOptionsProcess.InjectionMethod injectionMethod;
-    private final List<InjectedProtocolPart> injectedProtocolParts;
+    private final InjectedProtocolStructure injectedProtocolStructure;
     private final FuzzOptionsProcess.CommunicationSave saveCommunication;
     private long startTime;
     private long endTime;
@@ -40,19 +41,19 @@ class FuzzingRunnable extends AbstractRunnable {
     /**
      * Instantiates a new runnable responsible for handling the fuzzing activities in a separate thread.
      *
-     * @param injectionMethod       the injection method
-     * @param injectedProtocolParts the injected protocol parts
-     * @param target                the fuzzing target
-     * @param timeout               the target timeout
-     * @param interval              the fuzzing interval
-     * @param saveCommunication     the option to save the fuzzed messages
+     * @param injectionMethod           the injection method
+     * @param injectedProtocolStructure the injected protocol blocks
+     * @param target                    the fuzzing target
+     * @param timeout                   the target timeout
+     * @param interval                  the fuzzing interval
+     * @param saveCommunication         the option to save the fuzzed messages
      */
     public FuzzingRunnable(FuzzOptionsProcess.InjectionMethod injectionMethod,
-                           List<InjectedProtocolPart> injectedProtocolParts, InetSocketAddress target, int timeout,
-                           int interval, FuzzOptionsProcess.CommunicationSave saveCommunication) {
+                           InjectedProtocolStructure injectedProtocolStructure, InetSocketAddress target,
+                           int timeout, int interval, FuzzOptionsProcess.CommunicationSave saveCommunication) {
         super();
         this.injectionMethod = injectionMethod;
-        this.injectedProtocolParts = injectedProtocolParts;
+        this.injectedProtocolStructure = injectedProtocolStructure;
         this.target = target;
         this.timeout = timeout;
         this.interval = interval;
@@ -85,10 +86,10 @@ class FuzzingRunnable extends AbstractRunnable {
      */
     private int calcWorkTotalSeparate() {
         int result = 0;
-        for (InjectedProtocolPart each : Model.INSTANCE.getFuzzOptionsProcess().filterVarParts(injectedProtocolParts)) {
-            switch (each.getDataInjectionMethod()) {
+        for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
+            switch (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod()) {
                 case LIBRARY:
-                    result += each.getNumOfLibraryLines();
+                    result += injectedProtocolStructure.getVarBlock(i).getNumOfLibraryLines();
                     break;
                 case RANDOM:
                     return -1;
@@ -105,11 +106,11 @@ class FuzzingRunnable extends AbstractRunnable {
      * @return the number of work steps, -1 for infinite work
      */
     private int calcWorkTotalSimultaneous() {
-        InjectedProtocolPart injectedProtocolPart = Model.INSTANCE.getFuzzOptionsProcess().filterVarParts
-                (injectedProtocolParts).get(0);
-        switch (injectedProtocolPart.getDataInjectionMethod()) {
+        InjectedProtocolBlock injectedProtocolBlock = Model.INSTANCE.getFuzzOptionsProcess()
+                .getInjectedProtocolStructure().getVarBlock(0);
+        switch (injectedProtocolBlock.getDataInjectionMethod()) {
             case LIBRARY:
-                return injectedProtocolPart.getNumOfLibraryLines();
+                return injectedProtocolBlock.getNumOfLibraryLines();
             case RANDOM:
                 return -1;
             default:
@@ -125,7 +126,8 @@ class FuzzingRunnable extends AbstractRunnable {
             setFinished(false);
             // The fuzzing begins …
             int iteration = 0;
-            FuzzingMessageCallable messageCallable = new FuzzingMessageCallable(injectedProtocolParts, injectionMethod);
+            FuzzingMessageCallable messageCallable = new FuzzingMessageCallable(injectedProtocolStructure,
+                    injectionMethod);
             while (true) {
                 byte[] message = getMessage(messageCallable);
                 if (message == null) {

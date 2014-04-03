@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 07.02.14 00:21.
+ * This file is part of ProDisFuzz, modified on 31.03.14 19:11.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,11 +10,10 @@ package model.process.learn;
 
 import model.Model;
 import model.ProtocolFile;
-import model.ProtocolPart;
 import model.process.AbstractThreadProcess;
+import model.protocol.ProtocolStructure;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.CancellationException;
@@ -24,7 +23,7 @@ import java.util.concurrent.Future;
 public class LearnProcess extends AbstractThreadProcess {
 
     private List<ProtocolFile> files;
-    private List<ProtocolPart> parts;
+    private ProtocolStructure protocolStructure;
     private LearnRunnable runnable;
     private Future learnFuture;
 
@@ -34,13 +33,13 @@ public class LearnProcess extends AbstractThreadProcess {
     public LearnProcess() {
         super();
         files = new ArrayList<>();
-        parts = new ArrayList<>();
+        protocolStructure = new ProtocolStructure();
     }
 
     @Override
     public void reset() {
         files.clear();
-        parts.clear();
+        protocolStructure.clear();
         spreadUpdate();
     }
 
@@ -57,8 +56,8 @@ public class LearnProcess extends AbstractThreadProcess {
      *
      * @return the protocol parts
      */
-    public List<ProtocolPart> getProtocolParts() {
-        return Collections.unmodifiableList(parts);
+    public ProtocolStructure getProtocolStructure() {
+        return protocolStructure;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class LearnProcess extends AbstractThreadProcess {
         if (runnable.isFinished()) {
             complete();
         }
-        parts = new ArrayList<>(runnable.getProtocolParts());
+        protocolStructure = runnable.getProtocolStructure();
         spreadUpdate();
     }
 }

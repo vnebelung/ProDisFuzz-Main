@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.03.14 18:39.
+ * This file is part of ProDisFuzz, modified on 31.03.14 19:42.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,25 +9,24 @@
 package model.process.export;
 
 import model.Model;
-import model.ProtocolPart;
 import model.helper.Constants;
 import model.helper.Hex;
 import model.helper.XmlExchange;
 import model.process.AbstractProcess;
+import model.protocol.ProtocolBlock;
+import model.protocol.ProtocolStructure;
 import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
 
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class ExportProcess extends AbstractProcess {
 
-    private List<ProtocolPart> protocolParts;
+    private ProtocolStructure protocolStructure;
     private boolean exported;
 
     /**
@@ -35,19 +34,19 @@ public class ExportProcess extends AbstractProcess {
      */
     public ExportProcess() {
         super();
-        protocolParts = new ArrayList<>();
+        protocolStructure = new ProtocolStructure();
     }
 
     @Override
     public void reset() {
         exported = false;
-        protocolParts.clear();
+        protocolStructure.clear();
         spreadUpdate();
     }
 
     @Override
     public void init() {
-        protocolParts = new ArrayList<>(Model.INSTANCE.getLearnProcess().getProtocolParts());
+        protocolStructure = Model.INSTANCE.getLearnProcess().getProtocolStructure();
         exported = false;
         spreadUpdate();
     }
@@ -64,9 +63,9 @@ public class ExportProcess extends AbstractProcess {
     }
 
     /**
-     * Creates the XML root node with all children.
+     * Creates the XML root element with all children.
      *
-     * @return the root node
+     * @return the root element
      */
     private Element createXMLRoot() {
         Element result = new Element(Constants.XML_PROTOCOL_ROOT);
@@ -76,65 +75,65 @@ public class ExportProcess extends AbstractProcess {
         date = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2);
         result.addAttribute(new Attribute("datetime", date));
         // Append the protocolParts element to the root element
-        result.appendChild(createXMLParts());
+        result.appendChild(createXMLBlocks());
         return result;
     }
 
     /**
      * Creates the XML parts node with all children.
      *
-     * @return the parts node
+     * @return the blocks element
      */
-    private Element createXMLParts() {
+    private Element createXMLBlocks() {
         // Create the protocolParts element
-        Element result = new Element(Constants.XML_PROTOCOL_PARTS);
+        Element result = new Element(Constants.XML_PROTOCOL_BLOCKS);
         // Append individual part elements to the protocolParts element
-        for (ProtocolPart each : protocolParts) {
-            result.appendChild(createXMLPart(each));
+        for (int i = 0; i < protocolStructure.getSize(); i++) {
+            result.appendChild(createXMLBlock(protocolStructure.getBlock(i)));
         }
         return result;
     }
 
     /**
-     * Creates a XML part node with all children.
+     * Creates a XML block element with all children.
      *
-     * @param protocolPart the protocol part
-     * @return the part node
+     * @param protocolBlock the protocol block
+     * @return the block element
      */
-    private Element createXMLPart(ProtocolPart protocolPart) {
+    private Element createXMLBlock(ProtocolBlock protocolBlock) {
         Element result = null;
-        switch (protocolPart.getType()) {
+        switch (protocolBlock.getType()) {
             case VAR:
-                result = new Element(Constants.XML_PROTOCOL_PART_VAR);
+                result = new Element(Constants.XML_PROTOCOL_BLOCK_VAR);
                 break;
             case FIX:
-                result = new Element(Constants.XML_PROTOCOL_PART_FIX);
+                result = new Element(Constants.XML_PROTOCOL_BLOCK_FIX);
                 break;
             default:
                 // Should not happen
                 break;
         }
-        result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(protocolPart.getMinLength
+        result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(protocolBlock.getMinLength
                 ())));
-        result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(protocolPart.getMaxLength
+        result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(protocolBlock.getMaxLength
                 ())));
         // Append content element to the part element
-        if (protocolPart.getType() == ProtocolPart.Type.FIX) {
-            result.appendChild(createXMLContent(protocolPart.getBytes()));
+        if (protocolBlock.getType() == ProtocolBlock.Type.FIX) {
+            result.appendChild(createXMLContent(protocolBlock.getBytes()));
         }
         return result;
     }
 
     /**
-     * Creates a XML content node with all children.
+     * Creates a XML content element with all children.
      *
-     * @param bytes the byte content of a protocol part
-     * @return the content node
+     * @param bytes the byte content of a protocol block
+     * @return the content element
      */
-    private Element createXMLContent(List<Byte> bytes) {
+    private Element createXMLContent(Byte[] bytes) {
         Element result = new Element(Constants.XML_PROTOCOL_CONTENT);
         // Append byte elements to the content element
-        StringBuilder content = new StringBuilder(bytes.size() * 2);
+        StringBuilder content = new StringBuilder(bytes.length * 2);
         for (Byte each : bytes) {
             content.append(Hex.byte2Hex(each));
         }

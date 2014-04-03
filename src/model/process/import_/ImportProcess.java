@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.03.14 18:39.
+ * This file is part of ProDisFuzz, modified on 01.04.14 23:18.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -9,11 +9,11 @@
 package model.process.import_;
 
 import model.Model;
-import model.ProtocolPart;
 import model.helper.Constants;
 import model.helper.Hex;
 import model.helper.XmlExchange;
 import model.process.AbstractProcess;
+import model.protocol.ProtocolStructure;
 import model.xml.XmlSchemaValidator;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -22,12 +22,11 @@ import nu.xom.Elements;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ImportProcess extends AbstractProcess {
 
-    private List<ProtocolPart> protocolParts;
+    private ProtocolStructure protocolStructure;
     private boolean imported;
 
     /**
@@ -35,23 +34,23 @@ public class ImportProcess extends AbstractProcess {
      */
     public ImportProcess() {
         super();
-        protocolParts = new ArrayList<>();
+        protocolStructure = new ProtocolStructure();
     }
 
     @Override
     public void reset() {
         imported = false;
-        protocolParts.clear();
+        protocolStructure.clear();
         spreadUpdate();
     }
 
     /**
      * Imports a XML file containing the protocol structure.
      *
-     * @param p the path to the XML file
+     * @param path the path to the XML file
      */
-    public void importXML(Path p) {
-        Path file = p.toAbsolutePath().normalize();
+    public void importXML(Path path) {
+        Path file = path.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
             Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not a regular file");
             imported = false;
@@ -75,36 +74,26 @@ public class ImportProcess extends AbstractProcess {
             spreadUpdate();
             return;
         }
-        protocolParts = readXMLParts(document);
+        protocolStructure = readXMLBlocks(document);
         imported = true;
         spreadUpdate();
         Model.INSTANCE.getLogger().info("XML file successfully imported");
     }
 
     /**
-     * Reads the XML part elements.
+     * Returns the XML block elements.
      *
-     * @param document the DOM document
-     * @return the protocol parts
+     * @param document the XOM document
+     * @return the protocol structure
      */
-    private List<ProtocolPart> readXMLParts(Document document) {
-        List<ProtocolPart> result = new ArrayList<>();
+    private ProtocolStructure readXMLBlocks(Document document) {
+        ProtocolStructure result = new ProtocolStructure();
         // Create the node list
-
-        Elements elements = document.getRootElement().getChildElements(Constants.XML_PROTOCOL_PARTS).get(0)
+        Elements elements = document.getRootElement().getChildElements(Constants.XML_PROTOCOL_BLOCKS).get(0)
                 .getChildElements();
         // Create for each node the particular protocol part
         for (int i = 0; i < elements.size(); i++) {
-            switch (elements.get(i).getLocalName()) {
-                case Constants.XML_PROTOCOL_PART_VAR:
-                    result.add(new ProtocolPart(ProtocolPart.Type.VAR, readXMLContent(elements.get(i))));
-                    break;
-                case Constants.XML_PROTOCOL_PART_FIX:
-                    result.add(new ProtocolPart(ProtocolPart.Type.FIX, readXMLContent(elements.get(i))));
-                    break;
-                default:
-                    break;
-            }
+            result.addBlock(readXMLContent(elements.get(i)));
         }
         return result;
     }
@@ -118,14 +107,14 @@ public class ImportProcess extends AbstractProcess {
     private List<Byte> readXMLContent(Element element) {
         List<Byte> result = new ArrayList<>();
         switch (element.getLocalName()) {
-            case Constants.XML_PROTOCOL_PART_VAR:
+            case Constants.XML_PROTOCOL_BLOCK_VAR:
                 // Add as many null bytes as the maximum length attribute
                 int maxLength = Integer.parseInt(element.getAttribute(Constants.XML_PROTOCOL_MAXLENGTH).getValue());
                 for (int i = 0; i < maxLength; i++) {
                     result.add(null);
                 }
                 break;
-            case Constants.XML_PROTOCOL_PART_FIX:
+            case Constants.XML_PROTOCOL_BLOCK_FIX:
                 Elements elements = element.getChildElements();
                 // Create the content of this part for each content element
                 for (int i = 0; i < elements.size(); i++) {
@@ -155,11 +144,11 @@ public class ImportProcess extends AbstractProcess {
     }
 
     /**
-     * Returns the protocol parts imported from a XML file.
+     * Returns the protocol structure imported from an XML file.
      *
-     * @return the protocol parts
+     * @return the protocol structure
      */
-    public List<ProtocolPart> getProtocolParts() {
-        return Collections.unmodifiableList(protocolParts);
+    public ProtocolStructure getProtocolStructure() {
+        return protocolStructure;
     }
 }

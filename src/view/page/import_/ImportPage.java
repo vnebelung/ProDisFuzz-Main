@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -57,7 +57,7 @@ public class ImportPage extends VBox implements Observer, Page {
             fileTextField.setText(loadPath == null ? "Please choose the file path the protocol structure will be " +
                     "imported from" : "Could not import from '" + loadPath.toString() + "'");
         }
-        protocolContent.addProtocolText(process.getProtocolParts());
+        protocolContent.addProtocolText(process.getProtocolStructure());
 
         navigation.setCancelable(true, ImportPage.this);
         navigation.setFinishable(process.isImported(), ImportPage.this);

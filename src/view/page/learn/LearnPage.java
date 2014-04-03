@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 02.03.14 00:25.
+ * This file is part of ProDisFuzz, modified on 03.04.14 19:54.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -57,7 +57,7 @@ public class LearnPage extends VBox implements Observer, Page {
                 labeledProgressBar.update(progress, process.isRunning());
 
                 synchronized (this) {
-                    protocolContent.addProtocolText(process.getProtocolParts());
+                    protocolContent.addProtocolText(process.getProtocolStructure());
                 }
 
                 navigation.setCancelable(!process.isRunning(), LearnPage.this);

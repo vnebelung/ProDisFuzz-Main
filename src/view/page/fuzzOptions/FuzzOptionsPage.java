@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 13.03.14 22:10.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -14,17 +14,20 @@ import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
-import model.InjectedProtocolPart;
 import model.Model;
-import model.ProtocolPart;
 import model.process.fuzzOptions.FuzzOptionsProcess;
-import view.controls.partinjection.PartInjection;
+import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolStructure;
+import view.controls.blockinjection.BlockInjection;
 import view.controls.protocolcontent.ProtocolContent;
 import view.page.Page;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
-import java.util.*;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class FuzzOptionsPage extends VBox implements Observer, Page {
 
@@ -49,7 +52,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
     @FXML
     private ProtocolContent protocolContent;
     @FXML
-    private VBox partInjections;
+    private VBox blockInjections;
 
     /**
      * Instantiates a new fuzz options area responsible for visualizing the process of setting the fuzz options used for
@@ -98,44 +101,36 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
                         .CommunicationSave.CRITICAL);
                 allRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess.CommunicationSave.ALL);
 
+                InjectedProtocolStructure injectedProtocolStructure = process.getInjectedProtocolStructure();
                 synchronized (this) {
-                    List<ProtocolPart> parts = new ArrayList<>(process.getInjectedProtocolParts().size());
-                    for (InjectedProtocolPart each : process.getInjectedProtocolParts()) {
-                        parts.add(each.getProtocolPart());
-                    }
-                    protocolContent.addProtocolText(parts);
+                    protocolContent.addProtocolText(injectedProtocolStructure.toProtocolStructure());
                 }
 
-                List<InjectedProtocolPart> injectedProtocolParts = process.getInjectedProtocolParts();
-                List<InjectedProtocolPart> injectedVariableProtocolParts = process.filterVarParts
-                        (injectedProtocolParts);
                 // Update the part injections section only if the number of current part injection modules is
-                // different from
-                // the number of variable injected protocol parts
-                if (process.filterVarParts(injectedProtocolParts).size() != partInjections.getChildren().size()) {
-                    partInjections.getChildren().clear();
+                // different from the number of variable injected protocol blocks
+                if (injectedProtocolStructure.getVarSize() != blockInjections.getChildren().size()) {
+                    blockInjections.getChildren().clear();
                     // Create new part injection modules for every variable protocol part
-                    for (int i = 0; i < injectedProtocolParts.size(); i++) {
-                        if (injectedProtocolParts.get(i).getProtocolPart().getType() == ProtocolPart.Type.VAR) {
-                            partInjections.getChildren().add(new PartInjection(i));
-                        }
+                    for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
+                        blockInjections.getChildren().add(new BlockInjection(i));
                     }
                 }
 
-                for (int i = 0; i < injectedVariableProtocolParts.size(); i++) {
-                    InjectedProtocolPart.DataInjectionMethod dataInjectionMethod = injectedVariableProtocolParts.get
-                            (i).getDataInjectionMethod();
+                for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
+                    InjectedProtocolBlock.DataInjectionMethod dataInjectionMethod = injectedProtocolStructure
+                            .getVarBlock(i).getDataInjectionMethod();
                     boolean enabled = (process.getInjectionMethod() != FuzzOptionsProcess.InjectionMethod
                             .SIMULTANEOUS || i == 0);
-                    boolean validLibrary = injectedVariableProtocolParts.get(i).getLibrary() != null;
-                    ((PartInjection) partInjections.getChildren().get(i)).update(dataInjectionMethod, enabled,
+                    boolean validLibrary = injectedProtocolStructure.getVarBlock(i).getLibrary() != null;
+                    ((BlockInjection) blockInjections.getChildren().get(i)).update(dataInjectionMethod, enabled,
                             validLibrary);
                 }
 
                 boolean finishable = process.isTargetReachable();
-                for (InjectedProtocolPart each : injectedProtocolParts) {
-                    if (each.getProtocolPart().getType() == ProtocolPart.Type.VAR && each.getDataInjectionMethod() ==
-                            InjectedProtocolPart.DataInjectionMethod.LIBRARY && each.getLibrary() == null) {
+                for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
+                    if (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == InjectedProtocolBlock
+                            .DataInjectionMethod.LIBRARY && injectedProtocolStructure.getVarBlock(i).getLibrary() ==
+                            null) {
                         finishable = false;
                         break;
                     }
@@ -161,9 +156,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
      * @return the change listener
      */
     private ChangeListener<String> targetListener() {
-        return (observableValue, s, s2) -> {
-            targetTimer();
-        };
+        return (observableValue, s, s2) -> targetTimer();
     }
 
     /**

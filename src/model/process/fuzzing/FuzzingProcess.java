@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 08.02.14 23:36.
+ * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,11 +8,11 @@
 
 package model.process.fuzzing;
 
-import model.InjectedProtocolPart;
 import model.Model;
 import model.SavedDataFile;
 import model.process.AbstractThreadProcess;
 import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.protocol.InjectedProtocolStructure;
 
 import javax.xml.datatype.Duration;
 import java.io.IOException;
@@ -28,7 +28,7 @@ import java.util.concurrent.Future;
 
 public class FuzzingProcess extends AbstractThreadProcess {
 
-    private List<InjectedProtocolPart> injectedProtocolParts;
+    private InjectedProtocolStructure injectedProtocolStructure;
     private List<SavedDataFile> savedDataFiles;
     private FuzzingRunnable runnable;
     private Future fuzzingFuture;
@@ -38,13 +38,13 @@ public class FuzzingProcess extends AbstractThreadProcess {
      */
     public FuzzingProcess() {
         super();
-        injectedProtocolParts = new ArrayList<>();
+        injectedProtocolStructure = new InjectedProtocolStructure();
         savedDataFiles = new ArrayList<>();
     }
 
     @Override
     public void init() {
-        injectedProtocolParts = new ArrayList<>(Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolParts());
+        injectedProtocolStructure = Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolStructure();
         savedDataFiles = new ArrayList<>();
         InetSocketAddress target = Model.INSTANCE.getFuzzOptionsProcess().getTarget();
         int interval = Model.INSTANCE.getFuzzOptionsProcess().getInterval();
@@ -53,7 +53,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
                 .getSaveCommunication();
         FuzzOptionsProcess.InjectionMethod injectionMethod = Model.INSTANCE.getFuzzOptionsProcess()
                 .getInjectionMethod();
-        runnable = new FuzzingRunnable(injectionMethod, injectedProtocolParts, target, timeout, interval,
+        runnable = new FuzzingRunnable(injectionMethod, injectedProtocolStructure, target, timeout, interval,
                 saveCommunication);
         runnable.addObserver(this);
         spreadUpdate();
@@ -108,7 +108,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
 
     @Override
     public void reset() {
-        injectedProtocolParts.clear();
+        injectedProtocolStructure.clear();
         try {
             for (SavedDataFile each : savedDataFiles) {
                 Files.delete(each.getFilePath());

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 30.03.14 17:49.
+ * This file is part of ProDisFuzz, modified on 04.04.14 19:38.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -50,7 +50,7 @@ public class Log extends ScrollPane implements Observer {
                 logTextFlow.getChildren().addAll(styleText(each));
             }
             purge(500);
-            setVvalue(Double.MAX_VALUE);
+            setVvalue(1);
         });
     }
 
@@ -64,7 +64,7 @@ public class Log extends ScrollPane implements Observer {
         StringBuilder stringBuilder = new StringBuilder();
         Text result = new Text();
         DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        stringBuilder.append('[' + dateFormat.format(message.getTime()) + "] ");
+        stringBuilder.append('[').append(dateFormat.format(message.getTime())).append("] ");
         switch (message.getType()) {
             case ERROR:
                 result.getStyleClass().add("error");
@@ -83,7 +83,7 @@ public class Log extends ScrollPane implements Observer {
                 stringBuilder.append("[INFO] ");
                 break;
         }
-        stringBuilder.append(message.getText() + System.lineSeparator());
+        stringBuilder.append(message.getText()).append(System.lineSeparator());
         result.setText(stringBuilder.toString());
         return result;
     }

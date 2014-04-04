@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
+ * This file is part of ProDisFuzz, modified on 03.04.14 21:00.
  * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -102,6 +102,7 @@ public class ProtocolStructure {
         for (ProtocolBlock eachProtocolBlock : protocolBlocks) {
             for (Byte eachByte : eachProtocolBlock.getBytes()) {
                 result[index] = eachByte;
+                index++;
             }
         }
         return result;

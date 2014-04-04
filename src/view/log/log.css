@@ -3,7 +3,7 @@
 }
 
 .error {
-    -fx-fill: red;
+    -fx-fill: ff4040;
 }
 
 .info {
@@ -11,5 +11,5 @@
 }
 
 .success {
-    -fx-fill: lime;
+    -fx-fill: #20b020;
 }

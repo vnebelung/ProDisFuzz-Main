@@ -1,3 +1,12 @@
+2014-04-XX - Version 3 "Red Fish":
+
+- GUI changed from Swing to JavaFX
+- GUI feedback to user actions increased
+- Even more Internal changes in code architecture
+- Performance optimizations
+- Even better visualization of protocol structure
+
+
 2013-10-01 - Version 2 "Green River":
 
 - GUI changed from SWT to Swing
@@ -8,4 +17,4 @@
 
 2013-05-19 - Version 1:
 
-First release
+- First release

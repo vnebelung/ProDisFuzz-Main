@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ This file is part of ProDisFuzz, modified on 13.03.14 22:09.
+  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+    <children>
+        <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints hgrow="NEVER" />
+            </columnConstraints>
+            <Label text="Folder:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+            <TextField fx:id="folderTextField" editable="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                       GridPane.rowIndex="0" />
+            <Button fx:id="browseButton" onAction="#browse" text="Browse …" GridPane.columnIndex="2"
+                    GridPane.rowIndex="0" />
+        </GridPane>
+        <TableView fx:id="filesTableView" VBox.vgrow="ALWAYS">
+            <columnResizePolicy>
+                <TableView fx:constant="UNCONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <columns>
+                <TableColumn text="Use" fx:id="columnUse" />
+                <TableColumn text="File Name" fx:id="columnFileName" />
+                <TableColumn text="Last Modified" fx:id="columnLastModified" />
+                <TableColumn text="Size in KB" fx:id="columnSize" />
+                <TableColumn text="SHA-256" fx:id="columnSHA256" />
+            </columns>
+        </TableView>
+    </children>
+    <stylesheets>
+        <URL value="@../css/collectPage.css" />
+    </stylesheets>
+    <padding>
+        <Insets bottom="0" left="10" right="10" top="10" />
+    </padding>
+</fx:root>

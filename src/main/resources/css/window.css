@@ -1,0 +1,16 @@
+#window {
+    -fx-background-color: #4d4c62;
+    -fx-background-image: url("../images/background.png");
+    -fx-background-repeat: repeat-x;
+    -fx-background-position: left top;
+}
+
+#mainPane, #log {
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-radius: 4px;
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+#mainScrollPane, .viewport {
+    -fx-background-color: transparent;
+}

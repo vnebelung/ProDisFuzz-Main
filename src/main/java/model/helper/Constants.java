@@ -10,7 +10,7 @@ package model.helper;
 
 public abstract class Constants {
 
-    public final static int RELEASE_NUMBER = 1;
+    public final static int RELEASE_NUMBER = 3;
     public final static String FILE_PREFIX = "prodisfuzz_";
 
     public final static String XML_PROTOCOL_ROOT = "prodisfuzz";

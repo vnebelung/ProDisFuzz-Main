@@ -9,18 +9,13 @@
 package model.process.fuzzing;
 
 import model.Model;
-import model.SavedDataFile;
 import model.process.AbstractThreadProcess;
 import model.process.fuzzOptions.FuzzOptionsProcess;
 import model.protocol.InjectedProtocolStructure;
+import model.record.Recordings;
 
 import javax.xml.datatype.Duration;
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Observable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -29,7 +24,7 @@ import java.util.concurrent.Future;
 public class FuzzingProcess extends AbstractThreadProcess {
 
     private InjectedProtocolStructure injectedProtocolStructure;
-    private List<SavedDataFile> savedDataFiles;
+    private Recordings recordings;
     private FuzzingRunnable runnable;
     private Future fuzzingFuture;
 
@@ -39,13 +34,13 @@ public class FuzzingProcess extends AbstractThreadProcess {
     public FuzzingProcess() {
         super();
         injectedProtocolStructure = new InjectedProtocolStructure();
-        savedDataFiles = new ArrayList<>();
+        recordings = new Recordings();
     }
 
     @Override
     public void init() {
         injectedProtocolStructure = Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolStructure();
-        savedDataFiles = new ArrayList<>();
+        recordings.clear();
         InetSocketAddress target = Model.INSTANCE.getFuzzOptionsProcess().getTarget();
         int interval = Model.INSTANCE.getFuzzOptionsProcess().getInterval();
         int timeout = Model.INSTANCE.getFuzzOptionsProcess().getTimeout();
@@ -109,13 +104,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
     @Override
     public void reset() {
         injectedProtocolStructure.clear();
-        try {
-            for (SavedDataFile each : savedDataFiles) {
-                Files.delete(each.getFilePath());
-            }
-        } catch (IOException ignored) {
-        }
-        savedDataFiles.clear();
+        recordings.clear();
         spreadUpdate();
     }
 
@@ -134,7 +123,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
         if (runnable.isFinished()) {
             complete();
         }
-        savedDataFiles = new ArrayList<>(runnable.getSavedDataFiles());
+        recordings = runnable.getRecordings();
         spreadUpdate();
     }
 
@@ -143,8 +132,8 @@ public class FuzzingProcess extends AbstractThreadProcess {
      *
      * @return the saved data files
      */
-    public List<SavedDataFile> getSavedDataFiles() {
-        return Collections.unmodifiableList(savedDataFiles);
+    public Recordings getRecordings() {
+        return recordings;
     }
 
     /**

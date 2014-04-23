@@ -67,6 +67,6 @@ public class UpdateTimer {
                     dialog.showInformation();
                 });
             }
-        }, 2000);
+        }, 500);
     }
 }

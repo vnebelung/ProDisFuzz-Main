@@ -9,20 +9,18 @@
 package model.process.fuzzing;
 
 import model.Model;
-import model.SavedDataFile;
 import model.process.AbstractRunnable;
 import model.process.AbstractThreadProcess;
 import model.process.fuzzOptions.FuzzOptionsProcess;
 import model.protocol.InjectedProtocolBlock;
 import model.protocol.InjectedProtocolStructure;
+import model.record.Recordings;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.Duration;
 import java.net.InetSocketAddress;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -30,7 +28,7 @@ class FuzzingRunnable extends AbstractRunnable {
     private final InetSocketAddress target;
     private final int timeout;
     private final int interval;
-    private final List<SavedDataFile> savedDataFiles;
+    private final Recordings recordings;
     private final FuzzOptionsProcess.InjectionMethod injectionMethod;
     private final InjectedProtocolStructure injectedProtocolStructure;
     private final FuzzOptionsProcess.CommunicationSave saveCommunication;
@@ -58,7 +56,7 @@ class FuzzingRunnable extends AbstractRunnable {
         this.timeout = timeout;
         this.interval = interval;
         this.saveCommunication = saveCommunication;
-        savedDataFiles = new ArrayList<>();
+        recordings = new Recordings();
         // Amount of work depends of the user chosen options
         setWorkTotal(calcWorkTotal());
     }
@@ -160,9 +158,8 @@ class FuzzingRunnable extends AbstractRunnable {
             for (int i = 0; i < 3; i++) {
                 if (sendFuture.get()) {
                     if (saveCommunication == FuzzOptionsProcess.CommunicationSave.ALL) {
-                        savedDataFiles.add(new SavedDataFile(message, false, System.currentTimeMillis()));
-                        savedDataFiles.add(new SavedDataFile(sendCallable.getLastResponse(), false,
-                                System.currentTimeMillis()));
+                        recordings.addRecording(message, false, System.currentTimeMillis());
+                        recordings.addRecording(sendCallable.getLastResponse(), false, System.currentTimeMillis());
                     }
                     increaseWorkProgress();
                     break;
@@ -222,7 +219,7 @@ class FuzzingRunnable extends AbstractRunnable {
                 case 2:
                     Model.INSTANCE.getLogger().fine("Target not reachable for 3 times in a row. Information about the" +
                             " " + "crash is being saved");
-                    savedDataFiles.add(new SavedDataFile(b, true, crashTime));
+                    recordings.addRecording(b, true, crashTime);
                     increaseWorkProgress();
                     int count = 1;
                     do {
@@ -277,7 +274,7 @@ class FuzzingRunnable extends AbstractRunnable {
      *
      * @return the saved data files
      */
-    public List<SavedDataFile> getSavedDataFiles() {
-        return savedDataFiles;
+    public Recordings getRecordings() {
+        return recordings;
     }
 }

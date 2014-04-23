@@ -6,8 +6,9 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model;
+package model.record;
 
+import model.Model;
 import model.helper.Constants;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SavedDataFile {
+public class RecordedFile {
 
     private final long time;
     private final boolean crash;
@@ -30,7 +31,7 @@ public class SavedDataFile {
      * @param crash   true if the data lead to a crash
      * @param time    the system time the data was created
      */
-    public SavedDataFile(byte[] content, boolean crash, long time) {
+    public RecordedFile(byte[] content, boolean crash, long time) {
         this.crash = crash;
         this.time = time;
         try {
@@ -82,11 +83,20 @@ public class SavedDataFile {
     /**
      * Sets the output path, that is the path the temporary file will be copied to for permanent saving.
      *
-     * @param p the output path
+     * @param path the output path
      */
-    public void setOutputPath(Path p) {
-        if (p != null) {
-            outputPath = p.toAbsolutePath().normalize();
+    public void setOutputPath(Path path) {
+        outputPath = path.toAbsolutePath().normalize();
+    }
+
+    /**
+     * Deletes the temporary file.
+     */
+    public void delete() {
+        try {
+            Files.deleteIfExists(filePath);
+        } catch (IOException e) {
+            Model.INSTANCE.getLogger().error(e);
         }
     }
 

@@ -11,7 +11,7 @@ package model.updater;
 import model.Model;
 import model.helper.Constants;
 import model.helper.Keys;
-import model.helper.XmlExchange;
+import model.xml.XmlExchange;
 import model.xml.XmlSchemaValidator;
 import nu.xom.Document;
 import nu.xom.Element;

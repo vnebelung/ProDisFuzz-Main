@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.helper;
+package model.xml;
 
 import model.Model;
 import nu.xom.Builder;
@@ -47,11 +47,11 @@ public abstract class XmlExchange {
     public static boolean exportXML(Document document, Path path) {
         Path exportPath = path.toAbsolutePath().normalize();
         if (!Files.isDirectory(exportPath.getParent())) {
-            Model.INSTANCE.getLogger().error("Path '" + exportPath.toString() + "' for saving XML file invalid");
+            Model.INSTANCE.getLogger().error("Path '" + exportPath.toString() + "' for saving file invalid");
             return false;
         }
         if (!Files.isWritable(exportPath.getParent())) {
-            Model.INSTANCE.getLogger().error("File path for saving protocol structure not writable");
+            Model.INSTANCE.getLogger().error("Path '" + exportPath.getParent().toString() + "' not writable");
             return false;
         }
         try (OutputStream outputStream = Files.newOutputStream(exportPath)) {
@@ -62,7 +62,7 @@ public abstract class XmlExchange {
             Model.INSTANCE.getLogger().error(e);
             return false;
         }
-        Model.INSTANCE.getLogger().info("XML file saved to '" + exportPath.toString() + "'");
+        Model.INSTANCE.getLogger().fine("File saved to '" + exportPath.toString() + "'");
         return true;
     }
 }

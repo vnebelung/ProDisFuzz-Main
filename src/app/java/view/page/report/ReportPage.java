@@ -33,12 +33,14 @@ public class ReportPage extends VBox implements Observer, Page {
     /**
      * Instantiates a new report page responsible for visualizing the process of generating the report of the
      * fuzz-testing.
+     *
+     * @param navigation the navigation controls
      */
-    public ReportPage(Navigation n) {
+    public ReportPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/reportPage.fxml"), this);
         Model.INSTANCE.getReportProcess().addObserver(this);
-        navigation = n;
+        this.navigation = navigation;
     }
 
     @Override

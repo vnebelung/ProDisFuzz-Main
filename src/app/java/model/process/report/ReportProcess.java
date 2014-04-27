@@ -201,7 +201,7 @@ public class ReportProcess extends AbstractProcess {
             result.setLink(i + 1, 1, recordings.getRecord(record).getOutputPath().toString(),
                     recordings.getRecord(record).getOutputPath().getFileName().toString());
             if (recordings.getRecord(record).isCrash()) {
-                result.setText(i + 1, 1, "CRASHED");
+                result.setText(i + 1, 2, "CRASHED");
                 for (int j = 0; j < 4; j++) {
                     result.setAttribute(i + 1, j, "class", "crash");
                 }

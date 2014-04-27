@@ -36,12 +36,14 @@ public class ImportPage extends VBox implements Observer, Page {
     /**
      * Instantiates a new import area responsible for visualizing the process of importing the protocol structure from
      * an XML file.
+     *
+     * @param navigation the navigation controls
      */
-    public ImportPage(Navigation n) {
+    public ImportPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/importPage.fxml"), this);
         Model.INSTANCE.getImportProcess().addObserver(this);
-        navigation = n;
+        this.navigation = navigation;
     }
 
     @Override

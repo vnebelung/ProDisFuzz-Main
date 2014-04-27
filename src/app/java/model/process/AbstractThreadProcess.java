@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class AbstractThreadProcess extends AbstractProcess implements Observer {
+
     public final static ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     /**

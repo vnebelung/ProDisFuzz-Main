@@ -45,17 +45,19 @@ public class CollectPage extends VBox implements Observer, Page {
     @FXML
     private TableColumn<TableRow, String> columnSHA256;
     private int statusHash;
-    private final Navigation navigationPage;
+    private final Navigation navigation;
 
 
     /**
      * Instantiates a new collect area responsible for visualizing the process of collecting sequence files.
+     *
+     * @param navigation the navigation controls
      */
-    public CollectPage(Navigation n) {
+    public CollectPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/collectPage.fxml"), this);
         Model.INSTANCE.getCollectProcess().addObserver(this);
-        navigationPage = n;
+        this.navigation = navigation;
 
         filesTableView.setEditable(true);
         columnUse.setCellValueFactory(new PropertyValueFactory<>("selected"));
@@ -64,10 +66,8 @@ public class CollectPage extends VBox implements Observer, Page {
         columnUse.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.04));
         columnFileName.setCellValueFactory(new PropertyValueFactory<>("name"));
         columnFileName.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.22));
-        //noinspection unchecked
         columnSize.setCellValueFactory(new PropertyValueFactory<TableRow, String>("size"));
         columnSize.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.09));
-        //noinspection unchecked
         columnSize.setCellFactory(p -> new NumericTableCell());
         columnLastModified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
         columnLastModified.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.12));
@@ -114,8 +114,8 @@ public class CollectPage extends VBox implements Observer, Page {
 
         filesTableView.setVisible(process.isFolderValid());
 
-        navigationPage.setCancelable(true, this);
-        navigationPage.setFinishable(process.getNumOfSelectedFiles() >= 2, this);
+        navigation.setCancelable(true, this);
+        navigation.setFinishable(process.getNumOfSelectedFiles() >= 2, this);
     }
 
     /**

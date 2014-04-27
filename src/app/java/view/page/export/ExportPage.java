@@ -33,12 +33,14 @@ public class ExportPage extends VBox implements Observer, Page {
     /**
      * Instantiates a new export area responsible for visualizing the process of exporting the protocol structure to
      * XML.
+     *
+     * @param navigation the navigation controls
      */
-    public ExportPage(Navigation n) {
+    public ExportPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/exportPage.fxml"), this);
         Model.INSTANCE.getExportProcess().addObserver(this);
-        navigation = n;
+        this.navigation = navigation;
     }
 
     @Override

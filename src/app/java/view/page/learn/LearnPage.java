@@ -35,12 +35,14 @@ public class LearnPage extends VBox implements Observer, Page {
 
     /**
      * Instantiates a new learn area responsible for visualizing the process of learning the protocol sequence.
+     *
+     * @param navigation the navigation controls
      */
-    public LearnPage(Navigation n) {
+    public LearnPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/learnPage.fxml"), this);
         Model.INSTANCE.getLearnProcess().addObserver(this);
-        navigation = n;
+        this.navigation = navigation;
     }
 
     @Override

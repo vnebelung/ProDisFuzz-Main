@@ -36,6 +36,8 @@ public class Log extends ScrollPane implements Observer {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/log.fxml"), this);
         Model.INSTANCE.getLogger().addObserver(this);
+
+        logTextFlow.heightProperty().addListener((observable, oldvalue, newValue) -> setVvalue((Double) newValue));
     }
 
     @Override
@@ -47,10 +49,10 @@ public class Log extends ScrollPane implements Observer {
                 return;
             }
             for (Message each : messages) {
-                logTextFlow.getChildren().addAll(styleText(each));
+                logTextFlow.getChildren().add(styleText(each));
             }
             purge();
-            setVvalue(1);
+
         });
     }
 

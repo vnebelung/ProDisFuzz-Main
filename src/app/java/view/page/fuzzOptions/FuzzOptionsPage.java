@@ -58,13 +58,13 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
      * Instantiates a new fuzz options area responsible for visualizing the process of setting the fuzz options used for
      * fuzzing.
      *
-     * @param n the navigation interface
+     * @param navigation the navigation controls
      */
-    public FuzzOptionsPage(Navigation n) {
+    public FuzzOptionsPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/fuzzOptionsPage.fxml"), this);
         Model.INSTANCE.getFuzzOptionsProcess().addObserver(this);
-        navigation = n;
+        this.navigation = navigation;
 
         targetAddressTextField.textProperty().addListener(targetListener());
         targetPortTextField.textProperty().addListener(targetListener());

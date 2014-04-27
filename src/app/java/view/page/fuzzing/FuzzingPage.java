@@ -31,7 +31,7 @@ import java.util.TimerTask;
 
 public class FuzzingPage extends VBox implements Observer, Page {
 
-    private final Navigation navigationPage;
+    private final Navigation navigation;
     @FXML
     private Button startStopButton;
     @FXML
@@ -42,13 +42,15 @@ public class FuzzingPage extends VBox implements Observer, Page {
 
     /**
      * Instantiates a new fuzzing area responsible for visualizing the process of fuzzing the target.
+     *
+     * @param navigation the navigation controls
      */
-    public FuzzingPage(Navigation n) {
+    public FuzzingPage(Navigation navigation) {
         super();
         FxmlConnection.connect(getClass().getResource("/fxml/fuzzingPage.fxml"), this);
         Model.INSTANCE.getFuzzingProcess().addObserver(this);
 
-        navigationPage = n;
+        this.navigation = navigation;
     }
 
     @Override
@@ -81,8 +83,8 @@ public class FuzzingPage extends VBox implements Observer, Page {
                 }
             }
 
-            navigationPage.setCancelable(!process.isRunning(), FuzzingPage.this);
-            navigationPage.setFinishable(process.getWorkProgress() > 0 && !process.isRunning(), FuzzingPage.this);
+            navigation.setCancelable(!process.isRunning(), FuzzingPage.this);
+            navigation.setFinishable(process.getWorkProgress() > 0 && !process.isRunning(), FuzzingPage.this);
         });
     }
 

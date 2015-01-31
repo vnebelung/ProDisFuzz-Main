@@ -1,0 +1,56 @@
+<update xmlns="http://prodisfuzz.net">
+    <release>
+        <number>3</number>
+        <name>Red Fish</name>
+        <date>2014-04-06</date>
+        <requirements>Java >= 8</requirements>
+        <information>
+            <item>GUI feedback to user actions increased</item>
+            <item>Even more Internal changes in code architecture</item>
+            <item>GUI changed from Swing to JavaFX</item>
+            <item>Performance optimizations</item>
+            <item>Even better visualization of protocol structure</item>
+        </information>
+    </release>
+    <release>
+        <number>2</number>
+        <name>Green River</name>
+        <date>2013-10-01</date>
+        <requirements>Java >= 7</requirements>
+        <information>
+            <item>GUI changed from SWT to Swing</item>
+            <item>Internal changes in code architecture</item>
+            <item>New logging mechanism implemented</item>
+            <item>Better visualization of protocol structure</item>
+        </information>
+    </release>
+    <release>
+        <number>1</number>
+        <name>First Release</name>
+        <date>2013-05-19</date>
+        <requirements>Java >= 7</requirements>
+        <information>
+            <item>Nothing special</item>
+        </information>
+    </release>
+    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
+        <SignedInfo>
+            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
+            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+            <Reference URI="">
+                <Transforms>
+                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+                </Transforms>
+                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
+                <DigestValue>+h/5YbHzS4KAQh6oWCBl9aOKqkXmqTWUEUWMENn8kcw=</DigestValue>
+            </Reference>
+        </SignedInfo>
+        <SignatureValue>
+            B+zz+E/NrmHVaLmqK5pkGJRKmeubE+OtfSPRC30z5C4dhXxC/6ZBFUdIfZ6fc9a4wfQQXESrZZ3M
+            uO/RPP2jQAVC9ZATl/jaFWWE7ufesJaKojYuQfzXJ5bhDxLdJxkmhQuAEde/ysV7RnNUGlmmbeBs
+            nIQWORJq0s4EmY6BCyV48ReDCnnf/N5N1enjOOZd6CGPztbVHO0lGviPj1LiDcJtUWvo19UIyMLW
+            DBXTuP9xhVVi1YCc6sUB6oY1nmU9NpXNqmExfT1YabR6ieEnfjYW7992LPafTKoZBqHmaexmIe1A
+            Dwj5HZvZtBaPyADO7cdVJggXT/vSeP6lVHO21Q==
+        </SignatureValue>
+    </Signature>
+</update>

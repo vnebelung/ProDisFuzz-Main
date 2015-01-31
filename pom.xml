@@ -3,7 +3,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
-        <maven>2.2.1</maven>
+        <maven>3.2.1</maven>
     </prerequisites>
     <groupId>net.prodisfuzz</groupId>
     <artifactId>ProDisFuzz</artifactId>
@@ -11,6 +11,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <packaging>jar</packaging>
     <name>ProDisFuzz</name>
@@ -18,12 +19,18 @@
         <dependency>
             <groupId>org.controlsfx</groupId>
             <artifactId>controlsfx</artifactId>
-            <version>8.0.5</version>
+            <version>8.20.8</version>
         </dependency>
         <dependency>
-            <groupId>xom</groupId>
+            <groupId>com.io7m.xom</groupId>
             <artifactId>xom</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8.17</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>

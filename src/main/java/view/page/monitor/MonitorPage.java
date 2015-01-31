@@ -1,0 +1,97 @@
+package view.page.monitor;
+
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
+import model.Model;
+import model.process.monitor.MonitorProcess;
+import view.page.Page;
+import view.window.FxmlConnection;
+import view.window.Navigation;
+
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Timer;
+import java.util.TimerTask;
+
+public class MonitorPage extends VBox implements Observer, Page {
+
+    private final Navigation navigation;
+    @FXML
+    private TextField monitorAddressTextField;
+    @FXML
+    private TextField monitorPortTextField;
+    private Timer monitorTimer;
+
+    /**
+     * Instantiates a new monitor area responsible for visualizing the process of setting the monitor options used for
+     * connecting to the external monitor.
+     *
+     * @param navigation the navigation controls
+     */
+    public MonitorPage(Navigation navigation) {
+        super();
+        FxmlConnection.connect(getClass().getResource("/fxml/monitorPage.fxml"), this);
+        Model.INSTANCE.getMonitorProcess().addObserver(this);
+        this.navigation = navigation;
+
+        monitorAddressTextField.textProperty().addListener(monitorListener());
+        monitorPortTextField.textProperty().addListener(monitorListener());
+    }
+
+    /**
+     * Creates the listener for the monitor address and port. Every change will start a timer so that the user has time
+     * to finish his changes before the input is processed.
+     *
+     * @return the change listener
+     */
+    private ChangeListener<String> monitorListener() {
+        return (observableValue, s, s2) -> monitorTimer();
+    }
+
+    /**
+     * Starts the timer for proceeding the monitor input. If the timer is already running, it will be reset.
+     */
+    private void monitorTimer() {
+        if (monitorTimer != null) {
+            monitorTimer.cancel();
+        }
+        monitorTimer = new Timer();
+        monitorTimer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                int port;
+                try {
+                    port = Integer.parseInt(monitorPortTextField.getText());
+                } catch (NumberFormatException e) {
+                    port = 0;
+                }
+                Model.INSTANCE.getMonitorProcess().setMonitor(monitorAddressTextField.getText(), port);
+            }
+        }, 1500);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        MonitorProcess process = (MonitorProcess) o;
+        Platform.runLater(() -> {
+            monitorPortTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+            monitorAddressTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+            if (process.isMonitorReachable()) {
+                monitorPortTextField.getStyleClass().add("text-field-success");
+                monitorAddressTextField.getStyleClass().add("text-field-success");
+            } else {
+                monitorPortTextField.getStyleClass().add("text-field-fail");
+                monitorAddressTextField.getStyleClass().add("text-field-fail");
+            }
+
+            navigation.setFinishable(process.isMonitorReachable(), MonitorPage.this);
+        });
+    }
+
+    @Override
+    public void initProcess() {
+    }
+}

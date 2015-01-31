@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>ProDisFuzz Results</title>
+    <meta name="date" content="2000-01-01T00:11:22+02:00"/>
+    <style type="text/css">body { font-family: sans-serif; background-color: #ffffff; color: #000000; } th, td {
+                           padding: 0.2em 1em; text-align: left; } h2, h3 { background-color: #6060a0; color: #ffffff;
+                           padding: 0.2em; } .crash { background-color: #ffc0c0; } .right { text-align: right; }
+    </style>
+</head>
+<body>
+<h1>ProDisFuzz Results</h1>
+
+<h2>Summary</h2>
+<table>
+    <tr>
+        <th>Destination</th>
+        <th>Timeout in ms</th>
+        <th>Interval in ms</th>
+        <th># Crashes</th>
+        <th># Iterations</th>
+        <th>Duration</th>
+    </tr>
+    <tr>
+        <td>example.net:999</td>
+        <td class="right">99</td>
+        <td class="right">10</td>
+        <td class="right">2</td>
+        <td class="right">100/101</td>
+        <td class="right">001:02:03</td>
+    </tr>
+</table>
+<h2>Protocol Structure</h2>
+<table>
+    <tr>
+        <th>#</th>
+        <th>Type</th>
+        <th>Minimum Length</th>
+        <th>Maximum Length</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>FIX</td>
+        <td>2</td>
+        <td>2</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>VAR</td>
+        <td>3</td>
+        <td>3</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>FIX</td>
+        <td>1</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>VAR</td>
+        <td>1</td>
+        <td>1</td>
+    </tr>
+    <tr>
+        <td/>
+        <td/>
+        <td/>
+        <td/>
+    </tr>
+</table>
+<h2>Crashes</h2>
+<table>
+    <tr>
+        <th># Crash</th>
+        <th>Time</th>
+        <th>Message</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>2000-01-01T00:11:22+02:00</td>
+        <td>
+            <a href="results_records/record1-0.bytes">record1-0.bytes</a>
+        </td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>2000-01-01T00:11:22+02:00</td>
+        <td>
+            <a href="results_records/record2-0.bytes">record2-0.bytes</a>
+        </td>
+    </tr>
+</table>
+<h2>Complete Communication</h2>
+<table>
+    <tr>
+        <th>#</th>
+        <th>Bytes sent</th>
+        <th>Bytes received</th>
+        <th>Time</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>
+            <a href="results_records/record0-0.bytes">record0-0.bytes</a>
+        </td>
+        <td>
+            <a href="results_records/record0-1.bytes">record0-1.bytes</a>
+        </td>
+        <td>2000-01-01T00:11:22+02:00</td>
+    </tr>
+    <tr>
+        <td class="crash">2</td>
+        <td class="crash">
+            <a href="results_records/record1-0.bytes">record1-0.bytes</a>
+        </td>
+        <td class="crash">CRASHED</td>
+        <td class="crash">2000-01-01T00:11:22+02:00</td>
+    </tr>
+    <tr>
+        <td class="crash">3</td>
+        <td class="crash">
+            <a href="results_records/record2-0.bytes">record2-0.bytes</a>
+        </td>
+        <td class="crash">CRASHED</td>
+        <td class="crash">2000-01-01T00:11:22+02:00</td>
+    </tr>
+</table>
+</body>
+</html>

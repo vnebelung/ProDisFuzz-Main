@@ -15,10 +15,10 @@ import java.util.concurrent.Callable;
 
 class LearnHirschbergCallable implements Callable<List<Byte>> {
 
-    private final static byte GAP_PENALTY = 2;
-    private final static byte SIM_SCORE_EQ = 0;
-    private final static byte SIM_SCORE_UNEQ_MATCH = 1;
-    private final static byte SIM_SCORE_UNEQ_NOMATCH = 2;
+    private static final byte GAP_PENALTY = 2;
+    private static final byte SIM_SCORE_EQ = 0;
+    private static final byte SIM_SCORE_UNEQ_MATCH = 1;
+    private static final byte SIM_SCORE_UNEQ_NOMATCH = 2;
     private final List<Byte> learnedSequence;
     private final List<Byte> sequence1;
     private final List<Byte> sequence2;
@@ -30,13 +30,14 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
      * @param sequence2 the second input sequence
      */
     public LearnHirschbergCallable(List<Byte> sequence1, List<Byte> sequence2) {
-        this.sequence1 = sequence1;
-        this.sequence2 = sequence2;
+        super();
+        this.sequence1 = new ArrayList<>(sequence1);
+        this.sequence2 = new ArrayList<>(sequence2);
         learnedSequence = new ArrayList<>();
     }
 
     @Override
-    public List<Byte> call() throws Exception {
+    public List<Byte> call() {
         hirschberg(0, sequence1.size(), 0, sequence2.size());
         return Collections.unmodifiableList(learnedSequence);
     }
@@ -51,6 +52,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
      * @param start2  the start position of the second subsequence
      * @param length2 the length of the second subsequence
      */
+    @SuppressWarnings("OverlyComplexMethod")
     private void hirschberg(int start1, int length1, int start2, int length2) {
         if (Thread.currentThread().isInterrupted()) {
             return;
@@ -58,7 +60,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
         if (length2 == 0) {
             // Execute a trivial version of the Needleman-Wunsch algorithm with length of sequence 2 = 0
             nullNeedlemanWunsch(length1);
-        } else if (length1 == 1 || length2 == 1) {
+        } else if ((length1 == 1) || (length2 == 1)) {
             // Executes a simple version of the Needleman-Wunsch algorithm with length of one sequence = 1
             simpleNeedlemanWunsch(start1, length1, start2, length2);
         } else {
@@ -69,18 +71,18 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
             int[][] upperMatrix = new int[2][length2 + 1];
             int[][] lowerMatrix = new int[2][length2 + 1];
             // For every row up to the center row calculate the matrix values
-            for (int i = 0; i < center1 && !Thread.currentThread().isInterrupted(); i++) {
+            for (int i = 0; (i < center1) && !Thread.currentThread().isInterrupted(); i++) {
                 shiftUpperMatrix(upperMatrix, i, start1, start2);
             }
             // For every row down to the middle calculate the matrix values
-            for (int i = length1 - 1; i >= center1 && !Thread.currentThread().isInterrupted(); i--) {
+            for (int i = length1 - 1; (i >= center1) && !Thread.currentThread().isInterrupted(); i--) {
                 shiftLowerMatrix(lowerMatrix, i, start1, length1, start2);
             }
             // Find the center of the second sequence
             int center2 = Integer.MIN_VALUE;
             int min = Integer.MAX_VALUE;
-            for (int i = 0; i < upperMatrix[1].length && !Thread.currentThread().isInterrupted(); i++) {
-                if (upperMatrix[1][i] + lowerMatrix[0][i] < min) {
+            for (int i = 0; (i < upperMatrix[1].length) && !Thread.currentThread().isInterrupted(); i++) {
+                if ((upperMatrix[1][i] + lowerMatrix[0][i]) < min) {
                     min = upperMatrix[1][i] + lowerMatrix[0][i];
                     center2 = i;
                 }
@@ -118,6 +120,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
      * @param start2  the start position of the first subsequence
      * @param length2 the length of the second subsequence
      */
+    @SuppressWarnings("OverlyComplexMethod")
     private void simpleNeedlemanWunsch(int start1, int length1, int start2, int length2) {
         int index = -1;
         if (length1 <= length2) {
@@ -133,7 +136,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
             }
             // Add the concurrent byte to the learned sequence and null for all other bytes in the second sequence
             for (int i = 0; i < length2; i++) {
-                learnedSequence.add(i + start2 == index ? sequence1.get(start1) : null);
+                learnedSequence.add(((i + start2) == index) ? sequence1.get(start1) : null);
             }
         } else {
             // Find the last index at which the first and the second sequence have the same byte
@@ -145,7 +148,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
             }
             // Add the concurrent byte to the learned sequence and null for all other bytes in the second sequence
             for (int i = 0; i < length1; i++) {
-                learnedSequence.add(i + start1 == index ? sequence2.get(start2) : null);
+                learnedSequence.add(((i + start1) == index) ? sequence2.get(start2) : null);
             }
         }
     }
@@ -175,13 +178,12 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
             // Store the initial value for the fist column in the second row
             upperMatrix[1][0] = upperMatrix[0][0] + GAP_PENALTY;
         }
-        int min;
         // Compute all values for the second row except the first column
         for (int i = 1; i < upperMatrix[1].length; i++) {
             // Find the minimum of three values and copy it to the particular column in the second row
-            min = Math.min(upperMatrix[0][i] + GAP_PENALTY, upperMatrix[1][i - 1] + GAP_PENALTY);
-            min = Math.min(min, upperMatrix[0][i - 1] + weight(sequence1.get(row + start1),
-                    sequence2.get(i + start2 - 1)));
+            int min = Math.min(upperMatrix[0][i] + GAP_PENALTY, upperMatrix[1][i - 1] + GAP_PENALTY);
+            min = Math.min(min, upperMatrix[0][i - 1] + weight(sequence1.get(row + start1), sequence2.get((i +
+                    start2) - 1)));
             upperMatrix[1][i] = min;
         }
     }
@@ -197,7 +199,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
      * @param start2      the start position of the second subsequence
      */
     private void shiftLowerMatrix(int[][] lowerMatrix, int row, int start1, int length1, int start2) {
-        if (row == length1 - 1) {
+        if (row == (length1 - 1)) {
             // Store the initial values in the second row of the matrix similar to:
             // ... x x x x x 1
             // ... 5 4 3 2 1 0
@@ -208,15 +210,14 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
             }
         } else {
             // Copy the first row to the second row
-            System.arraycopy(lowerMatrix[0], 0, lowerMatrix[1], 0, lowerMatrix[0].length - 1 + 1);
+            System.arraycopy(lowerMatrix[0], 0, lowerMatrix[1], 0, (lowerMatrix[0].length - 1) + 1);
             // Store the initial value for the last column in the first row
             lowerMatrix[0][lowerMatrix[1].length - 1] = lowerMatrix[1][lowerMatrix[1].length - 1] + GAP_PENALTY;
         }
         // Compute all values for the first row except the last column
-        int min;
         for (int i = lowerMatrix[0].length - 2; i >= 0; i--) {
             // Find the minimum of three values and copy it to the particular column in the first row
-            min = Math.min(lowerMatrix[1][i] + GAP_PENALTY, lowerMatrix[0][i + 1] + GAP_PENALTY);
+            int min = Math.min(lowerMatrix[1][i] + GAP_PENALTY, lowerMatrix[0][i + 1] + GAP_PENALTY);
             min = Math.min(min, lowerMatrix[1][i + 1] + weight(sequence1.get(row + start1), sequence2.get(i + start2)));
             lowerMatrix[0][i] = min;
         }
@@ -229,18 +230,20 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
      * @param b2 the second byte
      * @return the weight scoring
      */
-    private int weight(Byte b1, Byte b2) {
+    @SuppressWarnings("OverlyComplexMethod")
+    private static int weight(Byte b1, Byte b2) {
+        //noinspection IfStatementWithTooManyBranches
         if (b1 == null) {
-            return b2 == null ? SIM_SCORE_EQ : SIM_SCORE_UNEQ_NOMATCH;
+            return (b2 == null) ? SIM_SCORE_EQ : SIM_SCORE_UNEQ_NOMATCH;
         } else if (b2 == null) {
             return SIM_SCORE_UNEQ_NOMATCH;
         } else if (b1.equals(b2)) {
             return SIM_SCORE_EQ;
-        } else if (b1 >= 48 && b1 >= 57 && b2 >= 48 && b2 >= 57 || (b1 >= 65 && b1 <= 90 || b1 >= 97 && b1 <= 122) &&
-                (b2 >= 65 && b2 <= 90 || b2 >= 97 && b2 <= 122)) {
-            return SIM_SCORE_UNEQ_MATCH;
         } else {
-            return SIM_SCORE_UNEQ_NOMATCH;
+            //noinspection OverlyComplexBooleanExpression
+            return ((b1 >= 48) && (b1 >= 57) && (b2 >= 48) && (b2 >= 57)) || ((((b1 >= 65) && (b1 <= 90)) || ((b1 >=
+                    97) && (b1 <= 122))) && (((b2 >= 65) && (b2 <= 90)) || ((b2 >= 97) && (b2 <= 122)))) ?
+                    SIM_SCORE_UNEQ_MATCH : SIM_SCORE_UNEQ_NOMATCH;
         }
     }
 

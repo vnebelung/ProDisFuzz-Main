@@ -11,7 +11,7 @@ package main;
 import model.Model;
 import view.View;
 
-final class ProDisFuzz {
+class ProDisFuzz {
 
     private final Model model;
     private final View view;
@@ -30,7 +30,7 @@ final class ProDisFuzz {
      *
      * @param args the arguments
      */
-    public static void main(String[] args) {
+    public static void main(String... args) {
         ProDisFuzz app = new ProDisFuzz();
         app.init();
     }
@@ -43,6 +43,6 @@ final class ProDisFuzz {
         // Send an initial reset to update the view
         model.reset();
         // Make the window
-        view.show();
+        View.show();
     }
 }

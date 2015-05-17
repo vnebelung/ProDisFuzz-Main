@@ -11,16 +11,18 @@ package model.process;
 import java.util.Observable;
 
 public abstract class AbstractRunnable extends Observable implements Runnable {
+    private final Runnable updateRunnable;
     private boolean finished;
     private int workTotal;
     private int workProgress;
-    private final Runnable updateRunnable;
 
     /**
      * Instantiates a new abstract runnable responsible for setting a basic structure for a runnable..
      */
     protected AbstractRunnable() {
+        super();
         workTotal = -1;
+        workProgress = 0;
         finished = false;
         updateRunnable = () -> {
             setChanged();
@@ -99,14 +101,14 @@ public abstract class AbstractRunnable extends Observable implements Runnable {
     /**
      * Sets the finish status of the runnable.
      *
-     * @param b true, if the runnable has finished its work
+     * @param finished true, if the runnable has finished its work
      * @throws InterruptedException
      */
-    protected void setFinished(boolean b) throws InterruptedException {
-        if (finished == b) {
+    protected void setFinished(boolean finished) throws InterruptedException {
+        if (this.finished == finished) {
             return;
         }
-        finished = b;
+        this.finished = finished;
         spreadUpdate();
     }
 

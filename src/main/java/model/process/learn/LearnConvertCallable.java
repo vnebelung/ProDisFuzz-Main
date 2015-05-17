@@ -24,15 +24,16 @@ class LearnConvertCallable implements Callable<List<List<Byte>>> {
      *
      * @param files the protocol files
      */
-    public LearnConvertCallable(ProtocolFile[] files) {
+    public LearnConvertCallable(ProtocolFile... files) {
+        super();
         this.files = Arrays.copyOf(files, files.length);
     }
 
     @Override
-    public List<List<Byte>> call() throws Exception {
+    public List<List<Byte>> call() {
         List<List<Byte>> result = new ArrayList<>(files.length);
         for (ProtocolFile eachFile : files) {
-            if (eachFile.getContent().length > 0 && !Thread.currentThread().isInterrupted()) {
+            if ((eachFile.getContent().length > 0) && !Thread.currentThread().isInterrupted()) {
                 result.add(new ArrayList<>(eachFile.getContent().length));
                 for (byte eachByte : eachFile.getContent()) {
                     result.get(result.size() - 1).add(eachByte);

@@ -6,11 +6,13 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.helper;
+package model.utilities;
 
-public abstract class Hex {
+public enum Hex {
+    ;
 
-    private final static char[] HEX_CHARS = "0123456789abcdef".toCharArray();
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
     /**
      * Returns the hex value for a given byte.
@@ -19,6 +21,7 @@ public abstract class Hex {
      * @return the hex value as a string
      */
     public static String byte2Hex(byte b) {
+        //noinspection UnnecessaryCallToStringValueOf,StringConcatenationMissingWhitespace
         return String.valueOf(HEX_CHARS[(b & 0xF0) >>> 4]) + String.valueOf(HEX_CHARS[b & 0x0F]);
     }
 
@@ -29,6 +32,7 @@ public abstract class Hex {
      * @return the byte
      */
     public static byte hex2Byte(String s) {
+        //noinspection NumericCastThatLosesPrecision
         return (byte) Integer.parseInt(s, 16);
     }
 

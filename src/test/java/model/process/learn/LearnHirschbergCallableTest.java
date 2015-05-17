@@ -4,6 +4,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class LearnHirschbergCallableTest {
@@ -40,7 +41,7 @@ public class LearnHirschbergCallableTest {
         sequence5.add((byte) 'c');
         sequence5.add(null);
 
-        List<Byte> reference = new ArrayList<>();
+        Collection<Byte> reference = new ArrayList<>();
         for (int i = 0; i < Math.max(sequence1.size(), sequence2.size()); i++) {
             reference.add(null);
         }

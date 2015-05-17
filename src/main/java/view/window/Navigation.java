@@ -15,16 +15,16 @@ public interface Navigation {
     /**
      * Sets whether the control panel should enable the option to cancel the current page.
      *
-     * @param b true, if the cancel option should be enabled
-     * @param n the Node that sends the signal
+     * @param enabled true, if the cancel option should be enabled
+     * @param node the Node that sends the signal
      */
-    void setFinishable(boolean b, Node n);
+    void setFinishable(boolean enabled, Node node);
 
     /**
      * Sets whether the control panel should enable the option to finish the current page.
      *
-     * @param b true, if the finish option should be enabled
-     * @param n the Node that sends the signal
+     * @param enabled true, if the finish option should be enabled
+     * @param node the Node that sends the signal
      */
-    void setCancelable(boolean b, Node n);
+    void setCancelable(boolean enabled, Node node);
 }

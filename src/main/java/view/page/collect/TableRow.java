@@ -17,6 +17,7 @@ import model.Model;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 class TableRow {
     private final String name;
@@ -28,26 +29,26 @@ class TableRow {
     /**
      * Instantiates a new table row that represents the table model for the collect view.
      *
-     * @param b  the checkbox flag
-     * @param s1 the file name
-     * @param l1 the file size
-     * @param l2 the date the file was last modified
-     * @param s2 the SHA-256 of the file
+     * @param checkbox  the checkbox flag
+     * @param fileName the file name
+     * @param fileSize the file size
+     * @param modified the date the file was last modified
+     * @param sha256 the SHA-256 of the file
      */
-    public TableRow(boolean b, String s1, long l1, long l2, String s2) {
-        selected = new SimpleBooleanProperty(b);
+    public TableRow(boolean checkbox, String fileName, long fileSize, long modified, String sha256) {
+        selected = new SimpleBooleanProperty(checkbox);
         selected.addListener(new ChangeListener<Boolean>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> o, Boolean b1, Boolean b2) {
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 Model.INSTANCE.getCollectProcess().setSelected(name, selected.get());
             }
         });
-        name = s1;
+        name = fileName;
         DecimalFormat decimalFormat = new DecimalFormat("#0.00");
-        size = decimalFormat.format(l1 / 1024.0);
-        DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm");
-        lastModified = dateFormat.format(l2);
-        sha256 = s2;
+        size = decimalFormat.format(fileSize / 1024.0);
+        DateFormat dateFormat = new SimpleDateFormat("yy-MM-dd HH:mm", Locale.ENGLISH);
+        lastModified = dateFormat.format(modified);
+        this.sha256 = sha256;
     }
 
     /**
@@ -62,10 +63,10 @@ class TableRow {
     /**
      * Sets the select status of the table row indicating whether the user has selected the row for further processing.
      *
-     * @param b true, if the table row is selected
+     * @param selected true, if the table row is selected
      */
-    public void setSelected(boolean b) {
-        selected.set(b);
+    public void setSelected(boolean selected) {
+        this.selected.set(selected);
     }
 
     /**

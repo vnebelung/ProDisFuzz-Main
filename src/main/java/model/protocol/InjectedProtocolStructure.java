@@ -8,6 +8,8 @@
 
 package model.protocol;
 
+import model.protocol.ProtocolBlock.Type;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +24,7 @@ public class InjectedProtocolStructure {
      * fuzzing options.
      */
     public InjectedProtocolStructure() {
+        super();
         injectedProtocolBlocks = new ArrayList<>();
         varInjectedProtocolBlocks = new ArrayList<>();
     }
@@ -32,7 +35,7 @@ public class InjectedProtocolStructure {
      *
      * @param bytes the bytes
      */
-    public void addBlock(Byte[] bytes) {
+    public void addBlock(Byte... bytes) {
         boolean fixed = true;
         boolean variable = true;
         for (Byte each : bytes) {
@@ -45,10 +48,11 @@ public class InjectedProtocolStructure {
         if (!fixed && !variable) {
             return;
         }
-        ProtocolBlock.Type type = fixed ? ProtocolBlock.Type.FIX : ProtocolBlock.Type.VAR;
+        // noinspection UnqualifiedInnerClassAccess
+        Type type = fixed ? Type.FIX : Type.VAR;
         InjectedProtocolBlock injectedProtocolBlock = new InjectedProtocolBlock(type, bytes);
         injectedProtocolBlocks.add(injectedProtocolBlock);
-        if (type == ProtocolBlock.Type.VAR) {
+        if (type == Type.VAR) {
             varInjectedProtocolBlocks.add(injectedProtocolBlock);
         }
     }

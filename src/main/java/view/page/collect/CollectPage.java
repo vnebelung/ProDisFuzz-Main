@@ -30,6 +30,7 @@ import java.util.Observer;
 
 public class CollectPage extends VBox implements Observer, Page {
 
+    private final Navigation navigation;
     @FXML
     private TextField folderTextField;
     @FXML
@@ -41,11 +42,10 @@ public class CollectPage extends VBox implements Observer, Page {
     @FXML
     private TableColumn<TableRow, String> columnLastModified;
     @FXML
-    private TableColumn columnSize;
+    private TableColumn<TableRow, String> columnSize;
     @FXML
     private TableColumn<TableRow, String> columnSHA256;
     private int statusHash;
-    private final Navigation navigation;
 
 
     /**
@@ -55,22 +55,28 @@ public class CollectPage extends VBox implements Observer, Page {
      */
     public CollectPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/collectPage.fxml"), this);
         Model.INSTANCE.getCollectProcess().addObserver(this);
         this.navigation = navigation;
 
         filesTableView.setEditable(true);
+        //noinspection HardCodedStringLiteral
         columnUse.setCellValueFactory(new PropertyValueFactory<>("selected"));
         columnUse.setCellFactory(CheckBoxTableCell.forTableColumn(columnUse));
         columnUse.setEditable(true);
         columnUse.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.04));
+        //noinspection HardCodedStringLiteral
         columnFileName.setCellValueFactory(new PropertyValueFactory<>("name"));
         columnFileName.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.22));
-        columnSize.setCellValueFactory(new PropertyValueFactory<TableRow, String>("size"));
+        // noinspection HardCodedStringLiteral
+        columnSize.setCellValueFactory(new PropertyValueFactory<>("size"));
         columnSize.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.09));
         columnSize.setCellFactory(p -> new NumericTableCell());
+        //noinspection HardCodedStringLiteral
         columnLastModified.setCellValueFactory(new PropertyValueFactory<>("lastModified"));
         columnLastModified.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.12));
+        //noinspection HardCodedStringLiteral
         columnSHA256.setCellValueFactory(new PropertyValueFactory<>("sha256"));
         columnSHA256.prefWidthProperty().bind(filesTableView.widthProperty().multiply(0.51));
     }
@@ -99,15 +105,18 @@ public class CollectPage extends VBox implements Observer, Page {
             statusHash = newStatusHash;
             filesTableView.getItems().clear();
             for (ProtocolFile each : process.getFiles()) {
-                filesTableView.getItems().add(new TableRow(process.isSelected(each.getName()), each.getName(),
-                        each.getSize(), each.getLastModified(), each.getSha256()));
+                filesTableView.getItems().add(new TableRow(process.isSelected(each.getName()), each.getName(), each
+                        .getSize(), each.getLastModified(), each.getSha256()));
             }
         }
 
+        // noinspection HardCodedStringLiteral
         folderTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
         if (process.isFolderValid()) {
+            //noinspection HardCodedStringLiteral
             folderTextField.getStyleClass().add("text-field-success");
         } else {
+            //noinspection HardCodedStringLiteral
             folderTextField.getStyleClass().add("text-field-fail");
             folderTextField.setText("Please select a valid folder that contains the protocol recordings");
         }

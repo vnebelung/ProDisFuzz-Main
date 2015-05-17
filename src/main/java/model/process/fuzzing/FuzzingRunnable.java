@@ -11,7 +11,8 @@ package model.process.fuzzing;
 import model.Model;
 import model.process.AbstractRunnable;
 import model.process.AbstractThreadProcess;
-import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
 import model.protocol.InjectedProtocolBlock;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
@@ -20,6 +21,8 @@ import java.net.InetSocketAddress;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.Temporal;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -28,9 +31,9 @@ class FuzzingRunnable extends AbstractRunnable {
     private final int timeout;
     private final int interval;
     private final Recordings recordings;
-    private final FuzzOptionsProcess.InjectionMethod injectionMethod;
+    private final InjectionMethod injectionMethod;
     private final InjectedProtocolStructure injectedProtocolStructure;
-    private final FuzzOptionsProcess.CommunicationSave saveCommunication;
+    private final CommunicationSave saveCommunication;
     private Instant startTime;
     private Instant endTime;
     private Instant crashTime;
@@ -45,9 +48,8 @@ class FuzzingRunnable extends AbstractRunnable {
      * @param interval                  the fuzzing interval
      * @param saveCommunication         the option to save the fuzzed messages
      */
-    public FuzzingRunnable(FuzzOptionsProcess.InjectionMethod injectionMethod,
-                           InjectedProtocolStructure injectedProtocolStructure, InetSocketAddress target,
-                           int timeout, int interval, FuzzOptionsProcess.CommunicationSave saveCommunication) {
+    public FuzzingRunnable(InjectionMethod injectionMethod, InjectedProtocolStructure injectedProtocolStructure,
+                           InetSocketAddress target, int timeout, int interval, CommunicationSave saveCommunication) {
         super();
         this.injectionMethod = injectionMethod;
         this.injectedProtocolStructure = injectedProtocolStructure;
@@ -71,6 +73,7 @@ class FuzzingRunnable extends AbstractRunnable {
                 return calcWorkTotalSeparate();
             case SIMULTANEOUS:
                 return calcWorkTotalSimultaneous();
+            //noinspection UnnecessaryDefault
             default:
                 return 0;
         }
@@ -90,8 +93,6 @@ class FuzzingRunnable extends AbstractRunnable {
                     break;
                 case RANDOM:
                     return -1;
-                default:
-                    return 0;
             }
         }
         return result;
@@ -102,7 +103,7 @@ class FuzzingRunnable extends AbstractRunnable {
      *
      * @return the number of work steps, -1 for infinite work
      */
-    private int calcWorkTotalSimultaneous() {
+    private static int calcWorkTotalSimultaneous() {
         InjectedProtocolBlock injectedProtocolBlock = Model.INSTANCE.getFuzzOptionsProcess()
                 .getInjectedProtocolStructure().getVarBlock(0);
         switch (injectedProtocolBlock.getDataInjectionMethod()) {
@@ -110,6 +111,7 @@ class FuzzingRunnable extends AbstractRunnable {
                 return injectedProtocolBlock.getNumOfLibraryLines();
             case RANDOM:
                 return -1;
+            //noinspection UnnecessaryDefault
             default:
                 return 0;
         }
@@ -123,14 +125,14 @@ class FuzzingRunnable extends AbstractRunnable {
             setFinished(false);
             // The fuzzing begins …
             int iteration = 0;
-            FuzzingMessageCallable messageCallable = new FuzzingMessageCallable(injectedProtocolStructure,
-                    injectionMethod);
+            Callable<byte[]> messageCallable = new FuzzingMessageCallable(injectedProtocolStructure, injectionMethod);
             while (true) {
                 byte[] message = getMessage(messageCallable);
                 if (message == null) {
                     break;
                 }
-                send(message, ++iteration);
+                iteration++;
+                send(message, iteration);
             }
             endTime = Instant.now();
             setFinished(true);
@@ -156,7 +158,7 @@ class FuzzingRunnable extends AbstractRunnable {
         try {
             for (int i = 0; i < 3; i++) {
                 if (sendFuture.get()) {
-                    if (saveCommunication == FuzzOptionsProcess.CommunicationSave.ALL) {
+                    if (saveCommunication == CommunicationSave.ALL) {
                         recordings.addRecording(message, false, Instant.now());
                         recordings.addRecording(sendCallable.getLastResponse(), false, Instant.now());
                     }
@@ -180,7 +182,7 @@ class FuzzingRunnable extends AbstractRunnable {
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    private byte[] getMessage(FuzzingMessageCallable messageCallable) throws InterruptedException, ExecutionException {
+    private static byte[] getMessage(Callable<byte[]> messageCallable) throws InterruptedException, ExecutionException {
         Future<byte[]> messageFuture = AbstractThreadProcess.EXECUTOR.submit(messageCallable);
         byte[] result;
         try {
@@ -197,11 +199,11 @@ class FuzzingRunnable extends AbstractRunnable {
      * error.
      *
      * @param iteration the current iteration of tries to sent a message
-     * @param b         the sent message
+     * @param bytes         the sent message
      * @throws InterruptedException
      * @throws ExecutionException
      */
-    private void handleTimeout(int iteration, byte[] b) throws InterruptedException, ExecutionException {
+    private void handleTimeout(int iteration, byte... bytes) throws InterruptedException, ExecutionException {
         Future<Boolean> reconnectFuture = null;
         double errorInterval = Math.pow(iteration + 2, 0.75) * interval;
         DecimalFormat decimalFormat = new DecimalFormat(",##0.0");
@@ -212,22 +214,25 @@ class FuzzingRunnable extends AbstractRunnable {
                 case 1:
                     // Error interval has a logarithmic style curve
                     Model.INSTANCE.getLogger().warning("Target not reachable. Resend message again in " +
-                            (decimalFormat.format(errorInterval / 1000)) + " seconds");
+                            decimalFormat.format(errorInterval / 1000) + " seconds");
+                    //noinspection NumericCastThatLosesPrecision
                     Thread.sleep((long) errorInterval);
                     break;
                 case 2:
                     Model.INSTANCE.getLogger().fine("Target not reachable for 3 times in a row. Information about the" +
-                            " " + "crash is being saved");
-                    recordings.addRecording(b, true, crashTime);
+                            ' ' + "crash is being saved");
+                    recordings.addRecording(bytes, true, crashTime);
                     increaseWorkProgress();
                     int count = 1;
                     do {
-                        errorInterval = Math.pow(count++, 0.75) * interval;
-                        Model.INSTANCE.getLogger().warning("Trying to reconnect to target in " + (decimalFormat
-                                .format(errorInterval / 1000)) + " seconds");
+                        errorInterval = Math.pow(count, 0.75) * interval;
+                        count++;
+                        Model.INSTANCE.getLogger().warning("Trying to reconnect to target in " + decimalFormat.format
+                                (errorInterval / 1000) + " seconds");
+                        //noinspection NumericCastThatLosesPrecision,BusyWait
                         Thread.sleep((long) errorInterval);
                         // Try again to connect
-                        FuzzingReconnectCallable reconnectCallable = new FuzzingReconnectCallable(target, timeout);
+                        Callable<Boolean> reconnectCallable = new FuzzingReconnectCallable(target, timeout);
                         reconnectFuture = AbstractThreadProcess.EXECUTOR.submit(reconnectCallable);
                     } while (!reconnectFuture.get());
                     Model.INSTANCE.getLogger().info("Connection to target successfully reestablished");
@@ -251,11 +256,7 @@ class FuzzingRunnable extends AbstractRunnable {
      * @return the fuzzing duration
      */
     public Duration getDuration() {
-        if (isFinished()) {
-            return Duration.between(endTime, startTime);
-        } else {
-            return Duration.between(Instant.now(), startTime);
-        }
+        return isFinished() ? Duration.between(endTime, startTime) : Duration.between(Instant.now(), startTime);
     }
 
     /**
@@ -263,7 +264,7 @@ class FuzzingRunnable extends AbstractRunnable {
      *
      * @return the fuzzing start time
      */
-    public Instant getStartTime() {
+    public Temporal getStartTime() {
         return startTime;
     }
 

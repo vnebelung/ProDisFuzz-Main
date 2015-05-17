@@ -17,17 +17,19 @@ import view.window.Window;
 public class WindowApplication extends Application {
 
     @Override
-    public void start(Stage stage) {
+    public void start(Stage primaryStage) {
         Window window = new Window();
 
         Scene scene = new Scene(new Window());
+        //noinspection HardCodedStringLiteral
         scene.getStylesheets().add(getClass().getResource("/css/scene.css").toExternalForm());
-        stage.setScene(scene);
-        stage.setTitle("ProDisFuzz");
-        stage.setOnCloseRequest(windowEvent -> window.onClose());
-        stage.show();
+        primaryStage.setScene(scene);
+        //noinspection HardCodedStringLiteral
+        primaryStage.setTitle("ProDisFuzz");
+        primaryStage.setOnCloseRequest(windowEvent -> window.onClose());
+        primaryStage.show();
 
-        initUpdateCheck(stage);
+        initUpdateCheck(primaryStage);
     }
 
     /**
@@ -35,14 +37,14 @@ public class WindowApplication extends Application {
      *
      * @param stage the stage
      */
-    private void initUpdateCheck(Stage stage) {
+    private static void initUpdateCheck(Stage stage) {
         new UpdateTimer(stage).start();
     }
 
     /**
      * Makes the basic window visible.
      */
-    public void show() {
-        launch();
+    public static void show() {
+        Application.launch();
     }
 }

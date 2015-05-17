@@ -8,6 +8,8 @@
 
 package model.logger;
 
+import model.logger.Message.Type;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -33,7 +35,7 @@ public class Logger extends Observable {
      * @param text the message text to be add
      */
     public void info(String text) {
-        addEntry(text, Message.Type.INFO);
+        addEntry(text, Type.INFO);
     }
 
     /**
@@ -42,7 +44,7 @@ public class Logger extends Observable {
      * @param text the message text to be add
      */
     public void fine(String text) {
-        addEntry(text, Message.Type.FINE);
+        addEntry(text, Type.FINE);
     }
 
     /**
@@ -51,7 +53,7 @@ public class Logger extends Observable {
      * @param text the message text to be add
      */
     public void error(String text) {
-        addEntry(text, Message.Type.ERROR);
+        addEntry(text, Type.ERROR);
     }
 
     /**
@@ -60,11 +62,9 @@ public class Logger extends Observable {
      * @param throwable the throwable
      */
     public void error(Throwable throwable) {
-        try (StringWriter sw = new StringWriter()) {
-            try (PrintWriter pw = new PrintWriter(sw)) {
-                throwable.printStackTrace(pw);
-                error(sw.toString());
-            }
+        try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+            throwable.printStackTrace(pw);
+            error(sw.toString());
         } catch (IOException ignored) {
             // Should not happen
         }
@@ -76,7 +76,7 @@ public class Logger extends Observable {
      * @param text the message text to be add
      */
     public void warning(String text) {
-        addEntry(text, Message.Type.WARNING);
+        addEntry(text, Type.WARNING);
     }
 
     /**
@@ -85,7 +85,7 @@ public class Logger extends Observable {
      * @param text the text to log
      * @param type the log type
      */
-    private void addEntry(String text, Message.Type type) {
+    private void addEntry(String text, Type type) {
         Message message = new Message(text, type);
         log.add(message);
         returned.put(message, false);
@@ -119,11 +119,11 @@ public class Logger extends Observable {
     public Message[] getUnreadEntries() {
         List<Message> result = new LinkedList<>();
         for (int i = log.size() - 1; i >= 0; i--) {
-            if (!returned.get(log.get(i))) {
+            if (returned.get(log.get(i))) {
+                break;
+            } else {
                 returned.put(log.get(i), true);
                 result.add(0, log.get(i));
-            } else {
-                break;
             }
         }
         return result.toArray(new Message[result.size()]);

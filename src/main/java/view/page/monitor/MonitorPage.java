@@ -33,6 +33,7 @@ public class MonitorPage extends VBox implements Observer, Page {
      */
     public MonitorPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/monitorPage.fxml"), this);
         Model.INSTANCE.getMonitorProcess().addObserver(this);
         this.navigation = navigation;
@@ -65,7 +66,7 @@ public class MonitorPage extends VBox implements Observer, Page {
                 int port;
                 try {
                     port = Integer.parseInt(monitorPortTextField.getText());
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                     port = 0;
                 }
                 Model.INSTANCE.getMonitorProcess().setMonitor(monitorAddressTextField.getText(), port);
@@ -77,17 +78,23 @@ public class MonitorPage extends VBox implements Observer, Page {
     public void update(Observable o, Object arg) {
         MonitorProcess process = (MonitorProcess) o;
         Platform.runLater(() -> {
+            // noinspection HardCodedStringLiteral
             monitorPortTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+            //noinspection HardCodedStringLiteral
             monitorAddressTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
             if (process.isMonitorReachable()) {
+                //noinspection HardCodedStringLiteral
                 monitorPortTextField.getStyleClass().add("text-field-success");
+                //noinspection HardCodedStringLiteral
                 monitorAddressTextField.getStyleClass().add("text-field-success");
             } else {
+                //noinspection HardCodedStringLiteral
                 monitorPortTextField.getStyleClass().add("text-field-fail");
+                //noinspection HardCodedStringLiteral
                 monitorAddressTextField.getStyleClass().add("text-field-fail");
             }
 
-            navigation.setFinishable(process.isMonitorReachable(), MonitorPage.this);
+            navigation.setFinishable(process.isMonitorReachable(), this);
         });
     }
 

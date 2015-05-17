@@ -15,7 +15,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import model.Model;
-import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import view.window.FxmlConnection;
 
 import java.io.File;
@@ -41,6 +41,7 @@ public class BlockInjection extends GridPane {
      */
     public BlockInjection(int index) {
         super();
+        // noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/blockInjection.fxml"), this);
         protocolBlockIndex = index;
     }
@@ -80,20 +81,22 @@ public class BlockInjection extends GridPane {
      * @param enabled             false if this complete module should be greyed out
      * @param isValidLibrary      true, if the library file is valid
      */
-    public void update(InjectedProtocolBlock.DataInjectionMethod dataInjectionMethod, boolean enabled,
-                       boolean isValidLibrary) {
-        randomRadioButton.setSelected(dataInjectionMethod == InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+    public void update(DataInjectionMethod dataInjectionMethod, boolean enabled, boolean isValidLibrary) {
+        randomRadioButton.setSelected(dataInjectionMethod == DataInjectionMethod.RANDOM);
         randomRadioButton.setDisable(!enabled);
 
-        libraryRadioButton.setSelected(dataInjectionMethod == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+        libraryRadioButton.setSelected(dataInjectionMethod == DataInjectionMethod.LIBRARY);
         libraryRadioButton.setDisable(!enabled);
 
+        //noinspection HardCodedStringLiteral
         libraryTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
-        if (enabled && dataInjectionMethod == InjectedProtocolBlock.DataInjectionMethod.LIBRARY) {
+        if (enabled && (dataInjectionMethod == DataInjectionMethod.LIBRARY)) {
             libraryTextField.setDisable(false);
             if (isValidLibrary) {
+                //noinspection HardCodedStringLiteral
                 libraryTextField.getStyleClass().add("text-field-success");
             } else {
+                //noinspection HardCodedStringLiteral
                 libraryTextField.getStyleClass().add("text-field-fail");
                 libraryTextField.setText("Please choose a valid library file");
             }
@@ -102,7 +105,7 @@ public class BlockInjection extends GridPane {
             libraryTextField.setText("");
         }
 
-        browseButton.setDisable(!enabled || dataInjectionMethod != InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+        browseButton.setDisable(!enabled || (dataInjectionMethod != DataInjectionMethod.LIBRARY));
     }
 
 }

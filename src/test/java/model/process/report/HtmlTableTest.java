@@ -3,6 +3,7 @@ package model.process.report;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class HtmlTableTest {
 
     @Test

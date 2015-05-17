@@ -15,8 +15,10 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import model.Model;
-import model.process.fuzzOptions.FuzzOptionsProcess;
-import model.protocol.InjectedProtocolBlock;
+import model.process.fuzzoptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
+import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 import view.controls.blockinjection.BlockInjection;
 import view.controls.protocolcontent.ProtocolContent;
@@ -62,6 +64,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
      */
     public FuzzOptionsPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/fuzzOptionsPage.fxml"), this);
         Model.INSTANCE.getFuzzOptionsProcess().addObserver(this);
         this.navigation = navigation;
@@ -78,13 +81,19 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                //noinspection HardCodedStringLiteral
                 targetPortTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+                //noinspection HardCodedStringLiteral
                 targetAddressTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
                 if (process.isTargetReachable()) {
+                    //noinspection HardCodedStringLiteral
                     targetPortTextField.getStyleClass().add("text-field-success");
+                    //noinspection HardCodedStringLiteral
                     targetAddressTextField.getStyleClass().add("text-field-success");
                 } else {
+                    //noinspection HardCodedStringLiteral
                     targetPortTextField.getStyleClass().add("text-field-fail");
+                    //noinspection HardCodedStringLiteral
                     targetAddressTextField.getStyleClass().add("text-field-fail");
                 }
 
@@ -92,14 +101,12 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
 
                 intervalTextField.setText(String.valueOf(process.getInterval()));
 
-                simultaneousRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess
-                        .InjectionMethod.SIMULTANEOUS);
-                separateRadioButton.setSelected(process.getInjectionMethod() == FuzzOptionsProcess.InjectionMethod
+                simultaneousRadioButton.setSelected(process.getInjectionMethod() == InjectionMethod.SIMULTANEOUS);
+                separateRadioButton.setSelected(process.getInjectionMethod() == InjectionMethod
                         .SEPARATE);
 
-                criticalRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess
-                        .CommunicationSave.CRITICAL);
-                allRadioButton.setSelected(process.getSaveCommunication() == FuzzOptionsProcess.CommunicationSave.ALL);
+                criticalRadioButton.setSelected(process.getSaveCommunication() == CommunicationSave.CRITICAL);
+                allRadioButton.setSelected(process.getSaveCommunication() == CommunicationSave.ALL);
 
                 InjectedProtocolStructure injectedProtocolStructure = process.getInjectedProtocolStructure();
                 synchronized (this) {
@@ -117,10 +124,10 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
                 }
 
                 for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
-                    InjectedProtocolBlock.DataInjectionMethod dataInjectionMethod = injectedProtocolStructure
+                    //noinspection UnqualifiedInnerClassAccess
+                    DataInjectionMethod dataInjectionMethod = injectedProtocolStructure
                             .getVarBlock(i).getDataInjectionMethod();
-                    boolean enabled = (process.getInjectionMethod() != FuzzOptionsProcess.InjectionMethod
-                            .SIMULTANEOUS || i == 0);
+                    boolean enabled = (process.getInjectionMethod() != InjectionMethod.SIMULTANEOUS) || (i == 0);
                     boolean validLibrary = injectedProtocolStructure.getVarBlock(i).getLibrary() != null;
                     ((BlockInjection) blockInjections.getChildren().get(i)).update(dataInjectionMethod, enabled,
                             validLibrary);
@@ -128,9 +135,8 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
 
                 boolean finishable = process.isTargetReachable();
                 for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
-                    if (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == InjectedProtocolBlock
-                            .DataInjectionMethod.LIBRARY && injectedProtocolStructure.getVarBlock(i).getLibrary() ==
-                            null) {
+                    if ((injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod
+                            .LIBRARY) && (injectedProtocolStructure.getVarBlock(i).getLibrary() == null)) {
                         finishable = false;
                         break;
                     }
@@ -169,7 +175,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
             try {
                 int timeout = Integer.parseInt(timeoutTextField.getText());
                 Model.INSTANCE.getFuzzOptionsProcess().setTimeout(timeout);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
                 // Nothing to do here
             }
         };
@@ -185,7 +191,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
             try {
                 int interval = Integer.parseInt(intervalTextField.getText());
                 Model.INSTANCE.getFuzzOptionsProcess().setInterval(interval);
-            } catch (NumberFormatException e) {
+            } catch (NumberFormatException ignored) {
                 // Nothing to do here
             }
         };
@@ -205,7 +211,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
                 int port;
                 try {
                     port = Integer.parseInt(targetPortTextField.getText());
-                } catch (NumberFormatException e) {
+                } catch (NumberFormatException ignored) {
                     port = 0;
                 }
                 Model.INSTANCE.getFuzzOptionsProcess().setTarget(targetAddressTextField.getText(), port);

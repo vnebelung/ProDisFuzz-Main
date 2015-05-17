@@ -33,6 +33,7 @@ public class ControlBar extends HBox {
      */
     public ControlBar() {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/controlBar.fxml"), this);
         memoryTimer = new MemoryTimer(memoryUsage);
         memoryTimer.start();
@@ -42,12 +43,12 @@ public class ControlBar extends HBox {
      * Sets the visibility status of the navigation buttons. All navigation buttons can be hidden if they are not
      * needed.
      *
-     * @param b true, if the buttons shall be visible. Default is true.
+     * @param visible true, if the buttons shall be visible. Default is true.
      */
-    public void setNavigationVisible(boolean b) {
-        cancelButton.setVisible(b);
-        nextButton.setVisible(b);
-        finishButton.setVisible(b);
+    public void setNavigationVisible(boolean visible) {
+        cancelButton.setVisible(visible);
+        nextButton.setVisible(visible);
+        finishButton.setVisible(visible);
     }
 
     /**
@@ -84,36 +85,36 @@ public class ControlBar extends HBox {
     /**
      * Sets the enabled status of the next button.
      *
-     * @param b true, if the button should be enabled
+     * @param enabled true, if the button should be enabled
      */
-    public void setNextEnabled(boolean b) {
-        nextButton.setDisable(!b);
+    public void setNextEnabled(boolean enabled) {
+        nextButton.setDisable(!enabled);
     }
 
     /**
      * Sets the enabled status of the cancel button.
      *
-     * @param b true, if the button should be enabled
+     * @param enabled true, if the button should be enabled
      */
-    public void setCancelEnabled(boolean b) {
-        cancelButton.setDisable(!b);
+    public void setCancelEnabled(boolean enabled) {
+        cancelButton.setDisable(!enabled);
     }
 
     /**
      * Sets the enabled status of the finish button.
      *
-     * @param b true, if the button should be enabled
+     * @param enabled true, if the button should be enabled
      */
-    public void setFinishEnabled(boolean b) {
-        finishButton.setDisable(!b);
+    public void setFinishEnabled(boolean enabled) {
+        finishButton.setDisable(!enabled);
     }
 
     /**
      * Sets the navigation control that handles the actions to navigate through pages.
      *
-     * @param n the navigation control
+     * @param navigationControl the navigation control
      */
-    public void setNavigationControl(NavigationControl n) {
-        navigationControl = n;
+    public void setNavigationControl(NavigationControl navigationControl) {
+        this.navigationControl = navigationControl;
     }
 }

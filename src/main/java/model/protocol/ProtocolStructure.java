@@ -8,6 +8,8 @@
 
 package model.protocol;
 
+import model.protocol.ProtocolBlock.Type;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +43,8 @@ public class ProtocolStructure {
         if (!fixed && !variable) {
             return;
         }
-        ProtocolBlock.Type type = fixed ? ProtocolBlock.Type.FIX : ProtocolBlock.Type.VAR;
+        // noinspection UnqualifiedInnerClassAccess
+        Type type = fixed ? Type.FIX : Type.VAR;
         protocolBlocks.add(new ProtocolBlock(type, bytes.toArray(new Byte[bytes.size()])));
     }
 
@@ -68,9 +71,6 @@ public class ProtocolStructure {
      * @return the protocol block
      */
     public ProtocolBlock getBlock(int index) {
-        if (index < 0 || index >= protocolBlocks.size()) {
-            throw new IndexOutOfBoundsException();
-        }
         return protocolBlocks.get(index);
     }
 

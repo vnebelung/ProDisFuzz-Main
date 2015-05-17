@@ -9,10 +9,10 @@
 package model.process.import_;
 
 import model.Model;
-import model.helper.Constants;
-import model.helper.Hex;
 import model.process.AbstractProcess;
 import model.protocol.ProtocolStructure;
+import model.utilities.Constants;
+import model.utilities.Hex;
 import model.xml.XmlExchange;
 import model.xml.XmlSchemaValidator;
 import nu.xom.Document;
@@ -52,13 +52,13 @@ public class ImportProcess extends AbstractProcess {
     public void importXML(Path path) {
         Path file = path.toAbsolutePath().normalize();
         if (!Files.isRegularFile(file)) {
-            Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not a regular file");
+            Model.INSTANCE.getLogger().error("File '" + file + "' is not a regular file");
             imported = false;
             spreadUpdate();
             return;
         }
         if (!Files.isReadable(file)) {
-            Model.INSTANCE.getLogger().error("File '" + file.toString() + "' is not readable");
+            Model.INSTANCE.getLogger().error("File '" + file + "' is not readable");
             imported = false;
             spreadUpdate();
             return;
@@ -86,7 +86,7 @@ public class ImportProcess extends AbstractProcess {
      * @param document the XOM document
      * @return the protocol structure
      */
-    private ProtocolStructure readXMLBlocks(Document document) {
+    private static ProtocolStructure readXMLBlocks(Document document) {
         ProtocolStructure result = new ProtocolStructure();
         // Create the node list
         Elements elements = document.getRootElement().getChildElements(Constants.XML_PROTOCOL_BLOCKS).get(0)
@@ -104,7 +104,7 @@ public class ImportProcess extends AbstractProcess {
      * @param element the protocol block XML element
      * @return the byte content
      */
-    private List<Byte> readXMLContent(Element element) {
+    private static List<Byte> readXMLContent(Element element) {
         List<Byte> result = new ArrayList<>();
         switch (element.getLocalName()) {
             case Constants.XML_PROTOCOL_BLOCK_VAR:
@@ -123,7 +123,7 @@ public class ImportProcess extends AbstractProcess {
                     }
                     // Create the content out of all byte elements
                     String bytes = elements.get(i).getValue();
-                    for (int j = 0; j < bytes.length(); j = j + 2) {
+                    for (int j = 0; j < bytes.length(); j += 2) {
                         result.add(Hex.hex2Byte(bytes.substring(j, j + 2)));
                     }
                 }

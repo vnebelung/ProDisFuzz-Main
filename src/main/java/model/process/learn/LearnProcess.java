@@ -22,6 +22,7 @@ public class LearnProcess extends AbstractThreadProcess {
 
     private ProtocolStructure protocolStructure;
     private LearnRunnable runnable;
+    @SuppressWarnings("rawtypes")
     private Future learnFuture;
 
     /**
@@ -38,7 +39,7 @@ public class LearnProcess extends AbstractThreadProcess {
         spreadUpdate();
     }
 
-    public void init(ProtocolFile[] files) {
+    public void init(ProtocolFile... files) {
         runnable = new LearnRunnable(files);
         runnable.addObserver(this);
         spreadUpdate();
@@ -55,12 +56,12 @@ public class LearnProcess extends AbstractThreadProcess {
 
     @Override
     public int getWorkProgress() {
-        return runnable == null ? 0 : runnable.getWorkProgress();
+        return (runnable == null) ? 0 : runnable.getWorkProgress();
     }
 
     @Override
     public int getWorkTotal() {
-        return runnable == null ? 0 : runnable.getWorkTotal();
+        return (runnable == null) ? 0 : runnable.getWorkTotal();
     }
 
     @Override
@@ -76,7 +77,7 @@ public class LearnProcess extends AbstractThreadProcess {
     @Override
     public void start() {
         Model.INSTANCE.getLogger().info("Learn process started");
-        learnFuture = EXECUTOR.submit(runnable);
+        learnFuture = AbstractThreadProcess.EXECUTOR.submit(runnable);
         spreadUpdate();
     }
 
@@ -84,7 +85,7 @@ public class LearnProcess extends AbstractThreadProcess {
     protected void complete() {
         try {
             learnFuture.get();
-        } catch (CancellationException | InterruptedException e) {
+        } catch (CancellationException | InterruptedException ignored) {
             interrupt();
             return;
         } catch (ExecutionException e) {
@@ -97,12 +98,11 @@ public class LearnProcess extends AbstractThreadProcess {
 
     @Override
     public boolean isRunning() {
-        return learnFuture != null && !learnFuture.isDone();
+        return (learnFuture != null) && !learnFuture.isDone();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        LearnRunnable runnable = (LearnRunnable) o;
         if (runnable.isFinished()) {
             complete();
         }

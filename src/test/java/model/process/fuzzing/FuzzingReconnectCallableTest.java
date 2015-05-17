@@ -5,6 +5,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class FuzzingReconnectCallableTest {
@@ -18,7 +19,8 @@ public class FuzzingReconnectCallableTest {
     }
 
     @Test
-    public void testCall() throws Exception {
+    public void testCall() throws IOException {
+        //noinspection HardCodedStringLiteral
         FuzzingReconnectCallable fuzzingReconnectCallable = new FuzzingReconnectCallable(new InetSocketAddress
                 ("localhost", 10020), 500);
         Assert.assertTrue(fuzzingReconnectCallable.call());

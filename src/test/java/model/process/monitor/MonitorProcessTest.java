@@ -6,6 +6,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class MonitorProcessTest {
     private SimulatedMonitor simulatedMonitor;
 

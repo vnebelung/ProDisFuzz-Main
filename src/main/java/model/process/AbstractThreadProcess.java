@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
 
 public abstract class AbstractThreadProcess extends AbstractProcess implements Observer {
 
-    public final static ExecutorService EXECUTOR = Executors.newCachedThreadPool();
+    public static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     /**
      * Gets the work progress of the thread.

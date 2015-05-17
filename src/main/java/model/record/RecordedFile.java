@@ -9,7 +9,7 @@
 package model.record;
 
 import model.Model;
-import model.helper.Constants;
+import model.utilities.Constants;
 
 import java.io.IOException;
 import java.nio.file.Files;

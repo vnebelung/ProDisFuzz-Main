@@ -15,8 +15,8 @@ import java.util.concurrent.Callable;
 
 class LearnAdjustCallable implements Callable<List<Byte>> {
 
-    private final static int CLEAN_LENGTH = 3;
-    private final static int CLEAN_THRESHOLD = 0;
+    private static final int CLEAN_LENGTH = 3;
+    private static final int CLEAN_THRESHOLD = 0;
     private final List<Byte> cleanedSequence;
 
     /**
@@ -26,13 +26,15 @@ class LearnAdjustCallable implements Callable<List<Byte>> {
      * @param sequence the input sequence
      */
     public LearnAdjustCallable(List<Byte> sequence) {
+        super();
         cleanedSequence = new ArrayList<>(sequence);
     }
 
+    @SuppressWarnings("OverlyComplexMethod")
     @Override
-    public List<Byte> call() throws Exception {
-        if (cleanedSequence.size() <= (CLEAN_LENGTH + 1) * 2) {
-            Collections.unmodifiableList(cleanedSequence);
+    public List<Byte> call() {
+        if (cleanedSequence.size() <= ((CLEAN_LENGTH + 1) * 2)) {
+            return Collections.unmodifiableList(cleanedSequence);
         }
         boolean changed;
         int[] scores = new int[cleanedSequence.size()];
@@ -43,7 +45,7 @@ class LearnAdjustCallable implements Callable<List<Byte>> {
                 scores[i] = 0;
             }
             // Compute all scoring values for every scoring element
-            for (int i = 1; i < scores.length - 1; i++) {
+            for (int i = 1; i < (scores.length - 1); i++) {
                 if (cleanedSequence.get(i) == null) {
                     scores[i]++;
                 } else {
@@ -58,10 +60,10 @@ class LearnAdjustCallable implements Callable<List<Byte>> {
             }
             // Clean up the array by changing all fixed elements to variable elements whose scoring value is equal or
             // greater than the threshold value
-            for (int i = CLEAN_LENGTH + 1; i < cleanedSequence.size() - (CLEAN_LENGTH + 1); i++) {
+            for (int i = CLEAN_LENGTH + 1; i < (cleanedSequence.size() - (CLEAN_LENGTH + 1)); i++) {
                 if (cleanedSequence.get(i) != null) {
                     int score = 0;
-                    for (int j = i - CLEAN_LENGTH; j <= i + CLEAN_LENGTH; j++) {
+                    for (int j = i - CLEAN_LENGTH; j <= (i + CLEAN_LENGTH); j++) {
                         if (j != i) {
                             score += scores[j];
                         }

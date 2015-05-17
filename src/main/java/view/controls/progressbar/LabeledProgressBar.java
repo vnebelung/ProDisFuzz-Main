@@ -26,6 +26,7 @@ public class LabeledProgressBar extends StackPane {
      */
     public LabeledProgressBar() {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/labeledProgressBar.fxml"), this);
     }
 
@@ -40,21 +41,28 @@ public class LabeledProgressBar extends StackPane {
      */
     public void update(double progress, boolean running) {
         progressBar.setProgress(progress);
+        //noinspection HardCodedStringLiteral
         progressBar.getStyleClass().removeAll("progress-bar-fail", "progress-bar-success");
         progressBar.setStyle("");
         StringBuilder labelText = new StringBuilder();
+        //noinspection NumericCastThatLosesPrecision
         int progressPercentage = (int) Math.ceil(100 * progress);
         if (running) {
             labelText.append("Running … ");
         }
-        labelText.append(progress < 0 ? "infinite" : progressPercentage + " %");
-        if (progress == 1 || progress < 0) {
+        labelText.append((progress < 0) ? "infinite" : (progressPercentage + " %"));
+        //noinspection FloatingPointEquality
+        if ((progress == 1) || (progress < 0)) {
+            //noinspection HardCodedStringLiteral
             progressBar.getStyleClass().add("progress-bar-success");
         } else if (running) {
             // Set dynamic background color depending on the progress
+            //noinspection NumericCastThatLosesPrecision
             int color = (int) (255 * progress);
+            //noinspection HardCodedStringLiteral
             progressBar.setStyle("-fx-background-color: rgba(" + (255 - color) + ", " + color + ", 0, 0.4);");
         } else {
+            //noinspection HardCodedStringLiteral
             progressBar.getStyleClass().add("progress-bar-fail");
         }
         label.setText(labelText.toString());

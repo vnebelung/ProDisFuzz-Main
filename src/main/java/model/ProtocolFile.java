@@ -26,10 +26,11 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
      */
     public ProtocolFile(Path path) {
         this.path = path;
-        sha256 = "";
         try {
+            //noinspection HardCodedStringLiteral
             sha256 = generateHash(MessageDigest.getInstance("SHA-256"));
         } catch (NoSuchAlgorithmException e) {
+            sha256 = "";
             Model.INSTANCE.getLogger().error(e);
         }
     }
@@ -43,14 +44,12 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
     private String generateHash(MessageDigest algorithm) {
         StringBuilder hash = new StringBuilder();
         algorithm.reset();
-        byte[] bytes;
         try {
-            bytes = Files.readAllBytes(path);
+            byte[] bytes = Files.readAllBytes(path);
             algorithm.update(bytes, 0, bytes.length);
             byte[] digest = algorithm.digest();
-            String hex;
             for (byte each : digest) {
-                hex = Integer.toHexString(0xff & each);
+                String hex = Integer.toHexString(0xff & each);
                 if (hex.length() == 1) {
                     hash.append('0');
                 }
@@ -60,7 +59,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             hash.delete(0, hash.length());
             hash.append("File could not be read");
             Model.INSTANCE.getLogger().error(e);
-        } catch (OutOfMemoryError e) {
+        } catch (OutOfMemoryError ignored) {
             hash.delete(0, hash.length());
             hash.append("File too large");
             Model.INSTANCE.getLogger().warning("File '" + getName() + "' is too large for checksum calculating");
@@ -125,15 +124,16 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             content = Files.readAllBytes(path);
         } catch (IOException | OutOfMemoryError e) {
             Model.INSTANCE.getLogger().error(e);
+            //noinspection ZeroLengthArrayAllocation
             content = new byte[0];
         }
         return content;
     }
 
     @Override
-    public int compareTo(ProtocolFile otherFile) {
+    public int compareTo(ProtocolFile o) {
         // Custom comparison by comparing the name of the particular files
-        return getName().compareTo(otherFile.getName());
+        return getName().compareTo(o.getName());
     }
 
 }

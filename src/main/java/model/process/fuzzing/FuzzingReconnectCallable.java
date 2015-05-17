@@ -10,6 +10,7 @@ package model.process.fuzzing;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketException;
@@ -28,23 +29,25 @@ class FuzzingReconnectCallable implements Callable<Boolean> {
      * @param timeout the timeout to wait before retrying to connect
      */
     public FuzzingReconnectCallable(InetSocketAddress target, int timeout) {
+        super();
         this.target = target;
         this.timeout = timeout;
     }
 
     @Override
-    public Boolean call() throws Exception {
+    public Boolean call() throws IOException {
         // Open connection
         try (Socket socket = new Socket()) {
             socket.setSoTimeout(timeout);
             socket.connect(target, timeout);
+            //noinspection NestedTryStatement
             try (DataOutputStream out = new DataOutputStream(socket.getOutputStream());
                  DataInputStream in = new DataInputStream(socket.getInputStream())) {
                 out.writeBoolean(false);
                 in.readByte();
                 return true;
             }
-        } catch (SocketTimeoutException | SocketException e) {
+        } catch (SocketTimeoutException | SocketException ignored) {
             return false;
         }
     }

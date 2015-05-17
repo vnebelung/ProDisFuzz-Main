@@ -10,7 +10,7 @@ package model.process.report;
 
 import model.Model;
 import model.process.AbstractProcess;
-import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
 import model.xml.XmlExchange;
@@ -31,8 +31,10 @@ import java.time.temporal.ChronoUnit;
 
 public class ReportProcess extends AbstractProcess {
 
-    private final static String DIR_POSTFIX = "_records";
-    public final static String NAMESPACE = "http://www.w3.org/1999/xhtml";
+    @SuppressWarnings("HardCodedStringLiteral")
+    public static final String NAMESPACE = "http://www.w3.org/1999/xhtml";
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final String DIR_POSTFIX = "_records";
     private Recordings recordings;
     private InetSocketAddress target;
     private int interval;
@@ -40,7 +42,7 @@ public class ReportProcess extends AbstractProcess {
     private Duration duration;
     private int workTotal;
     private int workProgress;
-    private FuzzOptionsProcess.CommunicationSave saveCommunication;
+    private CommunicationSave saveCommunication;
     private int timeout;
     private boolean written;
 
@@ -69,9 +71,11 @@ public class ReportProcess extends AbstractProcess {
         setOutputPath(outputName, path);
 
         Document document = new Document(createHtmlRoot());
-        DocType doctype = new DocType("html", "-//W3C//DTD XHTML 1.0 Strict//EN",
-                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
+        //noinspection HardCodedStringLiteral
+        DocType doctype = new DocType("html", "-//W3C//DTD XHTML 1.0 Strict//EN", "http://www.w3" + "" +
+                ".org/TR/xhtml1/DTD/xhtml1-strict.dtd");
         document.insertChild(doctype, 0);
+        //noinspection StringConcatenationMissingWhitespace
         Path directory = path.resolve(outputName + DIR_POSTFIX);
         // Create the directory
         try {
@@ -81,6 +85,7 @@ public class ReportProcess extends AbstractProcess {
                 // Move the temporary file to the output directory
                 Files.move(recordings.getRecord(i).getFilePath(), recordings.getRecord(i).getOutputPath());
             }
+            //noinspection HardCodedStringLiteral
             written = XmlExchange.exportXML(document, path.resolve(outputName + ".html"));
         } catch (IOException e) {
             Model.INSTANCE.getLogger().error(e);
@@ -95,6 +100,7 @@ public class ReportProcess extends AbstractProcess {
      * @return the html element
      */
     private Element createHtmlRoot() {
+        //noinspection HardCodedStringLiteral
         Element result = new Element("html", NAMESPACE);
         result.appendChild(createHead());
         result.appendChild(createBody());
@@ -106,17 +112,22 @@ public class ReportProcess extends AbstractProcess {
      *
      * @return the head element
      */
-    private Element createHead() {
+    private static Element createHead() {
+        //noinspection HardCodedStringLiteral
         Element result = new Element("head", NAMESPACE);
 
+        //noinspection HardCodedStringLiteral
         Element title = new Element("title", NAMESPACE);
         title.appendChild("ProDisFuzz Results");
         result.appendChild(title);
 
         // Create the meta element with the date of the generation
+        //noinspection HardCodedStringLiteral
         Element metaDate = new Element("meta", NAMESPACE);
+        // noinspection HardCodedStringLiteral
         metaDate.addAttribute(new Attribute("name", "date"));
         ZonedDateTime zonedDateTime = ZonedDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+        //noinspection HardCodedStringLiteral
         metaDate.addAttribute(new Attribute("content", zonedDateTime.toOffsetDateTime().toString()));
         result.appendChild(metaDate);
 
@@ -130,13 +141,19 @@ public class ReportProcess extends AbstractProcess {
      *
      * @return the CSS element
      */
-    private Element createCss() {
+    private static Element createCss() {
         Element style = new Element("style", NAMESPACE);
+        //noinspection HardCodedStringLiteral
         style.addAttribute(new Attribute("type", "text/css"));
+        //noinspection HardCodedStringLiteral
         style.appendChild("body { font-family: sans-serif; background-color: #ffffff; color: #000000; }");
+        //noinspection HardCodedStringLiteral
         style.appendChild(" th, td { padding: 0.2em 1em; text-align: left; }");
+        //noinspection HardCodedStringLiteral
         style.appendChild(" h2, h3 { background-color: #6060a0; color: #ffffff; padding: 0.2em; }");
+        //noinspection HardCodedStringLiteral
         style.appendChild(" .crash { background-color: #ffc0c0; }");
+        //noinspection HardCodedStringLiteral
         style.appendChild(" .right { text-align: right; }");
         return style;
     }
@@ -147,28 +164,34 @@ public class ReportProcess extends AbstractProcess {
      * @return the body element
      */
     private Element createBody() {
+        //noinspection HardCodedStringLiteral
         Element result = new Element("body", NAMESPACE);
 
+        //noinspection HardCodedStringLiteral
         Element h1 = new Element("h1", NAMESPACE);
         h1.appendChild("ProDisFuzz Results");
         result.appendChild(h1);
 
+        //noinspection HardCodedStringLiteral
         Element h2Summary = new Element("h2", NAMESPACE);
         h2Summary.appendChild("Summary");
         result.appendChild(h2Summary);
         result.appendChild(createSummary());
 
+        //noinspection HardCodedStringLiteral
         Element h2protocol = new Element("h2", NAMESPACE);
         h2protocol.appendChild("Protocol Structure");
         result.appendChild(h2protocol);
         result.appendChild(createStructure());
 
+        //noinspection HardCodedStringLiteral
         Element h2crashes = new Element("h2", NAMESPACE);
         h2crashes.appendChild("Crashes");
         result.appendChild(h2crashes);
         result.appendChild(createCrashes());
 
-        if (saveCommunication == FuzzOptionsProcess.CommunicationSave.ALL) {
+        if (saveCommunication == CommunicationSave.ALL) {
+            //noinspection HardCodedStringLiteral
             Element h2communication = new Element("h2", NAMESPACE);
             h2communication.appendChild("Complete Communication");
             result.appendChild(h2communication);
@@ -201,6 +224,7 @@ public class ReportProcess extends AbstractProcess {
             if (recordings.getRecord(record).isCrash()) {
                 result.setText(i + 1, 2, "CRASHED");
                 for (int j = 0; j < 4; j++) {
+                    //noinspection HardCodedStringLiteral
                     result.setAttribute(i + 1, j, "class", "crash");
                 }
             } else {
@@ -275,7 +299,7 @@ public class ReportProcess extends AbstractProcess {
         // For each protocol block fill the td elements with values
         for (int i = 1; i < injectedProtocolStructure.getSize(); i++) {
             result.setText(i, 0, String.valueOf(i));
-            result.setText(i, 1, (injectedProtocolStructure.getBlock(i - 1).getType().toString()));
+            result.setText(i, 1, injectedProtocolStructure.getBlock(i - 1).getType().toString());
             result.setText(i, 2, String.valueOf(injectedProtocolStructure.getBlock(i - 1).getMinLength()));
             result.setText(i, 3, String.valueOf(injectedProtocolStructure.getBlock(i - 1).getMaxLength()));
         }
@@ -298,19 +322,20 @@ public class ReportProcess extends AbstractProcess {
         result.setText(0, 5, "Duration");
 
         for (int i = 1; i < 6; i++) {
+            //noinspection HardCodedStringLiteral
             result.setAttribute(1, i, "class", "right");
         }
 
         // Fill the td elements with their values
-        result.setText(1, 0, target.getHostString() + ":" + target.getPort());
+        result.setText(1, 0, target.getHostString() + ':' + target.getPort());
         result.setText(1, 1, String.valueOf(timeout));
         result.setText(1, 2, String.valueOf(interval));
         result.setText(1, 3, String.valueOf(recordings.getCrashSize()));
         result.setText(1, 4, workProgress + "/" + (workTotal == -1 ? "inf" : workTotal));
         DecimalFormat hourFormat = new DecimalFormat("000");
         DecimalFormat minutesSecondsFormat = new DecimalFormat("00");
-        result.setText(1, 5, hourFormat.format(duration.toHours()) + ":" + minutesSecondsFormat.format(duration
-                .toMinutes() % 60) + ":" + minutesSecondsFormat.format(duration.getSeconds() % 60));
+        result.setText(1, 5, hourFormat.format(duration.toHours()) + ':' + minutesSecondsFormat.format(duration
+                .toMinutes() % 60) + ':' + minutesSecondsFormat.format(duration.getSeconds() % 60));
 
         return result.getTable();
     }
@@ -321,14 +346,17 @@ public class ReportProcess extends AbstractProcess {
      * @param path the output directory
      * @return the name of the file and directory
      */
-    private String findOutputName(Path path) {
+    private static String findOutputName(Path path) {
         String outputName;
         int postfix = 0;
         Path file;
         Path directory;
         do {
-            outputName = postfix == 0 ? "results" : "results(" + postfix + ")";
+            //noinspection HardCodedStringLiteral
+            outputName = (postfix == 0) ? "results" : ("results(" + postfix + ')');
+            //noinspection HardCodedStringLiteral
             file = path.resolve(outputName + ".html");
+            //noinspection StringConcatenationMissingWhitespace
             directory = path.resolve(outputName + DIR_POSTFIX);
             postfix++;
         } while (Files.exists(file) || Files.isDirectory(directory));
@@ -346,7 +374,8 @@ public class ReportProcess extends AbstractProcess {
         int messageIteration = 0;
         int messageCount = 0;
         for (int i = 0; i < recordings.getSize(); i++) {
-            Path outputPath = path.resolve(name + DIR_POSTFIX).resolve("record" + messageIteration + "-" +
+            //noinspection HardCodedStringLiteral,StringConcatenationMissingWhitespace
+            Path outputPath = path.resolve(name + DIR_POSTFIX).resolve("record" + messageIteration + '-' +
                     messageCount + ".bytes");
             recordings.getRecord(i).setOutputPath(outputPath);
             if (recordings.getRecord(i).isCrash() == (messageCount == 0)) {
@@ -358,9 +387,7 @@ public class ReportProcess extends AbstractProcess {
         }
     }
 
-    public void init(Recordings recordings, Duration duration, InetSocketAddress target, int interval,
-                     InjectedProtocolStructure injectedProtocolStructure, int workProgress, int workTotal,
-                     FuzzOptionsProcess.CommunicationSave saveCommunication, int timeout) {
+    public void init(Recordings recordings, Duration duration, InetSocketAddress target, int interval, InjectedProtocolStructure injectedProtocolStructure, int workProgress, int workTotal, CommunicationSave saveCommunication, int timeout) {
         this.recordings = recordings;
         this.duration = duration;
         this.target = target;

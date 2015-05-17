@@ -27,7 +27,7 @@ public class ReleaseInformation implements Comparable<ReleaseInformation> {
      * @param number       the version number
      * @param requirements the requirements
      */
-    public ReleaseInformation(int number, String name, String date, String requirements, String[] information) {
+    public ReleaseInformation(int number, String name, String date, String requirements, String... information) {
         this.number = number;
         this.name = name;
         this.date = date;
@@ -82,6 +82,10 @@ public class ReleaseInformation implements Comparable<ReleaseInformation> {
 
     @Override
     public int compareTo(ReleaseInformation o) {
-        return o.getNumber() - number;
+        if (o.number == number) {
+            return 0;
+        } else {
+            return o.number > number ? 1 : -1;
+        }
     }
 }

@@ -20,11 +20,13 @@ import view.window.FxmlConnection;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
 class Log extends ScrollPane implements Observer {
 
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private TextFlow logTextFlow;
 
@@ -33,10 +35,50 @@ class Log extends ScrollPane implements Observer {
      */
     public Log() {
         super();
+        //noinspection HardcodedFileSeparator,HardCodedStringLiteral,ThisEscapedInObjectConstruction
         FxmlConnection.connect(getClass().getResource("/fxml/log.fxml"), this);
+        //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getLogger().addObserver(this);
 
         logTextFlow.heightProperty().addListener((observable, oldValue, newValue) -> setVvalue((Double) newValue));
+    }
+
+    /**
+     * Returns a styled text based on the given log message.
+     *
+     * @param message the log message
+     * @return the styled text
+     */
+    private static Text styleText(Message message) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Text result = new Text();
+        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss", Locale.ENGLISH);
+        stringBuilder.append('[').append(dateFormat.format(message.getTime())).append("] ");
+        switch (message.getType()) {
+            case ERROR:
+                //noinspection HardCodedStringLiteral
+                result.getStyleClass().add("error");
+                stringBuilder.append("[ERROR] ");
+                break;
+            case WARNING:
+                //noinspection HardCodedStringLiteral
+                result.getStyleClass().add("warning");
+                stringBuilder.append("[WARNING] ");
+                break;
+            case FINE:
+                //noinspection HardCodedStringLiteral
+                result.getStyleClass().add("success");
+                stringBuilder.append("[SUCCESS] ");
+                break;
+            default:
+                //noinspection HardCodedStringLiteral
+                result.getStyleClass().add("info");
+                stringBuilder.append("[INFO] ");
+                break;
+        }
+        stringBuilder.append(message.getText()).append(System.lineSeparator());
+        result.setText(stringBuilder.toString());
+        return result;
     }
 
     @Override
@@ -53,40 +95,6 @@ class Log extends ScrollPane implements Observer {
             purge();
 
         });
-    }
-
-    /**
-     * Returns a styled text based on the given log message.
-     *
-     * @param message the log message
-     * @return the styled text
-     */
-    private Text styleText(Message message) {
-        StringBuilder stringBuilder = new StringBuilder();
-        Text result = new Text();
-        DateFormat dateFormat = new SimpleDateFormat("hh:mm:ss");
-        stringBuilder.append('[').append(dateFormat.format(message.getTime())).append("] ");
-        switch (message.getType()) {
-            case ERROR:
-                result.getStyleClass().add("error");
-                stringBuilder.append("[ERROR] ");
-                break;
-            case WARNING:
-                result.getStyleClass().add("warning");
-                stringBuilder.append("[WARNING] ");
-                break;
-            case FINE:
-                result.getStyleClass().add("success");
-                stringBuilder.append("[SUCCESS] ");
-                break;
-            default:
-                result.getStyleClass().add("info");
-                stringBuilder.append("[INFO] ");
-                break;
-        }
-        stringBuilder.append(message.getText()).append(System.lineSeparator());
-        result.setText(stringBuilder.toString());
-        return result;
     }
 
     /**

@@ -32,7 +32,7 @@ public class MonitorProcess extends AbstractProcess {
      * @param port    the target's port
      */
     public void setMonitor(String address, int port) {
-        if (monitor.getAddressName().equals(address) && monitor.getAddressPort() == port) {
+        if (monitor.getAddressName().equals(address) && (monitor.getAddressPort() == port)) {
             return;
         }
         monitor.setAddress(address, port);

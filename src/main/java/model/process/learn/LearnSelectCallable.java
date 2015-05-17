@@ -8,9 +8,7 @@
 
 package model.process.learn;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 class LearnSelectCallable implements Callable<int[]> {
@@ -24,11 +22,12 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param sequences the input sequences
      */
     public LearnSelectCallable(List<List<Byte>> sequences) {
-        this.sequences = sequences;
+        super();
+        this.sequences = new ArrayList<>(sequences);
     }
 
     @Override
-    public int[] call() throws Exception {
+    public int[] call() {
         double[][] distances = new double[sequences.size()][sequences.size()];
         double[] avgDistances = new double[sequences.size()];
         int[] result = new int[2];
@@ -69,10 +68,10 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param s2 the second sequence
      * @return the dice coefficient
      */
-    private double getDiceValue(List<Byte> s1, List<Byte> s2) {
+    private static double getDiceValue(List<Byte> s1, List<Byte> s2) {
         Set<String> set1 = getSet(s1);
         Set<String> set2 = getSet(s2);
-        Set<String> set3 = new HashSet<>(set1);
+        Collection<String> set3 = new HashSet<>(set1);
         set3.retainAll(set2);
         return (2.0 * set3.size()) / (set1.size() + set2.size());
     }
@@ -83,19 +82,20 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param sequence the byte sequence
      * @return the set of string-encoded n-grams
      */
-    private Set<String> getSet(List<Byte> sequence) {
+    private static Set<String> getSet(List<Byte> sequence) {
         int ngram = 3;
         StringBuilder fragment = new StringBuilder();
         Set<String> result = new HashSet<>();
-        for (int i = 0; i < sequence.size() + ngram - 1; i++) {
+        for (int i = 0; i < ((sequence.size() + ngram) - 1); i++) {
             fragment.delete(0, fragment.length());
-            for (int j = i - ngram + 1; j <= i; j++) {
-                if (j < 0 || j >= sequence.size()) {
+            for (int j = (i - ngram) + 1; j <= i; j++) {
+                if ((j < 0) || (j >= sequence.size())) {
                     fragment.append(" -");
                 } else if (sequence.get(j) == null) {
+                    //noinspection HardCodedStringLiteral
                     fragment.append(" n");
                 } else {
-                    fragment.append(' ').append(sequence.get(j).toString());
+                    fragment.append(' ').append(sequence.get(j));
                 }
             }
             fragment.deleteCharAt(0);
@@ -111,11 +111,10 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param size      the number of all not yet learned sequences
      * @return the average distances of the sequences
      */
-    private double[] avgDistances(double[][] distances, int size) {
+    private static double[] avgDistances(double[][] distances, int size) {
         double[] result = new double[size];
-        double sum;
         for (int i = 0; i < result.length; i++) {
-            sum = 0;
+            double sum = 0;
             for (int j = 0; j < result.length; j++) {
                 sum += distances[i][j];
             }
@@ -132,7 +131,7 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param avgDistances the average distances for each sequence
      * @return the new calculated distance matrix
      */
-    private double[][] avgDistanceMatrix(double[][] distances, double[] avgDistances) {
+    private static double[][] avgDistanceMatrix(double[][] distances, double... avgDistances) {
         for (int i = 0; i < distances.length; i++) {
             for (int j = i; j < distances[i].length; j++) {
                 if (i == j) {
@@ -152,7 +151,7 @@ class LearnSelectCallable implements Callable<int[]> {
      * @param distances the distance matrix
      * @return the indices of the two minimal sequences
      */
-    private int[] minIndices(double[][] distances) {
+    private static int[] minIndices(double[][] distances) {
         double minDistance = Double.MAX_VALUE;
         int[] result = new int[2];
         for (int i = 0; i < distances.length; i++) {

@@ -10,13 +10,14 @@ package model.process.fuzzing;
 
 import model.Model;
 import model.process.AbstractThreadProcess;
-import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.time.Instant;
+import java.time.temporal.Temporal;
 import java.util.Observable;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
@@ -27,6 +28,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
     private InjectedProtocolStructure injectedProtocolStructure;
     private Recordings recordings;
     private FuzzingRunnable runnable;
+    @SuppressWarnings("rawtypes")
     private Future fuzzingFuture;
 
     /**
@@ -49,7 +51,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
      * @param injectionMethod           the injection method
      */
     public void init(InjectedProtocolStructure injectedProtocolStructure, InetSocketAddress target, int interval, int
-            timeout, FuzzOptionsProcess.CommunicationSave saveCommunication, FuzzOptionsProcess.InjectionMethod
+            timeout, CommunicationSave saveCommunication, InjectionMethod
             injectionMethod) {
         this.injectedProtocolStructure = injectedProtocolStructure;
         recordings.clear();
@@ -61,12 +63,12 @@ public class FuzzingProcess extends AbstractThreadProcess {
 
     @Override
     public int getWorkProgress() {
-        return runnable == null ? 0 : runnable.getWorkProgress();
+        return (runnable == null) ? 0 : runnable.getWorkProgress();
     }
 
     @Override
     public int getWorkTotal() {
-        return runnable == null ? 0 : runnable.getWorkTotal();
+        return (runnable == null) ? 0 : runnable.getWorkTotal();
     }
 
     @Override
@@ -82,7 +84,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
     @Override
     public void start() {
         Model.INSTANCE.getLogger().info("Fuzzing process started");
-        fuzzingFuture = EXECUTOR.submit(runnable);
+        fuzzingFuture = AbstractThreadProcess.EXECUTOR.submit(runnable);
         spreadUpdate();
     }
 
@@ -90,7 +92,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
     protected void complete() {
         try {
             fuzzingFuture.get();
-        } catch (CancellationException | InterruptedException e) {
+        } catch (CancellationException | InterruptedException ignored) {
             interrupt();
             return;
         } catch (ExecutionException e) {
@@ -103,7 +105,7 @@ public class FuzzingProcess extends AbstractThreadProcess {
 
     @Override
     public boolean isRunning() {
-        return fuzzingFuture != null && !fuzzingFuture.isDone();
+        return (fuzzingFuture != null) && !fuzzingFuture.isDone();
     }
 
     @Override
@@ -118,13 +120,12 @@ public class FuzzingProcess extends AbstractThreadProcess {
      *
      * @return the start time of the fuzzing process, or -1 if the process has not been started after the last reset
      */
-    public Instant getStartTime() {
+    public Temporal getStartTime() {
         return runnable.getStartTime();
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        FuzzingRunnable runnable = (FuzzingRunnable) o;
         if (runnable.isFinished()) {
             complete();
         }

@@ -23,10 +23,11 @@ class MemoryTimer {
     /**
      * Instantiates a new timer for displaying the current memory consumption in periodic intervals.
      *
-     * @param l the label the memory consumption will be displayed in
+     * @param label the label the memory consumption will be displayed in
      */
-    public MemoryTimer(Label l) {
-        label = l;
+    public MemoryTimer(Label label) {
+        super();
+        this.label = label;
         timer = new Timer();
     }
 
@@ -38,10 +39,11 @@ class MemoryTimer {
             @Override
             public void run() {
                 DecimalFormat numberFormat = new DecimalFormat("#0");
-                final String totalMemory = numberFormat.format(Runtime.getRuntime().totalMemory() / 1024 / 1024);
-                final String usedMemory = numberFormat.format((Runtime.getRuntime().totalMemory() - Runtime
-                        .getRuntime().freeMemory()) / 1024 / 1024);
-                Platform.runLater(() -> label.setText(usedMemory + "/" + totalMemory + " MB"));
+                String totalMemory = numberFormat.format(Runtime.getRuntime().totalMemory() / 1024 / 1024);
+                String usedMemory = numberFormat.format((Runtime.getRuntime().totalMemory() - Runtime.getRuntime()
+                        .freeMemory()) / 1024 / 1024);
+                //noinspection HardCodedStringLiteral
+                Platform.runLater(() -> label.setText(usedMemory + '/' + totalMemory + " MB"));
             }
         }, 2000, 2000);
     }

@@ -11,8 +11,7 @@ public class RandomPoolTest {
     public void testNextBloatBytes() throws Exception {
         for (int i = 0; i < 100; i++) {
             List<Byte> bytes = RandomPool.getInstance().nextBloatBytes(i);
-            Assert.assertTrue(bytes.size() >= 0);
-            Assert.assertTrue(bytes.size() < i * 10000 + 1);
+            Assert.assertTrue(bytes.size() < ((i * 10000) + 1));
         }
     }
 }

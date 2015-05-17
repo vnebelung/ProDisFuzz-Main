@@ -5,18 +5,22 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("DynamicRegexReplaceableByCompiledPattern")
 public class ExportProcessTest {
 
     private ExportProcess exportProcess;
 
     @BeforeClass
-    public void setUp() throws Exception {
+    public void setUp() {
         exportProcess = new ExportProcess();
         ProtocolStructure protocolStructure = new ProtocolStructure();
         List<Byte> block1 = new ArrayList<>();
@@ -49,16 +53,19 @@ public class ExportProcessTest {
     }
 
     @Test(priority = 1)
-    public void testExportXML() throws Exception {
+    public void testExportXML() throws IOException, URISyntaxException {
         Assert.assertFalse(exportProcess.isExported());
+        //noinspection HardCodedStringLiteral
         Path path = Files.createTempFile("testng_", null);
         exportProcess.exportXML(path);
         Assert.assertTrue(exportProcess.isExported());
         Assert.assertTrue(Files.exists(path));
-        String exportedXML = new String(Files.readAllBytes(path));
+        String exportedXML = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+        //noinspection HardCodedStringLiteral
         exportedXML = exportedXML.replaceFirst("datetime=\"[^\"]+\"", "datetime=\"2014-04-12T22:55:54+02:00\"");
+        //noinspection HardCodedStringLiteral
         String referenceXML = new String(Files.readAllBytes(Paths.get(getClass().getResource("/protocol.xml").toURI()
-        )));
+        )), StandardCharsets.UTF_8);
         Assert.assertEquals(exportedXML, referenceXML);
         Files.delete(path);
     }

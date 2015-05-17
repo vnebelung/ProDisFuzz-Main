@@ -10,7 +10,9 @@ package model.logger;
 
 import model.Model;
 
-public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+import java.lang.Thread.UncaughtExceptionHandler;
+
+public class ExceptionHandler implements UncaughtExceptionHandler {
 
     @Override
     public void uncaughtException(Thread t, Throwable e) {

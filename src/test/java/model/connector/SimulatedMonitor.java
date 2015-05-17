@@ -1,6 +1,6 @@
 package model.connector;
 
-import model.helper.Constants;
+import model.utilities.Constants;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -8,14 +8,16 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"HardCodedStringLiteral", "OverlyComplexMethod"})
 public class SimulatedMonitor extends Thread {
 
+    private final Map<String, String> parameters;
     private int port;
-    private Map<String, String> parameters;
 
     public SimulatedMonitor(int port) {
         super();
@@ -23,10 +25,12 @@ public class SimulatedMonitor extends Thread {
         parameters = new HashMap<>();
     }
 
+    @SuppressWarnings("RefusedBequest")
     @Override
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (!isInterrupted()) {
+                //noinspection NestedTryStatement
                 try (Socket client = serverSocket.accept()) {
                     handleClient(client);
                 } catch (EOFException ignored) {
@@ -65,17 +69,17 @@ public class SimulatedMonitor extends Thread {
                 String body = stringBuilder.toString();
                 switch (header) {
                     case "AYT":
-                        out.write(("ROK " + String.valueOf(Constants.RELEASE_NUMBER).length() + " " + Constants
-                                .RELEASE_NUMBER).getBytes());
+                        out.write(("ROK " + String.valueOf(Constants.RELEASE_NUMBER).length() + ' ' + Constants
+                                .RELEASE_NUMBER).getBytes(StandardCharsets.UTF_8));
                         out.flush();
                         break;
                     case "GFP":
                         if (parameters.containsKey(body)) {
                             String p = parameters.get(body);
-                            out.write(("ROK " + p.length() + " " + p).getBytes());
+                            out.write(("ROK " + p.length() + ' ' + p).getBytes(StandardCharsets.UTF_8));
                             out.flush();
                         } else {
-                            out.write(("ERR 3 n/a").getBytes());
+                            out.write("ERR 3 n/a".getBytes(StandardCharsets.UTF_8));
                             out.flush();
                         }
                         break;
@@ -93,27 +97,24 @@ public class SimulatedMonitor extends Thread {
                             }
                         }
                         if (bad) {
-                            out.write("ERR 21 Not testkey=testvalue".getBytes());
+                            out.write("ERR 21 Not testkey=testvalue".getBytes(StandardCharsets.UTF_8));
                             out.flush();
                         } else {
-                            out.write("ROK 0 ".getBytes());
+                            out.write("ROK 0 ".getBytes(StandardCharsets.UTF_8));
                             out.flush();
                         }
                         break;
                     case "CTD":
                         Instant now = Instant.now();
                         String newBody;
-                        switch (body.length()) {
-                            case 1:
-                                newBody = "crashed=no,time=" + now;
-                                out.write(("ROK " + newBody.length() + " " + newBody).getBytes());
-                                out.flush();
-                                break;
-                            default:
-                                newBody = "crashed=yes,time=" + now + "crashcause=test";
-                                out.write(("ROK " + newBody.length() + " " + newBody).getBytes());
-                                out.flush();
-                                break;
+                        if (body.length() == 1) {
+                            newBody = "crashed=no,time=" + now;
+                            out.write(("ROK " + newBody.length() + ' ' + newBody).getBytes(StandardCharsets.UTF_8));
+                            out.flush();
+                        } else {
+                            newBody = "crashed=yes,time=" + now + ",crashcause=test";
+                            out.write(("ROK " + newBody.length() + ' ' + newBody).getBytes(StandardCharsets.UTF_8));
+                            out.flush();
                         }
                     default:
                 }

@@ -9,8 +9,8 @@
 package model.process.fuzzing;
 
 import model.RandomPool;
-import model.process.fuzzOptions.FuzzOptionsProcess;
-import model.protocol.InjectedProtocolBlock;
+import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
+import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 class FuzzingMessageCallable implements Callable<byte[]> {
 
     private final InjectedProtocolStructure injectedProtocolStructure;
-    private final FuzzOptionsProcess.InjectionMethod injectionMethod;
+    private final InjectionMethod injectionMethod;
     private int currentBlock;
     private int currentLibraryLine;
 
@@ -31,8 +31,9 @@ class FuzzingMessageCallable implements Callable<byte[]> {
      * @param injectedProtocolStructure the injected protocol blocks that define the protocol structure
      * @param injectionMethod           the injection method the user-chosen injection method
      */
-    public FuzzingMessageCallable(InjectedProtocolStructure injectedProtocolStructure,
-                                  FuzzOptionsProcess.InjectionMethod injectionMethod) {
+    public FuzzingMessageCallable(InjectedProtocolStructure injectedProtocolStructure, InjectionMethod
+            injectionMethod) {
+        super();
         this.injectedProtocolStructure = injectedProtocolStructure;
         this.injectionMethod = injectionMethod;
         currentBlock = 0;
@@ -40,7 +41,7 @@ class FuzzingMessageCallable implements Callable<byte[]> {
     }
 
     @Override
-    public byte[] call() throws Exception {
+    public byte[] call() {
         List<Byte> bytes = new ArrayList<>();
         if (finiteIterations()) {
             switch (injectionMethod) {
@@ -49,8 +50,6 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                     break;
                 case SIMULTANEOUS:
                     bytes = simFinMessage();
-                    break;
-                default:
                     break;
             }
         } else {
@@ -61,9 +60,11 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                 case SIMULTANEOUS:
                     bytes = simInfMessage();
                     break;
-                default:
-                    break;
             }
+        }
+        if (bytes == null) {
+            //noinspection ReturnOfNull
+            return null;
         }
         byte[] result = new byte[bytes.size()];
         for (int i = 0; i < bytes.size(); i++) {
@@ -86,6 +87,7 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                     result.addAll(Arrays.asList(injectedProtocolStructure.getBlock(i).getBytes()));
                     break;
                 case VAR:
+                    //noinspection NestedSwitchStatement
                     switch (injectedProtocolStructure.getBlock(i).getDataInjectionMethod()) {
                         case LIBRARY:
                             for (byte each : injectedProtocolStructure.getBlock(i).getRandomLibraryLine()) {
@@ -96,11 +98,7 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                             result.addAll(RandomPool.getInstance().nextBloatBytes(injectedProtocolStructure.getBlock
                                     (i).getMaxLength()));
                             break;
-                        default:
-                            break;
                     }
-                    break;
-                default:
                     break;
             }
         }
@@ -128,8 +126,6 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                     break;
                 case VAR:
                     result.addAll(rndBytes);
-                    break;
-                default:
                     break;
             }
         }
@@ -168,8 +164,6 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                         }
                     }
                     break;
-                default:
-                    break;
             }
         }
         currentLibraryLine++;
@@ -197,8 +191,6 @@ class FuzzingMessageCallable implements Callable<byte[]> {
                         result.add(each);
                     }
                     break;
-                default:
-                    break;
             }
         }
         currentLibraryLine++;
@@ -212,13 +204,11 @@ class FuzzingMessageCallable implements Callable<byte[]> {
      * @return true if all variable protocol blocks use library files
      */
     private boolean finiteIterations() {
-        if (injectionMethod == FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS) {
-            return injectedProtocolStructure.getVarBlock(0).getDataInjectionMethod() == InjectedProtocolBlock
-                    .DataInjectionMethod.LIBRARY;
+        if (injectionMethod == InjectionMethod.SIMULTANEOUS) {
+            return injectedProtocolStructure.getVarBlock(0).getDataInjectionMethod() == DataInjectionMethod.LIBRARY;
         } else {
             for (int i = 0; i < injectedProtocolStructure.getVarSize(); i++) {
-                if (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == InjectedProtocolBlock
-                        .DataInjectionMethod.RANDOM) {
+                if (injectedProtocolStructure.getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod.RANDOM) {
                     return false;
                 }
             }

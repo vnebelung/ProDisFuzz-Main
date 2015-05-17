@@ -1,15 +1,17 @@
 package model.connector;
 
-import model.helper.Constants;
+import model.utilities.Constants;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings({"HardCodedStringLiteral", "resource", "SocketOpenedButNotSafelyClosed"})
 public class ProtocolTest {
 
     private SimulatedMonitor simulatedMonitor;
@@ -25,16 +27,18 @@ public class ProtocolTest {
         simulatedMonitor.interrupt();
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @Test(priority = 1)
-    public void testAyt() throws Exception {
+    public void testAyt() throws IOException {
         Socket socket = new Socket("localhost", 10001);
         Protocol protocol = new Protocol(socket.getInputStream(), socket.getOutputStream());
         Assert.assertEquals(protocol.ayt(), Constants.RELEASE_NUMBER);
         socket.close();
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @Test(priority = 2)
-    public void testSfp() throws Exception {
+    public void testSfp() throws IOException {
         Socket socket = new Socket("localhost", 10001);
         Protocol protocol = new Protocol(socket.getInputStream(), socket.getOutputStream());
         protocol.ayt();
@@ -44,16 +48,17 @@ public class ProtocolTest {
         socket.close();
     }
 
+    @SuppressWarnings("OverlyBroadThrowsClause")
     @Test(priority = 4)
-    public void testCtd() throws Exception {
+    public void testCtd() throws IOException {
         Socket socket = new Socket("localhost", 10001);
         Protocol protocol = new Protocol(socket.getInputStream(), socket.getOutputStream());
         protocol.ayt();
         Map<String, String> parameter = new HashMap<>(1);
         parameter.put("testkey", "testvalue");
         protocol.sfp(parameter);
-        Assert.assertFalse(protocol.ctd(new byte[]{'a'}));
-        Assert.assertTrue(protocol.ctd(new byte[]{'a', 'a'}));
+        Assert.assertFalse(protocol.ctd((byte) 'a'));
+        Assert.assertTrue(protocol.ctd((byte) 'a', (byte) 'a'));
         socket.close();
     }
 }

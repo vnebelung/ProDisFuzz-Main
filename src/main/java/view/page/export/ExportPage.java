@@ -26,8 +26,10 @@ import java.util.Observer;
 public class ExportPage extends VBox implements Observer, Page {
 
     private final Navigation navigation;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private TextField fileTextField;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     private Path savePath;
 
     /**
@@ -38,7 +40,9 @@ public class ExportPage extends VBox implements Observer, Page {
      */
     public ExportPage(Navigation navigation) {
         super();
+        //noinspection HardcodedFileSeparator,ThisEscapedInObjectConstruction,HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/exportPage.fxml"), this);
+        //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getExportProcess().addObserver(this);
         this.navigation = navigation;
     }
@@ -47,14 +51,17 @@ public class ExportPage extends VBox implements Observer, Page {
     public void update(Observable o, Object arg) {
         ExportProcess process = (ExportProcess) o;
 
+        // noinspection HardCodedStringLiteral
         fileTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
         if (process.isExported()) {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-success");
-            fileTextField.setText("Successfully exported to '" + savePath.toString() + "'");
+            fileTextField.setText("Successfully exported to '" + savePath + '\'');
         } else {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-fail");
-            fileTextField.setText(savePath == null ? "Please choose the file the protocol structure will be exported " +
-                    "" + "to" : "Could not export to '" + savePath.toString() + "'");
+            fileTextField.setText((savePath == null) ? ("Please choose the file the protocol structure will be " +
+                    "exported " + "to") : ("Could not export to '" + savePath + '\''));
         }
 
         navigation.setCancelable(!process.isExported(), this);
@@ -69,8 +76,10 @@ public class ExportPage extends VBox implements Observer, Page {
             return;
         }
         savePath = file.toPath().toAbsolutePath();
+        //noinspection HardCodedStringLiteral
         if (!savePath.toString().endsWith(".xml")) {
-            savePath = savePath.getParent().resolve(savePath.getFileName().toString() + ".xml");
+            //noinspection HardCodedStringLiteral
+            savePath = savePath.getParent().resolve(savePath.getFileName() + ".xml");
         }
         Model.INSTANCE.getExportProcess().exportXML(savePath);
     }

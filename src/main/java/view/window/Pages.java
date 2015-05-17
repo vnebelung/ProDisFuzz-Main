@@ -23,6 +23,7 @@ class Pages {
      * page), so that it is possible to navigate through pages. The current page pointer is set to the first page.
      */
     public Pages() {
+        super();
         pages = new ArrayList<>();
         currentIndex = 0;
     }
@@ -30,10 +31,10 @@ class Pages {
     /**
      * Adds a page to the end of the list. The current page pointer is not changed by this call.
      *
-     * @param n the page as a node
+     * @param node the page as a node
      */
-    public void add(Node n) {
-        pages.add(n);
+    public void add(Node node) {
+        pages.add(node);
     }
 
     /**
@@ -63,10 +64,11 @@ class Pages {
      * @return the next page
      */
     public Node getNext() {
-        if (currentIndex < pages.size() - 1) {
+        if (currentIndex < (pages.size() - 1)) {
             currentIndex++;
             return pages.get(currentIndex);
         } else {
+            //noinspection ReturnOfNull
             return null;
         }
     }
@@ -82,6 +84,7 @@ class Pages {
             currentIndex--;
             return pages.get(currentIndex);
         } else {
+            //noinspection ReturnOfNull
             return null;
         }
     }
@@ -92,7 +95,7 @@ class Pages {
      * @return true if the current page has a succeeding page
      */
     public boolean hasNext() {
-        return currentIndex < pages.size() - 1;
+        return currentIndex < (pages.size() - 1);
     }
 
     /**

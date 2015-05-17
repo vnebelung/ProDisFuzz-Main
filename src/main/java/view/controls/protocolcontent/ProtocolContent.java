@@ -12,18 +12,18 @@ import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import model.helper.Hex;
 import model.protocol.ProtocolStructure;
+import model.utilities.Hex;
 import view.window.FxmlConnection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 public class ProtocolContent extends GridPane {
 
-    private final static char VAR_CHAR = '*';
-    private final static char NON_READABLE_CHAR = '.';
+    private static final char VAR_CHAR = '*';
+    private static final char NON_READABLE_CHAR = '.';
     private int lastHashCode;
     @FXML
     private TextFlow protocolTextFlow;
@@ -34,6 +34,7 @@ public class ProtocolContent extends GridPane {
      */
     public ProtocolContent() {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/protocolContent.fxml"), this);
     }
 
@@ -48,7 +49,7 @@ public class ProtocolContent extends GridPane {
             return;
         }
         lastHashCode = protocolStructure.hashCode();
-        List<Text> newTexts = new ArrayList<>();
+        Collection<Text> newTexts = new ArrayList<>();
         newTexts.add(createHeader());
         if (protocolStructure.getSize() == 0) {
             newTexts.add(createPlaceholder());
@@ -64,8 +65,9 @@ public class ProtocolContent extends GridPane {
      *
      * @return the text containing the header
      */
-    private Text createHeader() {
+    private static Text createHeader() {
         StringBuilder stringBuilder = new StringBuilder();
+        //noinspection HardCodedStringLiteral
         stringBuilder.append("Offset   ");
         for (int i = 0; i < 16; i++) {
             stringBuilder.append(" 0");
@@ -73,6 +75,7 @@ public class ProtocolContent extends GridPane {
         }
         stringBuilder.append(System.lineSeparator()).append(System.lineSeparator());
         Text result = new Text(stringBuilder.toString());
+        //noinspection HardCodedStringLiteral
         result.getStyleClass().add("normal");
         return result;
     }
@@ -82,8 +85,9 @@ public class ProtocolContent extends GridPane {
      *
      * @return the text containing the placeholder
      */
-    private Text createPlaceholder() {
+    private static Text createPlaceholder() {
         Text result = new Text("No protocol data available.");
+        //noinspection HardCodedStringLiteral
         result.getStyleClass().add("normal");
         return result;
     }
@@ -95,9 +99,10 @@ public class ProtocolContent extends GridPane {
      * @param protocolStructure the protocol structure
      * @return the text containing the offset, the hex representation and the ASCII representation
      */
-    private List<Text> createText(ProtocolStructure protocolStructure) {
+    private static Collection<Text> createText(ProtocolStructure protocolStructure) {
         Byte[] bytes = protocolStructure.getBytes();
-        List<Text> result = new ArrayList<>();
+        Collection<Text> result = new ArrayList<>();
+        //noinspection NumericCastThatLosesPrecision
         int totalLines = (int) Math.ceil(bytes.length / 16.0);
         for (int i = 0; i < totalLines; i++) {
             result.add(createOffset(i));
@@ -115,13 +120,14 @@ public class ProtocolContent extends GridPane {
      * @param bytes the input bytes
      * @return the text containing the ASCII representation plus a linebreak at the end
      */
-    private List<Text> createAscii(Byte[] bytes) {
-        List<Text> result = new ArrayList<>();
+    private static Collection<Text> createAscii(Byte... bytes) {
+        Collection<Text> result = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
         boolean isPreByteNull = bytes[0] == null;
         for (Byte each : bytes) {
             if (isPreByteNull != (each == null)) {
                 Text text = new Text(stringBuilder.toString());
+                //noinspection HardCodedStringLiteral
                 text.getStyleClass().add(isPreByteNull ? "var" : "fix");
                 result.add(text);
                 stringBuilder = new StringBuilder();
@@ -131,11 +137,13 @@ public class ProtocolContent extends GridPane {
                 stringBuilder.append(VAR_CHAR);
             } else {
                 int decimal = Integer.parseInt(Hex.byte2Hex(each), 16);
-                stringBuilder.append(decimal >= 32 && decimal <= 126 ? (char) decimal : NON_READABLE_CHAR);
+                //noinspection NumericCastThatLosesPrecision
+                stringBuilder.append(((decimal >= 32) && (decimal <= 126)) ? (char) decimal : NON_READABLE_CHAR);
             }
         }
         stringBuilder.append(System.lineSeparator());
         Text text = new Text(stringBuilder.toString());
+        //noinspection HardCodedStringLiteral
         text.getStyleClass().add(isPreByteNull ? "var" : "fix");
         result.add(text);
         return result;
@@ -147,14 +155,15 @@ public class ProtocolContent extends GridPane {
      * @param line the current line number
      * @return the text containing the offset plus an additional space at the end
      */
-    private Text createOffset(int line) {
+    private static Text createOffset(int line) {
         String offset = Integer.toHexString(line * 16);
         StringBuilder stringBuilder = new StringBuilder();
-        for (int j = 0; j < 8 - offset.length(); j++) {
+        for (int j = 0; j < (8 - offset.length()); j++) {
             stringBuilder.append(0);
         }
         stringBuilder.append(offset).append(' ');
         Text result = new Text(stringBuilder.toString());
+        //noinspection HardCodedStringLiteral
         result.getStyleClass().add("normal");
         return result;
     }
@@ -165,13 +174,14 @@ public class ProtocolContent extends GridPane {
      * @param bytes the input bytes
      * @return the text containing the hex representation plus two additional spaces at the end
      */
-    private List<Text> createHex(Byte[] bytes) {
-        List<Text> result = new ArrayList<>();
+    private static Collection<Text> createHex(Byte... bytes) {
+        Collection<Text> result = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
         boolean isPreByteNull = bytes[0] == null;
         for (Byte each : bytes) {
             if (isPreByteNull != (each == null)) {
                 Text text = new Text(stringBuilder.toString());
+                //noinspection HardCodedStringLiteral
                 text.getStyleClass().add(isPreByteNull ? "var" : "fix");
                 result.add(text);
                 stringBuilder = new StringBuilder();
@@ -184,11 +194,12 @@ public class ProtocolContent extends GridPane {
                 stringBuilder.append(Hex.byte2Hex(each));
             }
         }
-        for (int i = 0; i < 16 - bytes.length; i++) {
+        for (int i = 0; i < (16 - bytes.length); i++) {
             stringBuilder.append("   ");
         }
         stringBuilder.append("  ");
         Text text = new Text(stringBuilder.toString());
+        //noinspection HardCodedStringLiteral
         text.getStyleClass().add(isPreByteNull ? "var" : "fix");
         result.add(text);
         return result;

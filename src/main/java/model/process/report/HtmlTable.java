@@ -14,11 +14,15 @@ class HtmlTable {
      * @param columns the number of columns
      */
     public HtmlTable(int rows, int columns) {
+        super();
+        //noinspection HardCodedStringLiteral
         table = new Element("table", ReportProcess.NAMESPACE);
         for (int i = 0; i < rows; i++) {
+            //noinspection HardCodedStringLiteral
             Element tr = new Element("tr", ReportProcess.NAMESPACE);
             for (int j = 0; j < columns; j++) {
-                tr.appendChild(new Element(i == 0 ? "th" : "td", ReportProcess.NAMESPACE));
+                //noinspection HardCodedStringLiteral
+                tr.appendChild(new Element((i == 0) ? "th" : "td", ReportProcess.NAMESPACE));
             }
             table.appendChild(tr);
         }
@@ -32,7 +36,8 @@ class HtmlTable {
      * @param value  the cell text
      */
     public void setText(int row, int column, String value) {
-        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements(row == 0 ? "th" : "td",
+        //noinspection HardCodedStringLiteral
+        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements((row == 0) ? "th" : "td",
                 ReportProcess.NAMESPACE).get(column).appendChild(value);
     }
 
@@ -46,10 +51,13 @@ class HtmlTable {
      * @param text   the link text
      */
     public void setLink(int row, int column, String href, String text) {
+        //noinspection HardCodedStringLiteral
         Element a = new Element("a", ReportProcess.NAMESPACE);
+        //noinspection HardCodedStringLiteral
         a.addAttribute(new Attribute("href", href));
         a.appendChild(text);
-        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements(row == 0 ? "th" : "td",
+        //noinspection HardCodedStringLiteral
+        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements((row == 0) ? "th" : "td",
                 ReportProcess.NAMESPACE).get(column).appendChild(a);
     }
 
@@ -62,7 +70,8 @@ class HtmlTable {
      * @param value  the attribute value
      */
     public void setAttribute(int row, int column, String name, String value) {
-        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements(row == 0 ? "th" : "td",
+        //noinspection HardCodedStringLiteral
+        table.getChildElements("tr", ReportProcess.NAMESPACE).get(row).getChildElements((row == 0) ? "th" : "td",
                 ReportProcess.NAMESPACE).get(column).addAttribute(new Attribute(name, value));
     }
 

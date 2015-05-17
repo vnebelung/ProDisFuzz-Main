@@ -1,4 +1,4 @@
-package model.helper;
+package model.utilities;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -16,6 +16,7 @@ public class HexTest {
     public void testHex2Byte() throws Exception {
         Assert.assertEquals(Hex.hex2Byte("00"), 0);
 
+        //noinspection HardCodedStringLiteral
         Assert.assertEquals(Hex.hex2Byte("7f"), 127);
     }
 }

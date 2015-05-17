@@ -1,5 +1,6 @@
 package model.protocol;
 
+import model.protocol.ProtocolBlock.Type;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -13,14 +14,14 @@ public class ProtocolBlockTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
-        protocolBlock = new ProtocolBlock(ProtocolBlock.Type.FIX, bytes);
-        protocolBlockNull = new ProtocolBlock(ProtocolBlock.Type.VAR, bytesNull);
+        protocolBlock = new ProtocolBlock(Type.FIX, bytes);
+        protocolBlockNull = new ProtocolBlock(Type.VAR, bytesNull);
     }
 
     @Test
     public void testGetType() throws Exception {
-        Assert.assertEquals(protocolBlock.getType(), ProtocolBlock.Type.FIX);
-        Assert.assertEquals(protocolBlockNull.getType(), ProtocolBlock.Type.VAR);
+        Assert.assertEquals(protocolBlock.getType(), Type.FIX);
+        Assert.assertEquals(protocolBlockNull.getType(), Type.VAR);
     }
 
     @Test

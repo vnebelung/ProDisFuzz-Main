@@ -24,16 +24,16 @@ import view.page.fuzzing.FuzzingPage;
 import view.page.import_.ImportPage;
 import view.page.learn.LearnPage;
 import view.page.monitor.MonitorPage;
-import view.page.operationMode.OperationMode;
+import view.page.operationmode.OperationMode;
 import view.page.report.ReportPage;
 
 public class Window extends VBox implements NavigationControl, Navigation {
 
+    private final OperationMode operationMode;
     @FXML
     private ScrollPane mainScrollPane;
     @FXML
     private ControlBar controlArea;
-    private final OperationMode operationMode;
     private Pages pages;
 
     /**
@@ -41,6 +41,7 @@ public class Window extends VBox implements NavigationControl, Navigation {
      */
     public Window() {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/window.fxml"), this);
         controlArea.setNavigationControl(this);
         operationMode = new OperationMode(this);
@@ -101,10 +102,10 @@ public class Window extends VBox implements NavigationControl, Navigation {
      * Fades in a given page node, that means increasing its opacity from 0 to 1 in a specific time interval. If a page
      * is existing in mainScrollPane, this page is faded out before the given node is faded in.
      *
-     * @param n the page node to fade in
+     * @param node the page node to fade in
      */
-    private void fadeInPage(Node n) {
-        FadeTransition transition = new FadeTransition(Duration.millis(500), n);
+    private static void fadeInPage(Node node) {
+        FadeTransition transition = new FadeTransition(Duration.millis(500), node);
         transition.setFromValue(0);
         transition.setToValue(1);
         transition.play();
@@ -113,10 +114,10 @@ public class Window extends VBox implements NavigationControl, Navigation {
     /**
      * Fades out a given page node, that means decreasing its opacity from 1 to 0 in a specific time interval.
      *
-     * @param n the page node to fade out
+     * @param node the page node to fade out
      */
-    private void fadeOutPage(Node n) {
-        FadeTransition transition = new FadeTransition(Duration.millis(500), n);
+    private static void fadeOutPage(Node node) {
+        FadeTransition transition = new FadeTransition(Duration.millis(500), node);
         transition.setFromValue(1);
         transition.setToValue(0);
         transition.play();
@@ -166,19 +167,19 @@ public class Window extends VBox implements NavigationControl, Navigation {
     }
 
     @Override
-    public void setCancelable(boolean b, Node n) {
-        if (!n.equals(pages.getCurrent())) {
+    public void setCancelable(boolean enabled, Node node) {
+        if (!node.equals(pages.getCurrent())) {
             return;
         }
-        controlArea.setCancelEnabled(b);
+        controlArea.setCancelEnabled(enabled);
     }
 
     @Override
-    public void setFinishable(boolean b, Node n) {
-        if (!n.equals(pages.getCurrent())) {
+    public void setFinishable(boolean enabled, Node node) {
+        if (!node.equals(pages.getCurrent())) {
             return;
         }
-        controlArea.setFinishEnabled(!pages.hasNext() && b);
-        controlArea.setNextEnabled(pages.hasNext() && b);
+        controlArea.setFinishEnabled(!pages.hasNext() && enabled);
+        controlArea.setNextEnabled(pages.hasNext() && enabled);
     }
 }

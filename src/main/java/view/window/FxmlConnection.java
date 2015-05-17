@@ -14,7 +14,8 @@ import model.Model;
 import java.io.IOException;
 import java.net.URL;
 
-public class FxmlConnection {
+public enum FxmlConnection {
+    ;
 
     /**
      * Connect a given object to a FXML file defined by the given URL.

@@ -17,6 +17,7 @@ import model.protocol.ProtocolStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -30,11 +31,11 @@ class LearnRunnable extends AbstractRunnable {
      *
      * @param files the protocol files
      */
-    public LearnRunnable(ProtocolFile[] files) {
+    public LearnRunnable(ProtocolFile... files) {
         super();
         this.files = Arrays.copyOf(files, files.length);
         // Work: Convert + Select + Hirschberg + Parts + Clean + Parts
-        setWorkTotal(1 + files.length - 1 + files.length - 1 + files.length - 1 + 1 + 1);
+        setWorkTotal(3 * files.length);
     }
 
     @Override
@@ -62,7 +63,7 @@ class LearnRunnable extends AbstractRunnable {
             // Generate new protocol blocks
             generateProtocolParts(sequences.get(0));
             setFinished(true);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException ignored) {
             // Nothing to do here
         } catch (ExecutionException e) {
             Model.INSTANCE.getLogger().error(e);
@@ -77,7 +78,7 @@ class LearnRunnable extends AbstractRunnable {
      * @throws InterruptedException
      */
     private List<List<Byte>> convertToSequences() throws ExecutionException, InterruptedException {
-        LearnConvertCallable convertCallable = new LearnConvertCallable(files);
+        Callable<List<List<Byte>>> convertCallable = new LearnConvertCallable(files);
         Future<List<List<Byte>>> convertFuture = AbstractThreadProcess.EXECUTOR.submit(convertCallable);
         try {
             List<List<Byte>> result = new ArrayList<>(convertFuture.get());
@@ -99,7 +100,7 @@ class LearnRunnable extends AbstractRunnable {
      * @throws InterruptedException
      */
     private int[] selectSequences(List<List<Byte>> sequences) throws ExecutionException, InterruptedException {
-        LearnSelectCallable selectCallable = new LearnSelectCallable(sequences);
+        Callable<int[]> selectCallable = new LearnSelectCallable(sequences);
         Future<int[]> selectFuture = AbstractThreadProcess.EXECUTOR.submit(selectCallable);
         try {
             int[] result = selectFuture.get();
@@ -107,10 +108,10 @@ class LearnRunnable extends AbstractRunnable {
             StringBuilder string = new StringBuilder();
             string.append("Queued sequences: ");
             for (int i = 0; i < sequences.size(); i++) {
-                string.append(i > 0 ? ", " : "");
-                string.append(i == result[0] || i == result[1] ? '*' : "");
+                string.append((i > 0) ? ", " : "");
+                string.append(((i == result[0]) || (i == result[1])) ? '*' : "");
                 string.append(Integer.toHexString(sequences.get(i).hashCode()));
-                string.append(i == result[0] || i == result[1] ? '*' : "");
+                string.append(((i == result[0]) || (i == result[1])) ? '*' : "");
             }
             Model.INSTANCE.getLogger().info(string.toString());
             return result;
@@ -131,7 +132,7 @@ class LearnRunnable extends AbstractRunnable {
      */
     private List<Byte> learn(List<Byte> sequence1, List<Byte> sequence2) throws InterruptedException,
             ExecutionException {
-        LearnHirschbergCallable hirschbergCallable = new LearnHirschbergCallable(sequence1, sequence2);
+        Callable<List<Byte>> hirschbergCallable = new LearnHirschbergCallable(sequence1, sequence2);
         Future<List<Byte>> hirschbergFuture = AbstractThreadProcess.EXECUTOR.submit(hirschbergCallable);
         try {
             // Add the new sequence to the list
@@ -157,7 +158,7 @@ class LearnRunnable extends AbstractRunnable {
      * @throws ExecutionException
      */
     private void generateProtocolParts(List<Byte> sequence) throws InterruptedException, ExecutionException {
-        LearnStructureCallable structureCallable = new LearnStructureCallable(sequence);
+        Callable<ProtocolStructure> structureCallable = new LearnStructureCallable(sequence);
         Future<ProtocolStructure> structureFuture = AbstractThreadProcess.EXECUTOR.submit(structureCallable);
         try {
             protocolStructure = structureFuture.get();
@@ -178,7 +179,7 @@ class LearnRunnable extends AbstractRunnable {
      * @throws ExecutionException
      */
     private List<Byte> adjust(List<Byte> sequence) throws InterruptedException, ExecutionException {
-        LearnAdjustCallable adjustCallable = new LearnAdjustCallable(sequence);
+        Callable<List<Byte>> adjustCallable = new LearnAdjustCallable(sequence);
         Future<List<Byte>> adjustFuture = AbstractThreadProcess.EXECUTOR.submit(adjustCallable);
         try {
             List<Byte> result = adjustFuture.get();

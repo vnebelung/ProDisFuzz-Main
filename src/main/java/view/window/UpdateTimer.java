@@ -52,7 +52,7 @@ public class UpdateTimer {
                         updates.append(eachRelease.getDate()).append(", Version ").append(eachRelease.getNumber())
                                 .append(" \"").append(eachRelease.getName()).append("\":").append(System
                                 .lineSeparator());
-                        updates.append("(").append(eachRelease.getRequirements()).append(")").append(System
+                        updates.append('(').append(eachRelease.getRequirements()).append(')').append(System
                                 .lineSeparator());
                         for (String eachInformation : eachRelease.getInformation()) {
                             updates.append("- ").append(eachInformation).append(System.lineSeparator());

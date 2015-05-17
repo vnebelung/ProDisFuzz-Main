@@ -9,8 +9,8 @@
 package model.updater;
 
 import model.Model;
-import model.helper.Constants;
-import model.helper.Keys;
+import model.utilities.Constants;
+import model.utilities.Keys;
 import model.xml.XmlExchange;
 import model.xml.XmlSchemaValidator;
 import nu.xom.Document;
@@ -24,6 +24,7 @@ import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.XMLSignature;
 import javax.xml.crypto.dsig.XMLSignatureException;
 import javax.xml.crypto.dsig.XMLSignatureFactory;
+import javax.xml.crypto.dsig.XMLValidateContext;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -44,8 +45,9 @@ import java.util.List;
 
 public class UpdateCheck {
 
+    @SuppressWarnings("HardCodedStringLiteral")
+    private static final String URL = "http://prodisfuzz.net/updater/releases.xml";
     private ReleaseInformation[] releaseInformation;
-    private final static String URL = "http://prodisfuzz.net/updater/releases.xml";
 
     /**
      * Checks whether the remote server prodisfuzz.net has a newer version available for download.
@@ -63,8 +65,8 @@ public class UpdateCheck {
         }
         Path xmlPath = downloadXML(url);
         if (xmlPath == null) {
-            Model.INSTANCE.getLogger().error("ProDisFuzz could not receive the update information from '" + url
-                    .toString() + "'. Please check manually for an update.");
+            Model.INSTANCE.getLogger().error("ProDisFuzz could not receive the update information from '" + url + "'." +
+                    " Please check manually for an update.");
             return false;
         }
         if (!XmlSchemaValidator.validateUpdateCheck(xmlPath)) {
@@ -78,7 +80,7 @@ public class UpdateCheck {
         }
         if (!verifyIntegrity(document)) {
             Model.INSTANCE.getLogger().error("ProDisFuzz could not verify the integrity of the update information at " +
-                    "'" + url.toString() + "'. This is strange. Please check manually for an update.");
+                    '\'' + url + "'. This is strange. Please check manually for an update.");
             return false;
         }
         releaseInformation = readNewReleases(document);
@@ -99,20 +101,25 @@ public class UpdateCheck {
      * @param document the XOM document
      * @return the information about all newer releases
      */
-    private ReleaseInformation[] readNewReleases(Document document) {
+    private static ReleaseInformation[] readNewReleases(Document document) {
         List<ReleaseInformation> result = new ArrayList<>();
         Elements elements = document.getRootElement().getChildElements("release", Constants.XML_NAMESPACE_PRODISFUZZ);
         for (int i = 0; i < elements.size(); i++) {
             Element element = elements.get(i);
+            //noinspection HardCodedStringLiteral
             int number = Integer.parseInt(element.getFirstChildElement("number", Constants.XML_NAMESPACE_PRODISFUZZ)
                     .getValue());
             if (number <= Constants.RELEASE_NUMBER) {
                 continue;
             }
+            //noinspection HardCodedStringLiteral
             String name = element.getFirstChildElement("name", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            //noinspection HardCodedStringLiteral
             String date = element.getFirstChildElement("date", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            //noinspection HardCodedStringLiteral
             String requirements = element.getFirstChildElement("requirements", Constants.XML_NAMESPACE_PRODISFUZZ)
                     .getValue();
+            // noinspection HardCodedStringLiteral
             Elements items = element.getFirstChildElement("information", Constants.XML_NAMESPACE_PRODISFUZZ)
                     .getChildElements("item", Constants.XML_NAMESPACE_PRODISFUZZ);
             String[] information = new String[items.size()];
@@ -130,7 +137,7 @@ public class UpdateCheck {
      * @param document the DOM document
      * @return true, if the integrity could be verified
      */
-    private boolean verifyIntegrity(Document document) {
+    private static boolean verifyIntegrity(Document document) {
         PublicKey publicKey = Keys.getUpdatePublicKey();
         if (publicKey == null) {
             return false;
@@ -141,8 +148,10 @@ public class UpdateCheck {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             DOMImplementation domImplementation = documentBuilder.getDOMImplementation();
             org.w3c.dom.Document domDocument = DOMConverter.convert(document, domImplementation);
+            //noinspection HardCodedStringLiteral
             Node signatureNode = domDocument.getElementsByTagName("Signature").item(0);
-            DOMValidateContext valContext = new DOMValidateContext(publicKey, signatureNode);
+            XMLValidateContext valContext = new DOMValidateContext(publicKey, signatureNode);
+            //noinspection HardCodedStringLiteral
             XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
             XMLSignature signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
             return signature.validate(valContext);
@@ -158,14 +167,18 @@ public class UpdateCheck {
      * @param url the URL the remote file is located at
      * @return the path the file was downloaded to, or null in case of an error
      */
-    private Path downloadXML(URL url) {
+    private static Path downloadXML(URL url) {
         Path result;
+        //noinspection OverlyBroadCatchBlock
         try {
             result = Files.createTempFile(Constants.FILE_PREFIX, null);
-            try (ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream()); FileOutputStream fileOutputStream = new FileOutputStream(result.toFile()); FileChannel fileChannel = fileOutputStream.getChannel()) {
+            //noinspection NestedTryStatement
+            try (ReadableByteChannel readableByteChannel = Channels.newChannel(url.openStream()); FileOutputStream
+                    fileOutputStream = new FileOutputStream(result.toFile()); FileChannel fileChannel =
+                    fileOutputStream.getChannel()) {
                 fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
             }
-        } catch (IOException e) {
+        } catch (IOException ignored) {
             return null;
         }
         return result;

@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.helper;
+package model.utilities;
 
 import model.Model;
 
@@ -14,11 +14,14 @@ import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-public abstract class Keys {
+@SuppressWarnings("StaticMethodOnlyUsedInOneClass")
+public enum Keys {
+    ;
 
-    private final static byte[] UPDATE_PUBLIC_KEY = {48, -126, 1, 34, 48, 13, 6, 9, 42, -122, 72, -122, -9, 13, 1, 1,
+    private static final byte[] UPDATE_PUBLIC_KEY = {48, -126, 1, 34, 48, 13, 6, 9, 42, -122, 72, -122, -9, 13, 1, 1,
             1, 5, 0, 3, -126, 1, 15, 0, 48, -126, 1, 10, 2, -126, 1, 1, 0, -25, 112, -25, 83, 50, -127, 85, -83, -53,
             -56, 58, -68, -103, -48, -14, -67, 40, -115, 92, 101, 115, -15, -63, 20, 1, 60, 38, 54, -15, -3, -57,
             -110, 79, -118, -128, 104, -111, 90, -28, 24, 71, -16, 1, -103, 43, -86, -43, -54, 59, -81, -64, -87,
@@ -39,8 +42,9 @@ public abstract class Keys {
      * @return the public key or null in case of an error
      */
     public static PublicKey getUpdatePublicKey() {
-        X509EncodedKeySpec spec = new X509EncodedKeySpec(UPDATE_PUBLIC_KEY);
+        KeySpec spec = new X509EncodedKeySpec(UPDATE_PUBLIC_KEY);
         try {
+            //noinspection HardCodedStringLiteral
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(spec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {

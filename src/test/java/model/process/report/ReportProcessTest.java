@@ -1,6 +1,6 @@
 package model.process.report;
 
-import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
 import org.testng.Assert;
@@ -11,11 +11,14 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
 
+@SuppressWarnings({"HardCodedStringLiteral", "AnonymousInnerClassMayBeStatic", "NumericCastThatLosesPrecision",
+        "DynamicRegexReplaceableByCompiledPattern"})
 public class ReportProcessTest {
 
     private ReportProcess reportProcess;
@@ -24,7 +27,7 @@ public class ReportProcessTest {
     private Recordings recordings;
 
     @BeforeClass
-    public void setUp() throws Exception {
+    public void setUp() throws IOException {
         reportProcess = new ReportProcess();
         recordings = new Recordings();
         bytes = new byte[3];
@@ -50,6 +53,7 @@ public class ReportProcessTest {
         try {
             injectedProtocolStructure.getBlock(1).setLibrary(Paths.get(getClass().getResource("/library.txt").toURI()));
         } catch (URISyntaxException e) {
+            //noinspection CallToPrintStackTrace
             e.printStackTrace();
         }
         Byte[] block3 = new Byte[1];
@@ -65,23 +69,23 @@ public class ReportProcessTest {
         injectedProtocolStructure.addBlock(block5);
         InetSocketAddress inetSocketAddress = new InetSocketAddress("example.net", 999);
         reportProcess.init(recordings, duration, inetSocketAddress, 10, injectedProtocolStructure, 100, 101,
-                FuzzOptionsProcess.CommunicationSave.ALL, 99);
+                CommunicationSave.ALL, 99);
 
         path = Files.createTempDirectory("testng_");
     }
 
     @Test(priority = 1)
-    public void testWrite() throws Exception {
+    public void testWrite() throws IOException, URISyntaxException {
         reportProcess.write(path);
         Assert.assertEquals(Files.list(path).count(), 2);
         Assert.assertEquals(Files.list(path.resolve("results_records")).count(), 4);
 
         Assert.assertEquals(Files.exists(path.resolve("results.html")), true);
-        String reportHtml = new String(Files.readAllBytes(path.resolve("results.html")));
+        String reportHtml = new String(Files.readAllBytes(path.resolve("results.html")), StandardCharsets.UTF_8);
         reportHtml = reportHtml.replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}",
                 "2000-01-01T00:11:22+02:00");
         String referenceHtml = new String(Files.readAllBytes(Paths.get(getClass().getResource("/results.html").toURI
-                ())));
+                ())), StandardCharsets.UTF_8);
         Assert.assertEquals(reportHtml, referenceHtml);
 
         Assert.assertEquals(Files.exists(path.resolve("results_records").resolve("record0-0.bytes")), true);
@@ -105,6 +109,7 @@ public class ReportProcessTest {
 
     @AfterClass
     public void tearDown() throws IOException {
+        //noinspection RefusedBequest
         Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {

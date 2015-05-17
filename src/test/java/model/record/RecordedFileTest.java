@@ -3,6 +3,7 @@ package model.record;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -13,6 +14,7 @@ public class RecordedFileTest {
     public void testGetFilePath() throws Exception {
         byte[] bytes = {48, 49, 50};
         RecordedFile recordedFile = new RecordedFile(bytes, true, Instant.now());
+        //noinspection AccessOfSystemProperties
         Assert.assertTrue(recordedFile.getFilePath().startsWith(System.getProperty("java.io.tmpdir")));
     }
 
@@ -34,7 +36,7 @@ public class RecordedFileTest {
     }
 
     @Test
-    public void testSetOutputPath() throws Exception {
+    public void testSetOutputPath() throws IOException {
         byte[] bytes = {48, 49, 50};
         RecordedFile recordedFile = new RecordedFile(bytes, true, Instant.now());
         Path path = Files.createTempFile(null, null);

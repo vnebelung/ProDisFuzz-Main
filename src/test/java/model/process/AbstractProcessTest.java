@@ -6,11 +6,13 @@ import org.testng.annotations.Test;
 import java.util.Observable;
 import java.util.Observer;
 
+@SuppressWarnings({"unused", "AnonymousInnerClassMayBeStatic"})
 public class AbstractProcessTest implements Observer {
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     private boolean isUpdated;
 
     @Test
-    public void testSpreadUpdate() throws Exception {
+    public void testSpreadUpdate() {
         AbstractProcess abstractProcess = new AbstractProcess() {
             @Override
             public void reset() {

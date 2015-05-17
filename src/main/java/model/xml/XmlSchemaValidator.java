@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-public abstract class XmlSchemaValidator {
+public enum XmlSchemaValidator {
+    ;
 
     /**
      * Validates an XML file containing the update information against the schema.
@@ -32,7 +33,8 @@ public abstract class XmlSchemaValidator {
      */
     public static boolean validateUpdateCheck(Path path) {
         Source source = new StreamSource(path.toFile());
-        String[] schemes = new String[]{"/xml/xmldsig-core-schema.xsd", "/xml/update.xsd"};
+        // noinspection HardCodedStringLiteral
+        String[] schemes = {"/xml/xmldsig-core-schema.xsd", "/xml/update.xsd"};
         return validate(source, schemes);
     }
 
@@ -44,7 +46,8 @@ public abstract class XmlSchemaValidator {
      */
     public static boolean validateProtocol(Path path) {
         Source source = new StreamSource(path.toFile());
-        String[] scheme = new String[]{"/xml/protocol.xsd"};
+        //noinspection HardCodedStringLiteral
+        String[] scheme = {"/xml/protocol.xsd"};
         return validate(source, scheme);
     }
 
@@ -55,25 +58,25 @@ public abstract class XmlSchemaValidator {
      * @param schemaNames the file names of the schemes
      * @return true, if the XML file is validated against the schema without any errors
      */
-    private static boolean validate(Source xml, String[] schemaNames) {
-        final boolean[] result = {true};
+    private static boolean validate(Source xml, String... schemaNames) {
+        boolean[] result = {true};
         // Initializes the error handler
         ErrorHandler errorHandler = new ErrorHandler() {
             @Override
-            public void warning(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().warning(e.getMessage());
+            public void warning(SAXParseException exception) {
+                Model.INSTANCE.getLogger().warning(exception.getMessage());
                 result[0] = false;
             }
 
             @Override
-            public void fatalError(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().error(e);
+            public void fatalError(SAXParseException exception) {
+                Model.INSTANCE.getLogger().error(exception);
                 result[0] = false;
             }
 
             @Override
-            public void error(SAXParseException e) throws SAXException {
-                Model.INSTANCE.getLogger().error(e);
+            public void error(SAXParseException exception) {
+                Model.INSTANCE.getLogger().error(exception);
                 result[0] = false;
             }
         };
@@ -82,6 +85,7 @@ public abstract class XmlSchemaValidator {
         InputStream[] schemaStreams = new InputStream[schemaNames.length];
         try {
             for (int i = 0; i < schemaStreams.length; i++) {
+                //noinspection resource,IOResourceOpenedButNotSafelyClosed
                 schemaStreams[i] = XmlSchemaValidator.class.getResourceAsStream(schemaNames[i]);
             }
             Source[] schemaSources = new Source[schemaNames.length];
@@ -99,7 +103,7 @@ public abstract class XmlSchemaValidator {
             for (InputStream each : schemaStreams) {
                 try {
                     each.close();
-                } catch (IOException e) {
+                } catch (IOException ignored) {
                     // Should not happen
                 }
             }

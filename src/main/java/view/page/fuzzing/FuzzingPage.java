@@ -23,6 +23,7 @@ import view.window.Navigation;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.Temporal;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Timer;
@@ -46,15 +47,28 @@ public class FuzzingPage extends VBox implements Observer, Page {
      */
     public FuzzingPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/fuzzingPage.fxml"), this);
         Model.INSTANCE.getFuzzingProcess().addObserver(this);
 
         this.navigation = navigation;
     }
 
+    /**
+     * Handles the action of the start/stop button and starts oder stops the fuzzing process.
+     */
+    @FXML
+    private static void startStop() {
+        if (Model.INSTANCE.getFuzzingProcess().isRunning()) {
+            Model.INSTANCE.getFuzzingProcess().interrupt();
+        } else {
+            Model.INSTANCE.getFuzzingProcess().start();
+        }
+    }
+
     @Override
     public void update(Observable o, Object arg) {
-        final FuzzingProcess process = (FuzzingProcess) o;
+        FuzzingProcess process = (FuzzingProcess) o;
 
         Platform.runLater(() -> {
             startStopButton.setText(process.isRunning() ? "Stop" : "Start");
@@ -68,7 +82,7 @@ public class FuzzingPage extends VBox implements Observer, Page {
                     progress = process.isRunning() ? -1 : 0;
                     break;
                 default:
-                    progress = 1.0 * process.getWorkProgress() / process.getWorkTotal();
+                    progress = (1.0 * process.getWorkProgress()) / process.getWorkTotal();
                     break;
             }
             labeledProgressBar.update(progress, process.isRunning());
@@ -82,21 +96,9 @@ public class FuzzingPage extends VBox implements Observer, Page {
                 }
             }
 
-            navigation.setCancelable(!process.isRunning(), FuzzingPage.this);
-            navigation.setFinishable(process.getWorkProgress() > 0 && !process.isRunning(), FuzzingPage.this);
+            navigation.setCancelable(!process.isRunning(), this);
+            navigation.setFinishable((process.getWorkProgress() > 0) && !process.isRunning(), this);
         });
-    }
-
-    /**
-     * Handles the action of the start/stop button and starts oder stops the fuzzing process.
-     */
-    @FXML
-    private void startStop() {
-        if (Model.INSTANCE.getFuzzingProcess().isRunning()) {
-            Model.INSTANCE.getFuzzingProcess().interrupt();
-        } else {
-            Model.INSTANCE.getFuzzingProcess().start();
-        }
     }
 
     /**
@@ -105,7 +107,7 @@ public class FuzzingPage extends VBox implements Observer, Page {
      *
      * @param time the start time
      */
-    private void startTimer(final Instant time) {
+    private void startTimer(Temporal time) {
         if (processTimer != null) {
             return;
         }
@@ -114,11 +116,11 @@ public class FuzzingPage extends VBox implements Observer, Page {
             @Override
             public void run() {
                 // Fill the time values up to 2 chars with preceding zeros
-                final DecimalFormat timeFormat = new DecimalFormat("00");
+                DecimalFormat timeFormat = new DecimalFormat("00");
                 // The duration of the current fuzzing process is the current time minus the given start time
-                final Duration duration = Duration.between(Instant.now(), time);
-                Platform.runLater(() -> timeLabel.setText(timeFormat.format(duration.toHours()) + ":" +
-                        timeFormat.format(duration.toMinutes()) + ":" + timeFormat.format(duration.getSeconds())));
+                Duration duration = Duration.between(Instant.now(), time);
+                Platform.runLater(() -> timeLabel.setText(timeFormat.format(duration.toHours()) + ':' +
+                        timeFormat.format(duration.toMinutes()) + ':' + timeFormat.format(duration.getSeconds())));
             }
         }, 0, 1000);
 

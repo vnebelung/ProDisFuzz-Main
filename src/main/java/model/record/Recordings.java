@@ -55,9 +55,7 @@ public class Recordings {
      * Deletes all recorded data files.
      */
     public void clear() {
-        for (RecordedFile recordedFile : recordedFiles) {
-            recordedFile.delete();
-        }
+        recordedFiles.forEach(RecordedFile::delete);
         recordedFiles.clear();
         crashRecordedFiles.clear();
     }

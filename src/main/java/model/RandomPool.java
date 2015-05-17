@@ -12,8 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public final class RandomPool extends Random {
+@SuppressWarnings("DeserializableClassInSecureContext")
+public class RandomPool extends Random {
 
+    @SuppressWarnings("UnsecureRandomNumberGeneration")
     private static final RandomPool INSTANCE = new RandomPool();
 
     /**
@@ -40,7 +42,7 @@ public final class RandomPool extends Random {
      */
     public List<Byte> nextBloatBytes(int length) {
         // Generate random bytes according to the maximum length of the given protocol block
-        int fuzzDataLength = nextInt(length * 10000 + 1);
+        int fuzzDataLength = nextInt((length * 10000) + 1);
         byte[] bytes = new byte[fuzzDataLength];
         nextBytes(bytes);
         List<Byte> result = new ArrayList<>(bytes.length);

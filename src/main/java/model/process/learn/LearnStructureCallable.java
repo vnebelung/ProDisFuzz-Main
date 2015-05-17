@@ -24,11 +24,12 @@ class LearnStructureCallable implements Callable<ProtocolStructure> {
      * @param sequence the input sequence
      */
     public LearnStructureCallable(List<Byte> sequence) {
-        this.sequence = sequence;
+        super();
+        this.sequence = new ArrayList<>(sequence);
     }
 
     @Override
-    public ProtocolStructure call() throws Exception {
+    public ProtocolStructure call() {
         ProtocolStructure result = new ProtocolStructure();
         boolean var = sequence.get(0) == null;
         List<Byte> content = new ArrayList<>();

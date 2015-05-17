@@ -19,7 +19,7 @@ public class NumericTableCell<TableRow, String> extends TableCell<TableRow, Stri
             return;
         }
         super.updateItem(item, empty);
-        this.setText(item.toString());
-        this.setAlignment(Pos.CENTER_RIGHT);
+        setText(item.toString());
+        setAlignment(Pos.CENTER_RIGHT);
     }
 }

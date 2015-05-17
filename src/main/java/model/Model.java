@@ -12,8 +12,8 @@ import model.logger.ExceptionHandler;
 import model.logger.Logger;
 import model.process.collect.CollectProcess;
 import model.process.export.ExportProcess;
-import model.process.fuzzOptions.FuzzOptionsProcess;
 import model.process.fuzzing.FuzzingProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess;
 import model.process.import_.ImportProcess;
 import model.process.learn.LearnProcess;
 import model.process.monitor.MonitorProcess;
@@ -37,7 +37,8 @@ public enum Model {
     /**
      * Instantiates a new singleton model responsible for managing the data and logic.
      */
-    private Model() {
+    @SuppressWarnings("OverlyCoupledMethod")
+    Model() {
         collectProcess = new CollectProcess();
         learnProcess = new LearnProcess();
         exportProcess = new ExportProcess();
@@ -55,7 +56,7 @@ public enum Model {
      * Resets all variables and options to the default by calling the reset methods of all process classes.
      */
     public void reset() {
-        Model.INSTANCE.getLogger().reset();
+        logger.reset();
         collectProcess.reset();
         learnProcess.reset();
         exportProcess.reset();

@@ -71,7 +71,7 @@ public class CollectProcess extends AbstractProcess {
         if (!newPath.equals(folder)) {
             if (Files.isDirectory(newPath) && !s.isEmpty()) {
                 folder = newPath;
-                Model.INSTANCE.getLogger().info("Directory for collecting set to '" + folder.toString() + "'");
+                Model.INSTANCE.getLogger().info("Directory for collecting set to '" + folder + '\'');
                 setFiles();
             } else if (folder != null) {
                 folder = null;
@@ -114,14 +114,14 @@ public class CollectProcess extends AbstractProcess {
      * Sets the select status of a protocol file to the given value. If true, the file will be used in the further steps
      * of protocol learning.
      *
-     * @param s the file name of the protocol file
-     * @param b true if the file with the given name is selected
+     * @param file the file name of the protocol file
+     * @param selected true if the file with the given name is selected
      */
-    public void setSelected(String s, boolean b) {
-        if (!isFileNameInList(s) || b == selected.get(s)) {
+    public void setSelected(String file, boolean selected) {
+        if (!isFileNameInList(file) || (selected == this.selected.get(file))) {
             return;
         }
-        selected.put(s, b);
+        this.selected.put(file, selected);
         spreadUpdate();
         if (getNumOfSelectedFiles() < 2) {
             Model.INSTANCE.getLogger().warning("At least 2 files must be selected");

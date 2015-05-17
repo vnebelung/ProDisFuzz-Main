@@ -10,20 +10,28 @@ package view.controls.textfield;
 
 import javafx.scene.control.TextField;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@SuppressWarnings("ClassIndependentOfModule")
 class NumericTextField extends TextField {
+
+    private static final Pattern PATTERN = Pattern.compile("\\D");
 
     @Override
     public void replaceText(int start, int end, String text) {
         // If the replaced text would end up being invalid, then simply ignore this call!
-        if (!text.matches("\\D")) {
+        Matcher matcher = PATTERN.matcher(text);
+        if (!matcher.matches()) {
             super.replaceText(start, end, text);
         }
     }
 
     @Override
-    public void replaceSelection(String text) {
-        if (!text.matches("\\D")) {
-            super.replaceSelection(text);
+    public void replaceSelection(String replacement) {
+        Matcher matcher = PATTERN.matcher(replacement);
+        if (!matcher.matches()) {
+            super.replaceSelection(replacement);
         }
     }
 }

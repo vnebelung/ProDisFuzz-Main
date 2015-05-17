@@ -19,7 +19,8 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public abstract class XmlExchange {
+public enum XmlExchange {
+    ;
 
     /**
      * Imports a given XML file and returns the parsed XOM document.
@@ -28,6 +29,7 @@ public abstract class XmlExchange {
      * @return the parsed document or null in case of an error
      */
     public static Document importXml(Path path) {
+        //noinspection OverlyBroadCatchBlock
         try {
             Builder parser = new Builder();
             return parser.build(path.toFile());
@@ -47,18 +49,20 @@ public abstract class XmlExchange {
     public static boolean exportXML(Document document, Path path) {
         Path exportPath = path.toAbsolutePath().normalize();
         if (!Files.isDirectory(exportPath.getParent())) {
-            Model.INSTANCE.getLogger().error("Path '" + exportPath.toString() + "' for saving file invalid");
+            Model.INSTANCE.getLogger().error("Path '" + exportPath + "' for saving file invalid");
             return false;
         }
         if (!Files.isWritable(exportPath.getParent())) {
-            Model.INSTANCE.getLogger().error("Path '" + exportPath.getParent().toString() + "' not writable");
+            Model.INSTANCE.getLogger().error("Path '" + exportPath.getParent() + "' not writable");
             return false;
         }
         if (Files.isDirectory(exportPath)) {
-            Model.INSTANCE.getLogger().error("Path '" + exportPath.getParent().toString() + "' is a directory");
+            Model.INSTANCE.getLogger().error("Path '" + exportPath.getParent() + "' is a directory");
             return false;
         }
+        //noinspection OverlyBroadCatchBlock
         try (OutputStream outputStream = Files.newOutputStream(exportPath)) {
+            //noinspection HardCodedStringLiteral
             Serializer serializer = new Serializer(outputStream, "UTF-8");
             serializer.setIndent(4);
             serializer.write(document);
@@ -66,7 +70,7 @@ public abstract class XmlExchange {
             Model.INSTANCE.getLogger().error(e);
             return false;
         }
-        Model.INSTANCE.getLogger().fine("File saved to '" + exportPath.toString() + "'");
+        Model.INSTANCE.getLogger().fine("File saved to '" + exportPath + '\'');
         return true;
     }
 }

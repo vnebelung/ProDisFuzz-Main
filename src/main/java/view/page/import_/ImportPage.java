@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import model.Model;
 import model.process.import_.ImportProcess;
 import view.controls.protocolcontent.ProtocolContent;
@@ -41,6 +42,7 @@ public class ImportPage extends VBox implements Observer, Page {
      */
     public ImportPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/importPage.fxml"), this);
         Model.INSTANCE.getImportProcess().addObserver(this);
         this.navigation = navigation;
@@ -50,25 +52,29 @@ public class ImportPage extends VBox implements Observer, Page {
     public void update(Observable o, Object arg) {
         ImportProcess process = (ImportProcess) o;
 
+        //noinspection HardCodedStringLiteral
         fileTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
         if (process.isImported()) {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-success");
-            fileTextField.setText("Successfully imported from '" + loadPath.toString() + "'");
+            fileTextField.setText("Successfully imported from '" + loadPath + '\'');
         } else {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-fail");
-            fileTextField.setText(loadPath == null ? "Please choose the file path the protocol structure will be " +
-                    "imported from" : "Could not import from '" + loadPath.toString() + "'");
+            fileTextField.setText((loadPath == null) ? ("Please choose the file path the protocol structure will be "
+                    + "imported from") : ("Could not import from '" + loadPath + '\''));
         }
         protocolContent.addProtocolText(process.getProtocolStructure());
 
-        navigation.setCancelable(true, ImportPage.this);
-        navigation.setFinishable(process.isImported(), ImportPage.this);
+        navigation.setCancelable(true, this);
+        navigation.setFinishable(process.isImported(), this);
     }
 
     @FXML
     private void browse() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("XML", "*.xml"));
+        //noinspection HardCodedStringLiteral
+        fileChooser.getExtensionFilters().add(new ExtensionFilter("XML", "*.xml"));
         File file = fileChooser.showOpenDialog(getScene().getWindow());
         if (file == null) {
             return;

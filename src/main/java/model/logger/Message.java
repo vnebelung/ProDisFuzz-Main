@@ -23,6 +23,7 @@ public class Message {
      * @param type the message type
      */
     public Message(String text, Type type) {
+        super();
         this.text = text;
         this.type = type;
         time = new Date();
@@ -55,6 +56,6 @@ public class Message {
         return type;
     }
 
-    public static enum Type {INFO, ERROR, FINE, WARNING}
+    public enum Type {INFO, ERROR, FINE, WARNING}
 
 }

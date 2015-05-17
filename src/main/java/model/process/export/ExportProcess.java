@@ -8,11 +8,12 @@
 
 package model.process.export;
 
-import model.helper.Constants;
-import model.helper.Hex;
 import model.process.AbstractProcess;
 import model.protocol.ProtocolBlock;
+import model.protocol.ProtocolBlock.Type;
 import model.protocol.ProtocolStructure;
+import model.utilities.Constants;
+import model.utilities.Hex;
 import model.xml.XmlExchange;
 import nu.xom.Attribute;
 import nu.xom.Document;
@@ -74,7 +75,8 @@ public class ExportProcess extends AbstractProcess {
         LocalDateTime dateTime = LocalDateTime.now();
         String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
         // The time zone is separated with a colon (standardized)
-        date = date.substring(0, date.length() - 2) + ":" + date.substring(date.length() - 2);
+        date = date.substring(0, date.length() - 2) + ':' + date.substring(date.length() - 2);
+        //noinspection HardCodedStringLiteral
         result.addAttribute(new Attribute("datetime", date));
         // Append the protocolParts element to the root element
         result.appendChild(createXMLBlocks());
@@ -102,7 +104,7 @@ public class ExportProcess extends AbstractProcess {
      * @param protocolBlock the protocol block
      * @return the block element
      */
-    private Element createXMLBlock(ProtocolBlock protocolBlock) {
+    private static Element createXMLBlock(ProtocolBlock protocolBlock) {
         Element result = null;
         switch (protocolBlock.getType()) {
             case VAR:
@@ -111,16 +113,13 @@ public class ExportProcess extends AbstractProcess {
             case FIX:
                 result = new Element(Constants.XML_PROTOCOL_BLOCK_FIX);
                 break;
-            default:
-                // Should not happen
-                break;
         }
         result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MINLENGTH, String.valueOf(protocolBlock.getMinLength
                 ())));
         result.addAttribute(new Attribute(Constants.XML_PROTOCOL_MAXLENGTH, String.valueOf(protocolBlock.getMaxLength
                 ())));
         // Append content element to the part element
-        if (protocolBlock.getType() == ProtocolBlock.Type.FIX) {
+        if (protocolBlock.getType() == Type.FIX) {
             result.appendChild(createXMLContent(protocolBlock.getBytes()));
         }
         return result;
@@ -132,7 +131,7 @@ public class ExportProcess extends AbstractProcess {
      * @param bytes the byte content of a protocol block
      * @return the content element
      */
-    private Element createXMLContent(Byte[] bytes) {
+    private static Element createXMLContent(Byte... bytes) {
         Element result = new Element(Constants.XML_PROTOCOL_CONTENT);
         // Append byte elements to the content element
         StringBuilder content = new StringBuilder(bytes.length * 2);

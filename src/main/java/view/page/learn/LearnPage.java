@@ -25,11 +25,14 @@ import java.util.Observer;
 
 public class LearnPage extends VBox implements Observer, Page {
 
+    private final Navigation navigation;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private LabeledProgressBar labeledProgressBar;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private Button startStopButton;
-    private final Navigation navigation;
+    @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private ProtocolContent protocolContent;
 
@@ -40,22 +43,33 @@ public class LearnPage extends VBox implements Observer, Page {
      */
     public LearnPage(Navigation navigation) {
         super();
+        //noinspection HardcodedFileSeparator,HardCodedStringLiteral,ThisEscapedInObjectConstruction
         FxmlConnection.connect(getClass().getResource("/fxml/learnPage.fxml"), this);
+        //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getLearnProcess().addObserver(this);
         this.navigation = navigation;
     }
 
+    @FXML
+    private static void startStop() {
+        if (Model.INSTANCE.getLearnProcess().isRunning()) {
+            Model.INSTANCE.getLearnProcess().interrupt();
+        } else {
+            Model.INSTANCE.getLearnProcess().start();
+        }
+    }
+
     @Override
     public void update(Observable o, Object arg) {
-        final LearnProcess process = (LearnProcess) o;
+        LearnProcess process = (LearnProcess) o;
 
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 startStopButton.setText(process.isRunning() ? "Stop" : "Start");
 
-                double progress = process.getWorkTotal() == 0 ? 0 : 1.0 * process.getWorkProgress() / process
-                        .getWorkTotal();
+                double progress = (process.getWorkTotal() == 0) ? 0 : ((1.0 * process.getWorkProgress()) / process
+                        .getWorkTotal());
                 labeledProgressBar.update(progress, process.isRunning());
 
                 synchronized (this) {
@@ -66,15 +80,6 @@ public class LearnPage extends VBox implements Observer, Page {
                 navigation.setFinishable(process.getWorkTotal() == process.getWorkProgress(), LearnPage.this);
             }
         });
-    }
-
-    @FXML
-    private void startStop() {
-        if (Model.INSTANCE.getLearnProcess().isRunning()) {
-            Model.INSTANCE.getLearnProcess().interrupt();
-        } else {
-            Model.INSTANCE.getLearnProcess().start();
-        }
     }
 
     @Override

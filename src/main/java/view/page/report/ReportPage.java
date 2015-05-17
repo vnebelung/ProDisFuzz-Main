@@ -38,6 +38,7 @@ public class ReportPage extends VBox implements Observer, Page {
      */
     public ReportPage(Navigation navigation) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/reportPage.fxml"), this);
         Model.INSTANCE.getReportProcess().addObserver(this);
         this.navigation = navigation;
@@ -45,16 +46,19 @@ public class ReportPage extends VBox implements Observer, Page {
 
     @Override
     public void update(Observable o, Object arg) {
-        final ReportProcess process = (ReportProcess) o;
+        ReportProcess process = (ReportProcess) o;
 
+        //noinspection HardCodedStringLiteral
         fileTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
         if (process.isWritten()) {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-success");
-            fileTextField.setText("Successfully exported to '" + savePath.toString() + "'");
+            fileTextField.setText("Successfully exported to '" + savePath + '\'');
         } else {
+            //noinspection HardCodedStringLiteral
             fileTextField.getStyleClass().add("text-field-fail");
-            fileTextField.setText(savePath == null ? "Please choose the file the protocol structure will be " +
-                    "exported to" : "Could not export to '" + savePath.toString() + "'");
+            fileTextField.setText((savePath == null) ? ("Please choose the file the protocol structure will be " +
+                    "exported to") : ("Could not export to '" + savePath + '\''));
         }
 
         navigation.setCancelable(!process.isWritten(), this);

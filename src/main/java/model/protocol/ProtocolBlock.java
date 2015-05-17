@@ -23,7 +23,7 @@ public class ProtocolBlock {
      * @param type  the type of the protocol block
      * @param bytes the content in bytes
      */
-    public ProtocolBlock(Type type, Byte[] bytes) {
+    public ProtocolBlock(Type type, Byte... bytes) {
         // TODO: Refactor to two constructors, one with primitive array, the other without byte array for null values
         this.type = type;
         minLength = bytes.length;
@@ -67,5 +67,5 @@ public class ProtocolBlock {
         return bytes.clone();
     }
 
-    public static enum Type {FIX, VAR}
+    public enum Type {FIX, VAR}
 }

@@ -1,27 +1,33 @@
 package model.process.export;
 
 import model.protocol.ProtocolStructure;
+import model.xml.WhiteSpaceEliminator;
+import nu.xom.*;
+import nu.xom.canonical.Canonicalizer;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
-@SuppressWarnings("DynamicRegexReplaceableByCompiledPattern")
 public class ExportProcessTest {
 
     private ExportProcess exportProcess;
+    private Pattern pattern;
 
     @BeforeClass
     public void setUp() {
         exportProcess = new ExportProcess();
+        pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}");
         ProtocolStructure protocolStructure = new ProtocolStructure();
         List<Byte> block1 = new ArrayList<>();
         block1.add((byte) 0);
@@ -48,6 +54,7 @@ public class ExportProcessTest {
 
     @Test(priority = 2)
     public void testReset() throws Exception {
+        Assert.assertTrue(exportProcess.isExported());
         exportProcess.reset();
         Assert.assertFalse(exportProcess.isExported());
     }
@@ -60,13 +67,56 @@ public class ExportProcessTest {
         exportProcess.exportXML(path);
         Assert.assertTrue(exportProcess.isExported());
         Assert.assertTrue(Files.exists(path));
-        String exportedXML = new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
-        //noinspection HardCodedStringLiteral
-        exportedXML = exportedXML.replaceFirst("datetime=\"[^\"]+\"", "datetime=\"2014-04-12T22:55:54+02:00\"");
-        //noinspection HardCodedStringLiteral
-        String referenceXML = new String(Files.readAllBytes(Paths.get(getClass().getResource("/protocol.xml").toURI()
-        )), StandardCharsets.UTF_8);
-        Assert.assertEquals(exportedXML, referenceXML);
+
+        String exported = null;
+        //noinspection OverlyBroadCatchBlock
+        try (OutputStream outputStream = new ByteArrayOutputStream()) {
+            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Document exportedDoc = parser.build(path.toFile());
+            replaceDateTimes(exportedDoc.getRootElement());
+            Canonicalizer canonicalizer = new Canonicalizer(outputStream, false);
+            canonicalizer.write(exportedDoc);
+            exported = outputStream.toString();
+        } catch (ParsingException | IOException e) {
+            e.printStackTrace();
+        }
+        String reference = null;
+        //noinspection OverlyBroadCatchBlock
+        try (OutputStream outputStream = new ByteArrayOutputStream()) {
+            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Document referenceDoc = parser.build(Paths.get(getClass().getResource("/protocol.xml").toURI()).toFile());
+            Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
+            canonicalizer.write(referenceDoc);
+            reference = outputStream.toString();
+        } catch (ParsingException | IOException e) {
+            e.printStackTrace();
+        }
+        Assert.assertEquals(exported, reference);
         Files.delete(path);
     }
+
+    private void replaceDateTimes(Node node) {
+        //noinspection ChainOfInstanceofChecks
+        if (node instanceof Text) {
+            if (pattern.matcher(node.getValue()).matches()) {
+                ((Text) node).setValue("2000-01-01T00:11:22+02:00");
+            }
+            return;
+        }
+        if (node instanceof Attribute) {
+            if (pattern.matcher(node.getValue()).matches()) {
+                ((Attribute) node).setValue("2000-01-01T00:11:22+02:00");
+            }
+            return;
+        }
+        if (node instanceof Element) {
+            for (int i = 0; i < ((Element) node).getAttributeCount(); i++) {
+                replaceDateTimes(((Element) node).getAttribute(i));
+            }
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            replaceDateTimes(node.getChild(i));
+        }
+    }
+
 }

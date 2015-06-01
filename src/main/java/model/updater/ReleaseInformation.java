@@ -10,7 +10,7 @@ package model.updater;
 
 import java.util.Arrays;
 
-public class ReleaseInformation implements Comparable<ReleaseInformation> {
+public class ReleaseInformation {
 
     private final int number;
     private final String name;
@@ -80,12 +80,4 @@ public class ReleaseInformation implements Comparable<ReleaseInformation> {
         return information.clone();
     }
 
-    @Override
-    public int compareTo(ReleaseInformation o) {
-        if (o.number == number) {
-            return 0;
-        } else {
-            return o.number > number ? 1 : -1;
-        }
-    }
 }

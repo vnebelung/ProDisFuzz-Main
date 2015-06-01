@@ -3,33 +3,40 @@ package model.process.report;
 import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
+import model.xml.WhiteSpaceEliminator;
+import nu.xom.*;
+import nu.xom.canonical.Canonicalizer;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.regex.Pattern;
 
-@SuppressWarnings({"HardCodedStringLiteral", "AnonymousInnerClassMayBeStatic", "NumericCastThatLosesPrecision",
-        "DynamicRegexReplaceableByCompiledPattern"})
+@SuppressWarnings({"HardCodedStringLiteral", "AnonymousInnerClassMayBeStatic", "NumericCastThatLosesPrecision"})
 public class ReportProcessTest {
 
     private ReportProcess reportProcess;
     private Path path;
     private byte[] bytes;
     private Recordings recordings;
+    private Pattern pattern;
 
     @BeforeClass
     public void setUp() throws IOException {
         reportProcess = new ReportProcess();
         recordings = new Recordings();
+        pattern = Pattern.compile("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}");
+
         bytes = new byte[3];
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = (byte) (i * 17);
@@ -80,18 +87,36 @@ public class ReportProcessTest {
         Assert.assertEquals(Files.list(path).count(), 2);
         Assert.assertEquals(Files.list(path.resolve("results_records")).count(), 4);
 
-        Assert.assertEquals(Files.exists(path.resolve("results.html")), true);
-        String reportHtml = new String(Files.readAllBytes(path.resolve("results.html")), StandardCharsets.UTF_8);
-        reportHtml = reportHtml.replaceAll("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\+\\d{2}:\\d{2}",
-                "2000-01-01T00:11:22+02:00");
-        String referenceHtml = new String(Files.readAllBytes(Paths.get(getClass().getResource("/results.html").toURI
-                ())), StandardCharsets.UTF_8);
-        Assert.assertEquals(reportHtml, referenceHtml);
+        Assert.assertTrue(Files.exists(path.resolve("results.html")));
+        String report = null;
+        //noinspection OverlyBroadCatchBlock
+        try (OutputStream outputStream = new ByteArrayOutputStream()) {
+            Builder builder = new Builder(new WhiteSpaceEliminator());
+            Document exportedDoc = builder.build(path.resolve("results.html").toFile());
+            replaceDateTimes(exportedDoc.getRootElement());
+            Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
+            canonicalizer.write(exportedDoc);
+            report = outputStream.toString();
+        } catch (ParsingException | IOException e) {
+            e.printStackTrace();
+        }
+        String reference = null;
+        //noinspection OverlyBroadCatchBlock
+        try (OutputStream outputStream = new ByteArrayOutputStream()) {
+            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Document referenceDoc = parser.build(Paths.get(getClass().getResource("/results.html").toURI()).toFile());
+            Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
+            canonicalizer.write(referenceDoc);
+            reference = outputStream.toString();
+        } catch (ParsingException | IOException e) {
+            e.printStackTrace();
+        }
+        Assert.assertEquals(report, reference);
 
-        Assert.assertEquals(Files.exists(path.resolve("results_records").resolve("record0-0.bytes")), true);
-        Assert.assertEquals(Files.exists(path.resolve("results_records").resolve("record0-1.bytes")), true);
-        Assert.assertEquals(Files.exists(path.resolve("results_records").resolve("record1-0.bytes")), true);
-        Assert.assertEquals(Files.exists(path.resolve("results_records").resolve("record2-0.bytes")), true);
+        Assert.assertTrue(Files.exists(path.resolve("results_records").resolve("record0-0.bytes")));
+        Assert.assertTrue(Files.exists(path.resolve("results_records").resolve("record0-1.bytes")));
+        Assert.assertTrue(Files.exists(path.resolve("results_records").resolve("record1-0.bytes")));
+        Assert.assertTrue(Files.exists(path.resolve("results_records").resolve("record2-0.bytes")));
 
         Assert.assertEquals(Files.readAllBytes(path.resolve("results_records").resolve("record0-0.bytes")), bytes);
         Assert.assertEquals(Files.readAllBytes(path.resolve("results_records").resolve("record0-1.bytes")), bytes);
@@ -105,6 +130,30 @@ public class ReportProcessTest {
         reportProcess.write(path);
         Assert.assertEquals(Files.list(path).count(), 4);
         Assert.assertEquals(Files.list(path.resolve("results(1)_records")).count(), 4);
+    }
+
+    private void replaceDateTimes(Node node) {
+        //noinspection ChainOfInstanceofChecks
+        if (node instanceof Text) {
+            if (pattern.matcher(node.getValue()).matches()) {
+                ((Text) node).setValue("2000-01-01T00:11:22+02:00");
+            }
+            return;
+        }
+        if (node instanceof Attribute) {
+            if (pattern.matcher(node.getValue()).matches()) {
+                ((Attribute) node).setValue("2000-01-01T00:11:22+02:00");
+            }
+            return;
+        }
+        if (node instanceof Element) {
+            for (int i = 0; i < ((Element) node).getAttributeCount(); i++) {
+                replaceDateTimes(((Element) node).getAttribute(i));
+            }
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            replaceDateTimes(node.getChild(i));
+        }
     }
 
     @AfterClass

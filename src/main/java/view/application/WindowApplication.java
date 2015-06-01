@@ -20,7 +20,7 @@ public class WindowApplication extends Application {
     public void start(Stage primaryStage) {
         Window window = new Window();
 
-        Scene scene = new Scene(new Window());
+        Scene scene = new Scene(new Window(), 1024, 768);
         //noinspection HardCodedStringLiteral
         scene.getStylesheets().add(getClass().getResource("/css/scene.css").toExternalForm());
         primaryStage.setScene(scene);
@@ -37,14 +37,16 @@ public class WindowApplication extends Application {
      *
      * @param stage the stage
      */
-    private static void initUpdateCheck(Stage stage) {
+    @SuppressWarnings("MethodMayBeStatic")
+    private void initUpdateCheck(Stage stage) {
         new UpdateTimer(stage).start();
     }
 
     /**
      * Makes the basic window visible.
      */
-    public static void show() {
+    @SuppressWarnings("MethodMayBeStatic")
+    public void show() {
         Application.launch();
     }
 }

@@ -20,8 +20,10 @@ import nu.xom.Document;
 import nu.xom.Element;
 
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class ExportProcess extends AbstractProcess {
 
@@ -72,12 +74,10 @@ public class ExportProcess extends AbstractProcess {
      */
     private Element createXMLRoot() {
         Element result = new Element(Constants.XML_PROTOCOL_ROOT);
-        LocalDateTime dateTime = LocalDateTime.now();
-        String date = dateTime.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-        // The time zone is separated with a colon (standardized)
-        date = date.substring(0, date.length() - 2) + ':' + date.substring(date.length() - 2);
+        ZonedDateTime zonedDateTime = ZonedDateTime.from(Instant.now().atZone(ZoneId.systemDefault())).truncatedTo
+                (ChronoUnit.SECONDS);
         //noinspection HardCodedStringLiteral
-        result.addAttribute(new Attribute("datetime", date));
+        result.addAttribute(new Attribute("datetime", zonedDateTime.toOffsetDateTime().toString()));
         // Append the protocolParts element to the root element
         result.appendChild(createXMLBlocks());
         return result;

@@ -31,7 +31,7 @@ public enum XmlExchange {
     public static Document importXml(Path path) {
         //noinspection OverlyBroadCatchBlock
         try {
-            Builder parser = new Builder();
+            Builder parser = new Builder(new WhiteSpaceEliminator());
             return parser.build(path.toFile());
         } catch (ParsingException | IOException e) {
             Model.INSTANCE.getLogger().error(e);

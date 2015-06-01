@@ -36,6 +36,7 @@ class LearnHirschbergCallable implements Callable<List<Byte>> {
         learnedSequence = new ArrayList<>();
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public List<Byte> call() {
         hirschberg(0, sequence1.size(), 0, sequence2.size());

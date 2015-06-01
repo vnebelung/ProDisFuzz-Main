@@ -130,6 +130,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         return content;
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public int compareTo(ProtocolFile o) {
         // Custom comparison by comparing the name of the particular files

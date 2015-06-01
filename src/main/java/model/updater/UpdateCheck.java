@@ -191,6 +191,7 @@ public class UpdateCheck {
      */
     public ReleaseInformation[] getReleaseInformation() {
         if (releaseInformation == null) {
+            //noinspection ReturnOfNull
             return null;
         }
         return releaseInformation.clone();

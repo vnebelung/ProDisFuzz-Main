@@ -40,6 +40,7 @@ class FuzzingMessageCallable implements Callable<byte[]> {
         currentLibraryLine = 0;
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public byte[] call() {
         List<Byte> bytes = new ArrayList<>();

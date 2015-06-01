@@ -30,7 +30,7 @@ class LearnAdjustCallable implements Callable<List<Byte>> {
         cleanedSequence = new ArrayList<>(sequence);
     }
 
-    @SuppressWarnings("OverlyComplexMethod")
+    @SuppressWarnings({"OverlyComplexMethod", "ElementOnlyUsedFromTestCode"})
     @Override
     public List<Byte> call() {
         if (cleanedSequence.size() <= ((CLEAN_LENGTH + 1) * 2)) {

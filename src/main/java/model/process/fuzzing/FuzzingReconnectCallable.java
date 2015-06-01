@@ -34,6 +34,7 @@ class FuzzingReconnectCallable implements Callable<Boolean> {
         this.timeout = timeout;
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public Boolean call() throws IOException {
         // Open connection

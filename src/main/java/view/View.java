@@ -14,17 +14,20 @@ import java.util.Locale;
 
 public class View {
 
+    private WindowApplication windowApplication;
+
     /**
      * Instantiates a new view responsible for managing all components used for displaying components.
      */
     public View() {
         Locale.setDefault(Locale.ENGLISH);
+        windowApplication = new WindowApplication();
     }
 
     /**
      * Makes the basic window visible.
      */
-    public static void show() {
-        WindowApplication.show();
+    public void show() {
+        windowApplication.show();
     }
 }

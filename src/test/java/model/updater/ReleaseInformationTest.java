@@ -35,13 +35,4 @@ public class ReleaseInformationTest {
         ReleaseInformation releaseInformation = new ReleaseInformation(12, "test", "date", "requ", "1", "2");
         Assert.assertEquals(releaseInformation.getInformation(), new String[]{"1", "2"});
     }
-
-    @Test
-    public void testCompareTo() throws Exception {
-        ReleaseInformation releaseInformation1 = new ReleaseInformation(12, "test", "date", "requ", "1", "2");
-        ReleaseInformation releaseInformation2 = new ReleaseInformation(13, "test", "date", "requ", "1", "2");
-        Assert.assertTrue(releaseInformation1.compareTo(releaseInformation2) > 0);
-        Assert.assertTrue(releaseInformation2.compareTo(releaseInformation1) < 0);
-        Assert.assertTrue(releaseInformation1.compareTo(releaseInformation1) == 0);
-    }
 }

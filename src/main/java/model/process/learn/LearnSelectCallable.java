@@ -26,6 +26,7 @@ class LearnSelectCallable implements Callable<int[]> {
         this.sequences = new ArrayList<>(sequences);
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public int[] call() {
         double[][] distances = new double[sequences.size()][sequences.size()];

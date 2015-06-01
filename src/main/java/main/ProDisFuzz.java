@@ -43,6 +43,6 @@ class ProDisFuzz {
         // Send an initial reset to update the view
         model.reset();
         // Make the window
-        View.show();
+        view.show();
     }
 }

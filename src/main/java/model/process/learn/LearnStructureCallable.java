@@ -28,6 +28,7 @@ class LearnStructureCallable implements Callable<ProtocolStructure> {
         this.sequence = new ArrayList<>(sequence);
     }
 
+    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public ProtocolStructure call() {
         ProtocolStructure result = new ProtocolStructure();

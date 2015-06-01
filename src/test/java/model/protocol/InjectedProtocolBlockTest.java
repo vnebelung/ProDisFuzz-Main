@@ -88,6 +88,7 @@ public class InjectedProtocolBlockTest {
             min = Math.min(each, min);
             max = Math.max(each, max);
         }
+        // Test my fail rarely. In this case repeat the test.
         Assert.assertTrue((max - min) < 50);
     }
 }

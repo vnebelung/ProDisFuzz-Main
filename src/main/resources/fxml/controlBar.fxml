@@ -8,16 +8,15 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.layout.HBox?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.HBox" spacing="10">
+<?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.layout.HBox?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.HBox" id="controlBar">
     <children>
-        <Label fx:id="memoryUsage" maxWidth="Infinity" HBox.hgrow="ALWAYS" alignment="BOTTOM_LEFT"
-               maxHeight="Infinity" />
-        <Button fx:id="cancelButton" cancelButton="true" prefWidth="70" text="Cancel" onAction="#cancel" />
-        <Button fx:id="nextButton" defaultButton="true" prefWidth="70" text="Next >" onAction="#next" />
-        <Button fx:id="finishButton" prefWidth="70" text="Finish" onAction="#finish" />
+        <Label fx:id="memoryUsage" maxWidth="Infinity" HBox.hgrow="ALWAYS" maxHeight="Infinity" />
+        <Button fx:id="cancelButton" cancelButton="true" text="Cancel" onAction="#cancel" />
+        <Button fx:id="nextButton" defaultButton="true" text="Next >" onAction="#next" />
+        <Button fx:id="finishButton" text="Finish" onAction="#finish" />
     </children>
-    <padding>
-        <Insets bottom="10" left="10" right="10" top="0" />
-    </padding>
+    <stylesheets>
+        <URL value="@../css/controlBar.css" />
+    </stylesheets>
 </fx:root>

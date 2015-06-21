@@ -15,25 +15,16 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import model.Model;
-import view.controls.control.ControlBar;
-import view.page.Page;
-import view.page.collect.CollectPage;
-import view.page.export.ExportPage;
-import view.page.fuzzOptions.FuzzOptionsPage;
-import view.page.fuzzing.FuzzingPage;
-import view.page.import_.ImportPage;
-import view.page.learn.LearnPage;
-import view.page.monitor.MonitorPage;
-import view.page.operationmode.OperationMode;
-import view.page.report.ReportPage;
+import view.controls.ControlBar;
+import view.page.*;
 
 public class Window extends VBox implements NavigationControl, Navigation {
 
     private final OperationMode operationMode;
     @FXML
-    private ScrollPane mainScrollPane;
+    private ScrollPane scrollPane;
     @FXML
-    private ControlBar controlArea;
+    private ControlBar controlBar;
     private Pages pages;
 
     /**
@@ -43,9 +34,8 @@ public class Window extends VBox implements NavigationControl, Navigation {
         super();
         //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/window.fxml"), this);
-        controlArea.setNavigationControl(this);
+        controlBar.setNavigationControl(this);
         operationMode = new OperationMode(this);
-
         showOperationModePage();
     }
 
@@ -53,8 +43,8 @@ public class Window extends VBox implements NavigationControl, Navigation {
      * Makes the operation mode page visible.
      */
     private void showOperationModePage() {
-        controlArea.setNavigationVisible(false);
-        mainScrollPane.setContent(operationMode);
+        controlBar.setNavigationVisible(false);
+        scrollPane.setContent(operationMode);
         fadeInPage(operationMode);
     }
 
@@ -72,6 +62,7 @@ public class Window extends VBox implements NavigationControl, Navigation {
         pages.add(exportPage);
 
         Model.INSTANCE.reset();
+
         firstPage();
     }
 
@@ -95,12 +86,13 @@ public class Window extends VBox implements NavigationControl, Navigation {
         pages.add(reportPage);
 
         Model.INSTANCE.reset();
+
         firstPage();
     }
 
     /**
      * Fades in a given page node, that means increasing its opacity from 0 to 1 in a specific time interval. If a page
-     * is existing in mainScrollPane, this page is faded out before the given node is faded in.
+     * is existing in scrollPane, this page is faded out before the given node is faded in.
      *
      * @param node the page node to fade in
      */
@@ -127,43 +119,41 @@ public class Window extends VBox implements NavigationControl, Navigation {
      * Makes the first page visible. The first page is determined by the defined order of the pages.
      */
     private void firstPage() {
-        fadeOutPage(mainScrollPane.getContent());
-        controlArea.setNavigationVisible(true);
-        mainScrollPane.setContent(pages.getFirst());
-        fadeInPage(mainScrollPane.getContent());
+        fadeOutPage(scrollPane.getContent());
+        controlBar.setNavigationVisible(true);
+        scrollPane.setContent(pages.getFirst());
+        fadeInPage(scrollPane.getContent());
     }
 
     @Override
     public void nextPage() {
-        fadeOutPage(mainScrollPane.getContent());
-        mainScrollPane.setContent(pages.getNext());
+        fadeOutPage(scrollPane.getContent());
+        scrollPane.setContent(pages.getNext());
         Page currentPage = (Page) pages.getCurrent();
         currentPage.initProcess();
-        fadeInPage(mainScrollPane.getContent());
+        fadeInPage(scrollPane.getContent());
     }
 
     @Override
     public void previousPage() {
         // TODO: Not used yet.
-        fadeOutPage(mainScrollPane.getContent());
-        controlArea.setNavigationVisible(true);
-        mainScrollPane.setContent(pages.getPrevious());
-        fadeInPage(mainScrollPane.getContent());
+        fadeOutPage(scrollPane.getContent());
+        controlBar.setNavigationVisible(true);
+        scrollPane.setContent(pages.getPrevious());
+        fadeInPage(scrollPane.getContent());
     }
 
     @Override
     public void resetPage() {
-        fadeOutPage(mainScrollPane.getContent());
-        controlArea.setNavigationVisible(false);
-        mainScrollPane.setContent(operationMode);
-        fadeInPage(operationMode);
+        fadeOutPage(scrollPane.getContent());
+        showOperationModePage();
     }
 
     /**
      * Handles all actions necessary when the parent application is about to close.
      */
     public void onClose() {
-        controlArea.onClose();
+        controlBar.onClose();
     }
 
     @Override
@@ -171,7 +161,7 @@ public class Window extends VBox implements NavigationControl, Navigation {
         if (!node.equals(pages.getCurrent())) {
             return;
         }
-        controlArea.setCancelEnabled(enabled);
+        controlBar.setCancelEnabled(enabled);
     }
 
     @Override
@@ -179,7 +169,7 @@ public class Window extends VBox implements NavigationControl, Navigation {
         if (!node.equals(pages.getCurrent())) {
             return;
         }
-        controlArea.setFinishEnabled(!pages.hasNext() && enabled);
-        controlArea.setNextEnabled(pages.hasNext() && enabled);
+        controlBar.setFinishEnabled(!pages.hasNext() && enabled);
+        controlBar.setNextEnabled(pages.hasNext() && enabled);
     }
 }

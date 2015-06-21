@@ -8,10 +8,10 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.*?><?import view.controls.textfield.NumericTextField?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+<?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.*?><?import view.controls.NumericTextField?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <GridPane hgap="10" vgap="10">
+        <GridPane>
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" />
                 <ColumnConstraints hgrow="ALWAYS" />
@@ -23,13 +23,12 @@
             </rowConstraints>
             <Label text="Monitor Address:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <TextField fx:id="monitorAddressTextField" GridPane.columnIndex="1" GridPane.rowIndex="0"
-                       maxWidth="Infinity" styleClass="text-field-editable" />
+                       maxWidth="Infinity" />
             <Label text="Monitor Port:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-            <NumericTextField fx:id="monitorPortTextField" GridPane.columnIndex="3" GridPane.rowIndex="0"
-                              styleClass="text-field-editable" />
+            <NumericTextField fx:id="monitorPortTextField" GridPane.columnIndex="3" GridPane.rowIndex="0" />
         </GridPane>
     </children>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
+    <stylesheets>
+        <URL value="@../css/page.css" />
+    </stylesheets>
 </fx:root>

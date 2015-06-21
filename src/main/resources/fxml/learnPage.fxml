@@ -8,14 +8,14 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import view.controls.progressbar.LabeledProgressBar?><?import view.controls.protocolcontent.ProtocolContent?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+<?import javafx.scene.control.Button?><?import javafx.scene.layout.VBox?><?import view.controls.LabeledProgressBar?><?import view.controls.ProtocolHexDump?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <Button fx:id="startStopButton" onAction="#startStop" text="" />
+        <Button fx:id="startStopButton" onAction="#startStop" text="h" />
         <LabeledProgressBar fx:id="labeledProgressBar" />
-        <ProtocolContent fx:id="protocolContent" />
+        <ProtocolHexDump fx:id="protocolContent" />
     </children>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
+    <stylesheets>
+        <URL value="@../css/page.css" />
+    </stylesheets>
 </fx:root>

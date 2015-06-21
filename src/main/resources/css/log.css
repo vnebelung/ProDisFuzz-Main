@@ -1,15 +1,29 @@
-.warning {
+#log {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-border-color: rgba(255, 255, 255, 0.5);
+    -fx-border-radius: 4px;
+    -fx-min-height: 192px;
+    -fx-padding: 10px;
+    -fx-pref-height: 192px;
+}
+
+#log .warning {
     -fx-fill: yellow;
 }
 
-.error {
+#log .error {
     -fx-fill: ff4040;
 }
 
-.info {
+#log .info {
     -fx-fill: white;
 }
 
-.success {
+#log .success {
     -fx-fill: #20b020;
+}
+
+#log .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
 }

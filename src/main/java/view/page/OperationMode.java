@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.operationMode;
+package view.page;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.VBox;
@@ -24,6 +24,7 @@ public class OperationMode extends VBox {
      */
     public OperationMode(NavigationControl navigationControl) {
         super();
+        //noinspection HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/operationMode.fxml"), this);
         this.navigationControl = navigationControl;
     }

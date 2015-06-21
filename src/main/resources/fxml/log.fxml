@@ -8,14 +8,11 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.text.TextFlow?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.ScrollPane">
+<?import javafx.scene.control.ScrollPane?><?import javafx.scene.text.TextFlow?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.control.ScrollPane" id="log">
     <content>
-        <TextFlow fx:id="logTextFlow" />
+        <TextFlow fx:id="textFlow" />
     </content>
-    <padding>
-        <Insets bottom="10" left="10" right="10" top="10" />
-    </padding>
     <stylesheets>
         <URL value="@../css/log.css" />
     </stylesheets>

@@ -1,4 +1,4 @@
-package view.page.monitor;
+package view.page;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -7,7 +7,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import model.Model;
 import model.process.monitor.MonitorProcess;
-import view.page.Page;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 

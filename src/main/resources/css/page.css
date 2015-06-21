@@ -1,0 +1,9 @@
+#page {
+    -fx-spacing: 20px;
+    -fx-padding: 10px 10px 0 10px;
+}
+
+#page GridPane {
+    -fx-hgap: 10px;
+    -fx-vgap: 10px;
+}

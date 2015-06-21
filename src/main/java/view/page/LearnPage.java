@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.learn;
+package view.page;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -14,9 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import model.Model;
 import model.process.learn.LearnProcess;
-import view.controls.progressbar.LabeledProgressBar;
-import view.controls.protocolcontent.ProtocolContent;
-import view.page.Page;
+import view.controls.LabeledProgressBar;
+import view.controls.ProtocolHexDump;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
@@ -25,7 +24,7 @@ import java.util.Observer;
 
 public class LearnPage extends VBox implements Observer, Page {
 
-    private final Navigation navigation;
+    private Navigation navigation;
     @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
     private LabeledProgressBar labeledProgressBar;
@@ -34,7 +33,7 @@ public class LearnPage extends VBox implements Observer, Page {
     private Button startStopButton;
     @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
-    private ProtocolContent protocolContent;
+    private ProtocolHexDump protocolContent;
 
     /**
      * Instantiates a new learn area responsible for visualizing the process of learning the protocol sequence.
@@ -50,8 +49,9 @@ public class LearnPage extends VBox implements Observer, Page {
         this.navigation = navigation;
     }
 
+    @SuppressWarnings("MethodMayBeStatic")
     @FXML
-    private static void startStop() {
+    private void startStop() {
         if (Model.INSTANCE.getLearnProcess().isRunning()) {
             Model.INSTANCE.getLearnProcess().interrupt();
         } else {

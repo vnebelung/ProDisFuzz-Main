@@ -24,11 +24,11 @@ import java.util.Locale;
 import java.util.Observable;
 import java.util.Observer;
 
-class Log extends ScrollPane implements Observer {
+public class Log extends ScrollPane implements Observer {
 
     @SuppressWarnings("InstanceVariableMayNotBeInitialized")
     @FXML
-    private TextFlow logTextFlow;
+    private TextFlow textFlow;
 
     /**
      * Instantiates a new log area responsible for visualizing the log.
@@ -40,7 +40,7 @@ class Log extends ScrollPane implements Observer {
         //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getLogger().addObserver(this);
 
-        logTextFlow.heightProperty().addListener((observable, oldValue, newValue) -> setVvalue((Double) newValue));
+        textFlow.heightProperty().addListener((observable, oldValue, newValue) -> setVvalue((Double) newValue));
     }
 
     /**
@@ -90,7 +90,7 @@ class Log extends ScrollPane implements Observer {
                 return;
             }
             for (Message each : messages) {
-                logTextFlow.getChildren().add(styleText(each));
+                textFlow.getChildren().add(styleText(each));
             }
             purge();
 
@@ -101,8 +101,8 @@ class Log extends ScrollPane implements Observer {
      * Deletes old messages if the number of messages is greater than the given threshold.
      */
     private void purge() {
-        while (logTextFlow.getChildren().size() > 500) {
-            logTextFlow.getChildren().remove(0);
+        while (textFlow.getChildren().size() > 500) {
+            textFlow.getChildren().remove(0);
         }
     }
 }

@@ -8,22 +8,18 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?importjavafx.scene.control.TextArea?><?importjavafx.scene.shape.Rectangle?><?import javafx.geometry.Insets?><?import javafx.scene.control.Label?><?import javafx.scene.layout.*?><?import javafx.scene.shape.Rectangle?><?import javafx.scene.text.TextFlow?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolGridPane" hgap="10"
-         vgap="20">
+<?importjavafx.scene.control.TextArea?><?importjavafx.scene.shape.Rectangle?><?import javafx.scene.control.Label?><?import javafx.scene.layout.*?><?import javafx.scene.shape.Rectangle?><?import javafx.scene.text.TextFlow?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolHexDump">
     <children>
-        <Rectangle fill="#e0a0ff" height="10" width="10" GridPane.columnIndex="0" GridPane.halignment="LEFT"
+        <Rectangle id="varRectangle" height="10" width="10" GridPane.columnIndex="0" GridPane.halignment="LEFT"
                    GridPane.rowIndex="0" GridPane.valignment="CENTER" />
         <Label text="Variable Data" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="RIGHT" />
-        <Rectangle fill="#a0e0ff" height="10.0" width="10" GridPane.columnIndex="3" GridPane.halignment="RIGHT"
+        <Rectangle id="fixRectangle" height="10" width="10" GridPane.columnIndex="3" GridPane.halignment="RIGHT"
                    GridPane.rowIndex="0" GridPane.valignment="CENTER" />
         <Label text="Fixed Data" GridPane.columnIndex="4" GridPane.rowIndex="0" GridPane.halignment="LEFT" />
-        <TextFlow fx:id="protocolTextFlow" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.hgrow="ALWAYS"
+        <TextFlow fx:id="textFlow" GridPane.columnIndex="0" GridPane.columnSpan="5" GridPane.hgrow="ALWAYS"
                   GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
     </children>
-    <padding>
-        <Insets bottom="10" left="10" right="10" top="10" />
-    </padding>
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
         <ColumnConstraints halignment="LEFT" hgrow="NEVER" />
@@ -36,6 +32,6 @@
         <RowConstraints vgrow="ALWAYS" />
     </rowConstraints>
     <stylesheets>
-        <URL value="@../css/protocolContent.css" />
+        <URL value="@../css/protocolHexDump.css" />
     </stylesheets>
 </fx:root>

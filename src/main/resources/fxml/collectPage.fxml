@@ -8,10 +8,10 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <GridPane hgap="10" vgap="10">
+        <GridPane>
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" />
                 <ColumnConstraints hgrow="ALWAYS" />
@@ -37,9 +37,6 @@
         </TableView>
     </children>
     <stylesheets>
-        <URL value="@../css/collectPage.css" />
+        <URL value="@../css/page.css" />
     </stylesheets>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
 </fx:root>

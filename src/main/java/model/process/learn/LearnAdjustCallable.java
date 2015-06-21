@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-class LearnAdjustCallable implements Callable<List<Byte>> {
+public class LearnAdjustCallable implements Callable<List<Byte>> {
 
     private static final int CLEAN_LENGTH = 3;
     private static final int CLEAN_THRESHOLD = 0;

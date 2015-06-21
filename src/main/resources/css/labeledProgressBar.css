@@ -1,24 +1,32 @@
-.progress-bar {
+#labeledProgressBar ProgressBar {
     -fx-background-color: transparent;
     -fx-border-color: rgba(255, 255, 255, 0.7);
 }
 
-.progress-bar-fail {
+#labeledProgressBar .fail {
     -fx-background-color: rgba(255, 0, 0, 0.4);
 }
 
-.progress-bar-success {
+#labeledProgressBar .success {
     -fx-background-color: rgba(0, 255, 0, 0.4);
 }
 
-.progress-bar .track {
+#labeledProgressBar .progress-bar .track {
     -fx-background-color: transparent;
 }
 
-.progress-bar .bar {
+#labeledProgressBar .progress-bar .bar {
     -fx-background-color: linear-gradient(to left, white 0%, #6060a0 5%, transparent 30%);
 }
 
-.progress-bar:indeterminate .bar {
+#labeledProgressBar .progress-bar:indeterminate .bar {
     -fx-background-color: linear-gradient(to left, transparent 40%, #6060a0 65%, white 70%);
+}
+
+#labeledProgressBar ProgressBar {
+    -fx-min-height: 24px;
+}
+
+#labeledProgressBar Label {
+    -fx-alignment: center;
 }

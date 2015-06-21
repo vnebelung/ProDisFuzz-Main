@@ -11,14 +11,9 @@ import java.util.Map;
 public class Monitor {
 
     private static final int TIMEOUT = 50;
-    private final Socket socket;
+    private Socket socket;
     private Protocol protocol;
     private InetSocketAddress inetSocketAddress;
-
-    public Monitor() {
-        super();
-        socket = new Socket();
-    }
 
     /**
      * Sets the monitor's address.
@@ -65,6 +60,9 @@ public class Monitor {
      * @return true, if the connection to the monitor could be successfully established.
      */
     public boolean connect() {
+        if (socket == null || socket.isClosed()) {
+            socket = new Socket();
+        }
         if (inetSocketAddress == null) {
             Model.INSTANCE.getLogger().error("Monitor address must not be empty");
             return false;
@@ -75,7 +73,8 @@ public class Monitor {
             socket.connect(inetSocketAddress, TIMEOUT);
             protocol = new Protocol(socket.getInputStream(), socket.getOutputStream());
         } catch (IOException ignored) {
-            Model.INSTANCE.getLogger().error("Could not connect to monitor '" + inetSocketAddress.getHostString() +
+            disconnect();
+            Model.INSTANCE.getLogger().error("Cannot connect to monitor '" + inetSocketAddress.getHostString() +
                     ':' + inetSocketAddress.getPort() + '\'');
             return false;
         }
@@ -83,15 +82,19 @@ public class Monitor {
         try {
             monitorVersion = protocol.ayt();
         } catch (IOException ignored) {
-            Model.INSTANCE.getLogger().error("Connection to monitor was lost");
-            return false;
-        }
-        if (monitorVersion == -1) {
+            disconnect();
             Model.INSTANCE.getLogger().error("Monitor '" + inetSocketAddress.getHostString() + ':' +
                     inetSocketAddress.getPort() + "' is not responding");
             return false;
         }
+        if (monitorVersion == -1) {
+            disconnect();
+            Model.INSTANCE.getLogger().error("Connection to monitor '" + inetSocketAddress.getHostString() + ':' +
+                    inetSocketAddress.getPort() + "' is lost");
+            return false;
+        }
         if (monitorVersion != Constants.RELEASE_NUMBER) {
+            disconnect();
             Model.INSTANCE.getLogger().error("Version mismatch between monitor '" + inetSocketAddress.getHostString()
                     + ':' + inetSocketAddress.getPort() + "' (release " + monitorVersion + ") and main instance (" +
                     Constants.RELEASE_NUMBER + ')');
@@ -166,6 +169,9 @@ public class Monitor {
      * Disconnects the monitor connection and closes the socket.
      */
     public void disconnect() {
+        if (socket == null) {
+            return;
+        }
         try {
             socket.close();
         } catch (IOException e) {

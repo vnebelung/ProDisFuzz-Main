@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.collect;
+package view.page;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -19,8 +19,8 @@ import javafx.stage.DirectoryChooser;
 import model.Model;
 import model.ProtocolFile;
 import model.process.collect.CollectProcess;
-import view.controls.table.NumericTableCell;
-import view.page.Page;
+import view.controls.NumericTableCell;
+import view.controls.TableRow;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 

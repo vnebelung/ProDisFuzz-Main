@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.controls.protocolcontent;
+package view.controls;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
@@ -20,22 +20,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-public class ProtocolContent extends GridPane {
+public class ProtocolHexDump extends GridPane {
 
     private static final char VAR_CHAR = '*';
     private static final char NON_READABLE_CHAR = '.';
     private int lastHashCode;
     @FXML
-    private TextFlow protocolTextFlow;
+    private TextFlow textFlow;
 
     /**
      * Instantiates a new protocol content area responsible for visualizing the process of learning the protocol
      * sequence.
      */
-    public ProtocolContent() {
+    public ProtocolHexDump() {
         super();
         //noinspection HardCodedStringLiteral
-        FxmlConnection.connect(getClass().getResource("/fxml/protocolContent.fxml"), this);
+        FxmlConnection.connect(getClass().getResource("/fxml/protocolHexDump.fxml"), this);
+        textFlow.getChildren().add(createHeader());
+        textFlow.getChildren().add(createPlaceholder());
     }
 
     /**
@@ -56,8 +58,8 @@ public class ProtocolContent extends GridPane {
         } else {
             newTexts.addAll(createText(protocolStructure));
         }
-        protocolTextFlow.getChildren().clear();
-        protocolTextFlow.getChildren().addAll(newTexts);
+        textFlow.getChildren().clear();
+        textFlow.getChildren().addAll(newTexts);
     }
 
     /**

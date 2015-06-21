@@ -8,10 +8,10 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+<?import javafx.scene.control.Button?><?import javafx.scene.control.Label?><?import javafx.scene.control.TextField?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <GridPane vgap="10" hgap="10">
+        <GridPane>
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" />
                 <ColumnConstraints hgrow="ALWAYS" />
@@ -20,11 +20,11 @@
             <Label text="Export to:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
             <TextField fx:id="fileTextField" editable="false" GridPane.columnIndex="1" GridPane.rowIndex="0"
                        maxWidth="Infinity" />
-            <Button fx:id="browseButton" defaultButton="false" onAction="#browse" text="Browse..."
+            <Button fx:id="browseButton" defaultButton="false" onAction="#browse" text="Browse…"
                     GridPane.columnIndex="2" GridPane.rowIndex="0" />
         </GridPane>
     </children>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
+    <stylesheets>
+        <URL value="@../css/page.css" />
+    </stylesheets>
 </fx:root>

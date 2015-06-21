@@ -18,7 +18,7 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
-class FuzzingSendCallable implements Callable<Boolean> {
+public class FuzzingSendCallable implements Callable<Boolean> {
 
     private final byte[] message;
     private final InetSocketAddress target;

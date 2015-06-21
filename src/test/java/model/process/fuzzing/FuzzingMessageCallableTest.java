@@ -90,6 +90,7 @@ public class FuzzingMessageCallableTest {
             count += answer4[1] == answer4[3] ? -1 : 1;
         }
         // Test whether the first variable block is different from the second one
+        // Test may fail, just repeat it
         Assert.assertTrue(count > 0);
 
         injectedProtocolStructure.getVarBlock(0).setRandomInjection();

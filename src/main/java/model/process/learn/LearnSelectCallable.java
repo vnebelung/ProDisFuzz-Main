@@ -11,7 +11,7 @@ package model.process.learn;
 import java.util.*;
 import java.util.concurrent.Callable;
 
-class LearnSelectCallable implements Callable<int[]> {
+public class LearnSelectCallable implements Callable<int[]> {
 
     private final List<List<Byte>> sequences;
 

@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-class LearnRunnable extends AbstractRunnable {
+public class LearnRunnable extends AbstractRunnable {
 
     private final ProtocolFile[] files;
     private ProtocolStructure protocolStructure;

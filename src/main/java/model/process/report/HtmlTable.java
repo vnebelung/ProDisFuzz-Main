@@ -3,7 +3,7 @@ package model.process.report;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
-class HtmlTable {
+public class HtmlTable {
 
     private Element table;
 

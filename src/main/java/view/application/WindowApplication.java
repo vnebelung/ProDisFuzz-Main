@@ -20,13 +20,15 @@ public class WindowApplication extends Application {
     public void start(Stage primaryStage) {
         Window window = new Window();
 
-        Scene scene = new Scene(new Window(), 1024, 768);
+        Scene scene = new Scene(window);
         //noinspection HardCodedStringLiteral
-        scene.getStylesheets().add(getClass().getResource("/css/scene.css").toExternalForm());
+        //        addStylesheets(scene);
+        scene.getStylesheets().add("/css/scene.css");
         primaryStage.setScene(scene);
-        //noinspection HardCodedStringLiteral
         primaryStage.setTitle("ProDisFuzz");
         primaryStage.setOnCloseRequest(windowEvent -> window.onClose());
+        primaryStage.minHeightProperty().setValue(768);
+        primaryStage.minWidthProperty().setValue(1024);
         primaryStage.show();
 
         initUpdateCheck(primaryStage);

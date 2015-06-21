@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.fuzzing;
+package view.page;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -15,8 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import model.Model;
 import model.process.fuzzing.FuzzingProcess;
-import view.controls.progressbar.LabeledProgressBar;
-import view.page.Page;
+import view.controls.LabeledProgressBar;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
@@ -57,8 +56,9 @@ public class FuzzingPage extends VBox implements Observer, Page {
     /**
      * Handles the action of the start/stop button and starts oder stops the fuzzing process.
      */
+    @SuppressWarnings("MethodMayBeStatic")
     @FXML
-    private static void startStop() {
+    private void startStop() {
         if (Model.INSTANCE.getFuzzingProcess().isRunning()) {
             Model.INSTANCE.getFuzzingProcess().interrupt();
         } else {
@@ -118,7 +118,7 @@ public class FuzzingPage extends VBox implements Observer, Page {
                 // Fill the time values up to 2 chars with preceding zeros
                 DecimalFormat timeFormat = new DecimalFormat("00");
                 // The duration of the current fuzzing process is the current time minus the given start time
-                Duration duration = Duration.between(Instant.now(), time);
+                Duration duration = Duration.between(time, Instant.now());
                 Platform.runLater(() -> timeLabel.setText(timeFormat.format(duration.toHours()) + ':' +
                         timeFormat.format(duration.toMinutes()) + ':' + timeFormat.format(duration.getSeconds())));
             }

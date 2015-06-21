@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.Map.Entry;
 
-class Protocol {
+public class Protocol {
 
     private final InputStream inputStream;
     private final OutputStream outputStream;

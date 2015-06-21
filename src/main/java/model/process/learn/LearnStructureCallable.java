@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-class LearnStructureCallable implements Callable<ProtocolStructure> {
+public class LearnStructureCallable implements Callable<ProtocolStructure> {
 
     private final List<Byte> sequence;
 

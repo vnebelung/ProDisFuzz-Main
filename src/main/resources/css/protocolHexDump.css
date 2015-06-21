@@ -1,20 +1,31 @@
-#protocolGridPane {
+#protocolHexDump {
     -fx-border-width: 1px;
     -fx-border-color: rgba(255, 255, 255, 0.7);
     -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-hgap: 5px;
+    -fx-padding: 10px;
+    -fx-vgap: 20px;
 }
 
-.normal {
+#protocolHexDump #varRectangle {
+    -fx-fill: #e0a0ff;
+}
+
+#protocolHexDump #fixRectangle {
+    -fx-fill: #a0e0ff;
+}
+
+#protocolHexDump .normal {
     -fx-fill: white;
     -fx-font-family: 'monospace';
 }
 
-.var {
+#protocolHexDump .var {
     -fx-fill: #e0a0ff;
     -fx-font-family: 'monospace';
 }
 
-.fix {
+#protocolHexDump .fix {
     -fx-fill: #a0e0ff;
     -fx-font-family: 'monospace';
 }

@@ -11,7 +11,7 @@ package main;
 import model.Model;
 import view.View;
 
-class ProDisFuzz {
+public class ProDisFuzz {
 
     private final Model model;
     private final View view;

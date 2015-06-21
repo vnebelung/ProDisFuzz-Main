@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.collect;
+package view.controls;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -19,7 +19,8 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-class TableRow {
+@SuppressWarnings("unused")
+public class TableRow {
     private final String name;
     private final String size;
     private final String lastModified;

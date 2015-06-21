@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.controls.blockinjection;
+package view.controls;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;

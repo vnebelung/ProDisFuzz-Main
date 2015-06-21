@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.import_;
+package view.page;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -15,8 +15,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import model.Model;
 import model.process.import_.ImportProcess;
-import view.controls.protocolcontent.ProtocolContent;
-import view.page.Page;
+import view.controls.ProtocolHexDump;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
@@ -32,7 +31,7 @@ public class ImportPage extends VBox implements Observer, Page {
     private TextField fileTextField;
     private Path loadPath;
     @FXML
-    private ProtocolContent protocolContent;
+    private ProtocolHexDump protocolContent;
 
     /**
      * Instantiates a new import area responsible for visualizing the process of importing the protocol structure from

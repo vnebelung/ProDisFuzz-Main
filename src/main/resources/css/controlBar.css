@@ -1,0 +1,12 @@
+#controlBar {
+    -fx-padding: 0 10px 10px 10px;
+    -fx-spacing: 10px;
+}
+
+#controlBar Button {
+    -fx-pref-width: 70px;
+}
+
+#controlBar #memoryUsage {
+    -fx-alignment: bottom-left;
+}

@@ -1,0 +1,19 @@
+#blockinjection {
+    -fx-hgap: 5px;
+    -fx-vgap: 5px;
+}
+
+#blockinjection .normal {
+    -fx-fill: white;
+    -fx-font-family: 'monospace';
+}
+
+#blockinjection .var {
+    -fx-fill: #e0a0ff;
+    -fx-font-family: 'monospace';
+}
+
+#blockinjection .fix {
+    -fx-fill: #a0e0ff;
+    -fx-font-family: 'monospace';
+}

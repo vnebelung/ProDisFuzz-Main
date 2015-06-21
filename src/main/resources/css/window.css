@@ -3,14 +3,20 @@
     -fx-background-image: url("../images/background.png");
     -fx-background-repeat: repeat-x;
     -fx-background-position: left top;
+    -fx-padding: 10px;
+    -fx-pref-height: 768px;
+    -fx-pref-width: 1024px;
+    -fx-spacing: 10px;
 }
 
-#mainPane, #log {
+#mainFrame {
     -fx-border-color: rgba(255, 255, 255, 0.5);
     -fx-border-radius: 4px;
     -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-spacing: 20px;
 }
 
-#mainScrollPane, .viewport {
+#scrollPane, #scrollPane .viewport {
     -fx-background-color: transparent;
+    -fx-padding: 0;
 }

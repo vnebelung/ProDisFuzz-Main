@@ -8,12 +8,11 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="operationMode" spacing="20">
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <Label id="title" text="ProDisFuzz" alignment="CENTER" maxWidth="Infinity" VBox.vgrow="ALWAYS"
-               maxHeight="Infinity" />
-        <GridPane hgap="10" vgap="10" VBox.vgrow="ALWAYS" maxHeight="Infinity">
+        <Label id="title" text="ProDisFuzz" maxHeight="Infinity" VBox.vgrow="ALWAYS" maxWidth="Infinity" />
+        <GridPane VBox.vgrow="ALWAYS" maxHeight="Infinity">
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="50" />
@@ -33,9 +32,7 @@
         </GridPane>
     </children>
     <stylesheets>
+        <URL value="@../css/page.css" />
         <URL value="@../css/operationMode.css" />
     </stylesheets>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
 </fx:root>

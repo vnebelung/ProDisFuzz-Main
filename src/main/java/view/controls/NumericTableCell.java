@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.controls.table;
+package view.controls;
 
 
 import javafx.geometry.Pos;

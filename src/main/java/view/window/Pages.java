@@ -13,7 +13,7 @@ import javafx.scene.Node;
 import java.util.ArrayList;
 import java.util.List;
 
-class Pages {
+public class Pages {
 
     private final List<Node> pages;
     private int currentIndex;

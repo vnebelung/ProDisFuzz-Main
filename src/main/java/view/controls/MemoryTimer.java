@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.controls.control;
+package view.controls;
 
 import javafx.application.Platform;
 import javafx.scene.control.Label;
@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
 
-class MemoryTimer {
+public class MemoryTimer {
 
     private final Label label;
     private final Timer timer;

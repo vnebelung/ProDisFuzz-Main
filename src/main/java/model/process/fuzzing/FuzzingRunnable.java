@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-class FuzzingRunnable extends AbstractRunnable {
+public class FuzzingRunnable extends AbstractRunnable {
     private final InetSocketAddress target;
     private final int timeout;
     private final int interval;
@@ -256,7 +256,7 @@ class FuzzingRunnable extends AbstractRunnable {
      * @return the fuzzing duration
      */
     public Duration getDuration() {
-        return isFinished() ? Duration.between(endTime, startTime) : Duration.between(Instant.now(), startTime);
+        return isFinished() ? Duration.between(startTime, endTime) : Duration.between(startTime, Instant.now());
     }
 
     /**

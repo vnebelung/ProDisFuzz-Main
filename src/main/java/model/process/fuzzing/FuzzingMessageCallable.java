@@ -18,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-class FuzzingMessageCallable implements Callable<byte[]> {
+public class FuzzingMessageCallable implements Callable<byte[]> {
 
     private final InjectedProtocolStructure injectedProtocolStructure;
     private final InjectionMethod injectionMethod;

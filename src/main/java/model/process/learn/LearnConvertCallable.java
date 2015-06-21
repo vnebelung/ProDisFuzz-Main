@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-class LearnConvertCallable implements Callable<List<List<Byte>>> {
+public class LearnConvertCallable implements Callable<List<List<Byte>>> {
     private final ProtocolFile[] files;
 
     /**

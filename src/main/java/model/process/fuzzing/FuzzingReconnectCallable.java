@@ -17,7 +17,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.concurrent.Callable;
 
-class FuzzingReconnectCallable implements Callable<Boolean> {
+public class FuzzingReconnectCallable implements Callable<Boolean> {
 
     private final InetSocketAddress target;
     private final int timeout;

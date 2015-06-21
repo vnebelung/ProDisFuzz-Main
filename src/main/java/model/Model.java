@@ -64,6 +64,7 @@ public enum Model {
         monitorProcess.reset();
         fuzzOptionsProcess.reset();
         fuzzingProcess.reset();
+        reportProcess.reset();
     }
 
     /**

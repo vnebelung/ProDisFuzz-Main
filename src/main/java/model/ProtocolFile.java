@@ -49,11 +49,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             algorithm.update(bytes, 0, bytes.length);
             byte[] digest = algorithm.digest();
             for (byte each : digest) {
-                String hex = Integer.toHexString(0xff & each);
-                if (hex.length() == 1) {
-                    hash.append('0');
-                }
-                hash.append(hex);
+                hash.append(String.format("%02X", each));
             }
         } catch (IOException e) {
             hash.delete(0, hash.length());

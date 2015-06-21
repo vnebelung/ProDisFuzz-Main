@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.export;
+package view.page;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.Model;
 import model.process.export.ExportProcess;
-import view.page.Page;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 

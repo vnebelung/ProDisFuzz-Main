@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.controls.progressbar;
+package view.controls;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -37,12 +37,13 @@ public class LabeledProgressBar extends StackPane {
      * @param progress the absolute progress. A negative value for progress indicates that the progress is
      *                 indeterminate. A positive value between 0 and 1 indicates the percentage of progress where 0 is
      *                 0% and 1 is 100%. Any value greater than 1 is interpreted as 100%.
-     * @param running  true, if the process that is visualized through this progress bar is active
+     * @param running  true, if the process that is visualized through this progress bar is currently performing its
+     *                 task
      */
     public void update(double progress, boolean running) {
         progressBar.setProgress(progress);
         //noinspection HardCodedStringLiteral
-        progressBar.getStyleClass().removeAll("progress-bar-fail", "progress-bar-success");
+        progressBar.getStyleClass().removeAll("fail", "success");
         progressBar.setStyle("");
         StringBuilder labelText = new StringBuilder();
         //noinspection NumericCastThatLosesPrecision
@@ -54,7 +55,7 @@ public class LabeledProgressBar extends StackPane {
         //noinspection FloatingPointEquality
         if ((progress == 1) || (progress < 0)) {
             //noinspection HardCodedStringLiteral
-            progressBar.getStyleClass().add("progress-bar-success");
+            progressBar.getStyleClass().add("success");
         } else if (running) {
             // Set dynamic background color depending on the progress
             //noinspection NumericCastThatLosesPrecision
@@ -63,7 +64,7 @@ public class LabeledProgressBar extends StackPane {
             progressBar.setStyle("-fx-background-color: rgba(" + (255 - color) + ", " + color + ", 0, 0.4);");
         } else {
             //noinspection HardCodedStringLiteral
-            progressBar.getStyleClass().add("progress-bar-fail");
+            progressBar.getStyleClass().add("fail");
         }
         label.setText(labelText.toString());
     }

@@ -8,5 +8,5 @@
 
 package model.modificator;
 
-class AbstractModificator {
+public class AbstractModificator {
 }

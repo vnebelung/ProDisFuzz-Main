@@ -9,10 +9,10 @@
   -->
 
 <?import javafx.scene.control.Label?><?import javafx.scene.control.ProgressBar?><?import javafx.scene.layout.StackPane?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.StackPane">
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.StackPane" id="labeledProgressBar">
     <children>
-        <ProgressBar fx:id="progressBar" maxWidth="Infinity" minHeight="24.0" progress="0" />
-        <Label fx:id="label" StackPane.alignment="CENTER" />
+        <ProgressBar fx:id="progressBar" maxWidth="Infinity" progress="0" />
+        <Label fx:id="label" />
     </children>
     <stylesheets>
         <URL value="@../css/labeledProgressBar.css" />

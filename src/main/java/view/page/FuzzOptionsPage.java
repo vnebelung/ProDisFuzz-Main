@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package view.page.fuzzOptions;
+package view.page;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -20,9 +20,8 @@ import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
 import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.InjectedProtocolStructure;
-import view.controls.blockinjection.BlockInjection;
-import view.controls.protocolcontent.ProtocolContent;
-import view.page.Page;
+import view.controls.BlockInjection;
+import view.controls.ProtocolHexDump;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
@@ -52,7 +51,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
     private RadioButton allRadioButton;
     private Timer targetTimer;
     @FXML
-    private ProtocolContent protocolContent;
+    private ProtocolHexDump protocolHexDump;
     @FXML
     private VBox blockInjections;
 
@@ -110,7 +109,7 @@ public class FuzzOptionsPage extends VBox implements Observer, Page {
 
                 InjectedProtocolStructure injectedProtocolStructure = process.getInjectedProtocolStructure();
                 synchronized (this) {
-                    protocolContent.addProtocolText(injectedProtocolStructure.toProtocolStructure());
+                    protocolHexDump.addProtocolText(injectedProtocolStructure.toProtocolStructure());
                 }
 
                 // Update the block injections section only if the number of current block injection modules differs

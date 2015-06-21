@@ -8,24 +8,16 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.ScrollPane?><?import javafx.scene.layout.VBox?><?import view.controls.control.ControlBar?><?import view.log.Log?><?import java.net.URL?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="window" minHeight="768" minWidth="1024"
-         spacing="10">
+<?import javafx.scene.control.ScrollPane?><?import javafx.scene.layout.VBox?><?import view.controls.ControlBar?><?import view.log.Log?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="window">
     <children>
-        <VBox id="mainPane" spacing="20" VBox.vgrow="ALWAYS">
-            <ScrollPane fx:id="mainScrollPane" content="$null" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
-                        id="mainScrollPane" VBox.vgrow="ALWAYS">
-                <padding>
-                    <Insets bottom="0" left="0" right="10" top="0" />
-                </padding>
-            </ScrollPane>
-            <ControlBar fx:id="controlArea" />
+        <VBox fx:id="mainFrame" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="scrollPane" content="$null" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
+                        VBox.vgrow="ALWAYS" />
+            <ControlBar fx:id="controlBar" />
         </VBox>
-        <Log id="log" prefHeight="192" />
+        <Log />
     </children>
-    <padding>
-        <Insets bottom="10" left="10" right="10" top="10" />
-    </padding>
     <stylesheets>
         <URL value="@../css/window.css" />
     </stylesheets>

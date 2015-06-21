@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-class LearnHirschbergCallable implements Callable<List<Byte>> {
+public class LearnHirschbergCallable implements Callable<List<Byte>> {
 
     private static final byte GAP_PENALTY = 2;
     private static final byte SIM_SCORE_EQ = 0;

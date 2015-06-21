@@ -8,10 +8,10 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.geometry.Insets?><?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import view.controls.protocolcontent.ProtocolContent?><?import view.controls.textfield.NumericTextField?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" spacing="20">
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import view.controls.NumericTextField?><?import view.controls.ProtocolHexDump?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
     <children>
-        <GridPane hgap="10" vgap="10">
+        <GridPane>
             <columnConstraints>
                 <ColumnConstraints hgrow="NEVER" />
                 <ColumnConstraints hgrow="ALWAYS" />
@@ -22,13 +22,12 @@
                 <RowConstraints vgrow="NEVER" />
             </rowConstraints>
             <Label text="Target Address:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-            <TextField fx:id="targetAddressTextField" GridPane.columnIndex="1" GridPane.rowIndex="0" maxWidth="Infinity"
-                       styleClass="text-field-editable" />
+            <TextField fx:id="targetAddressTextField" GridPane.columnIndex="1" GridPane.rowIndex="0"
+                       maxWidth="Infinity" />
             <Label text="Target Port:" GridPane.columnIndex="2" GridPane.rowIndex="0" />
-            <NumericTextField fx:id="targetPortTextField" GridPane.columnIndex="3" GridPane.rowIndex="0"
-                              styleClass="text-field-editable" />
+            <NumericTextField fx:id="targetPortTextField" GridPane.columnIndex="3" GridPane.rowIndex="0" />
         </GridPane>
-        <GridPane hgap="10" vgap="10">
+        <GridPane>
             <fx:define>
                 <ToggleGroup fx:id="communicationGroup" />
                 <ToggleGroup fx:id="dataInjectionGroup" />
@@ -62,19 +61,20 @@
             <RadioButton fx:id="allRadioButton" onAction="#saveCommunication" text="All" GridPane.columnIndex="5"
                          GridPane.rowIndex="1" toggleGroup="$communicationGroup" />
         </GridPane>
-        <GridPane hgap="10" vgap="10" VBox.vgrow="ALWAYS">
+        <GridPane VBox.vgrow="ALWAYS">
             <columnConstraints>
-                <ColumnConstraints hgrow="ALWAYS" />
+                <ColumnConstraints />
                 <ColumnConstraints hgrow="ALWAYS" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints vgrow="ALWAYS" />
             </rowConstraints>
-            <ProtocolContent GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="protocolContent" />
-            <VBox fx:id="blockInjections" GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="10" />
+            <ProtocolHexDump GridPane.columnIndex="0" GridPane.rowIndex="0" fx:id="protocolHexDump" />
+            <VBox fx:id="blockInjections" GridPane.columnIndex="1" GridPane.rowIndex="0" />
         </GridPane>
     </children>
-    <padding>
-        <Insets bottom="0" left="10" right="10" top="10" />
-    </padding>
+    <stylesheets>
+        <URL value="@../css/page.css" />
+        <URL value="@../css/fuzzOptions.css" />
+    </stylesheets>
 </fx:root>

@@ -8,8 +8,8 @@
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.scene.control.*?><?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="protocolGridPane" hgap="5" vgap="5">
+<?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
+<fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.GridPane" id="blockinjection">
     <fx:define>
         <ToggleGroup fx:id="injectionSourceGroup" />
     </fx:define>
@@ -20,7 +20,7 @@
                      GridPane.rowIndex="1" toggleGroup="$injectionSourceGroup" />
         <TextField fx:id="libraryTextField" editable="false" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
                    GridPane.rowIndex="1" />
-        <Button fx:id="browseButton" onAction="#browse" text="Browse …" GridPane.columnIndex="2"
+        <Button fx:id="browseButton" onAction="#browse" text="Browse…" GridPane.columnIndex="2"
                 GridPane.rowIndex="1" />
     </children>
     <columnConstraints>
@@ -33,4 +33,7 @@
         <RowConstraints vgrow="NEVER" />
         <RowConstraints vgrow="NEVER" />
     </rowConstraints>
+    <stylesheets>
+        <URL value="@../css/blockInjection.css" />
+    </stylesheets>
 </fx:root>

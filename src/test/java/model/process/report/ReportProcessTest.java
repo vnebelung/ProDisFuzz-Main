@@ -1,9 +1,17 @@
+/*
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ */
+
 package model.process.report;
 
 import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
-import model.xml.WhiteSpaceEliminator;
+import model.util.XmlWhiteSpaceEliminator;
 import nu.xom.*;
 import nu.xom.canonical.Canonicalizer;
 import org.testng.Assert;
@@ -91,7 +99,7 @@ public class ReportProcessTest {
         String report = null;
         //noinspection OverlyBroadCatchBlock
         try (OutputStream outputStream = new ByteArrayOutputStream()) {
-            Builder builder = new Builder(new WhiteSpaceEliminator());
+            Builder builder = new Builder(new XmlWhiteSpaceEliminator());
             Document exportedDoc = builder.build(path.resolve("results.html").toFile());
             replaceDateTimes(exportedDoc.getRootElement());
             Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
@@ -103,7 +111,7 @@ public class ReportProcessTest {
         String reference = null;
         //noinspection OverlyBroadCatchBlock
         try (OutputStream outputStream = new ByteArrayOutputStream()) {
-            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Builder parser = new Builder(new XmlWhiteSpaceEliminator());
             Document referenceDoc = parser.build(Paths.get(getClass().getResource("/results.html").toURI()).toFile());
             Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
             canonicalizer.write(referenceDoc);

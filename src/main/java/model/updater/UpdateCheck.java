@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 30.03.14 17:49.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:31 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -9,10 +9,10 @@
 package model.updater;
 
 import model.Model;
-import model.utilities.Constants;
-import model.utilities.Keys;
-import model.xml.XmlExchange;
-import model.xml.XmlSchemaValidator;
+import model.util.Constants;
+import model.util.Keys;
+import model.util.XmlExchange;
+import model.util.XmlSchema;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
@@ -69,7 +69,7 @@ public class UpdateCheck {
                     " Please check manually for an update.");
             return false;
         }
-        if (!XmlSchemaValidator.validateUpdateCheck(xmlPath)) {
+        if (!XmlSchema.validateUpdateInformation(xmlPath)) {
             Model.INSTANCE.getLogger().error("ProDisFuzz could validate the format of the XML file containing the " +
                     "update information. Please check manually for an update.");
             return false;
@@ -87,7 +87,8 @@ public class UpdateCheck {
         Arrays.sort(releaseInformation);
         boolean result = releaseInformation.length > 0;
         if (result) {
-            Model.INSTANCE.getLogger().warning("ProDisFuzz update available. Please go to 'http://prodisfuzz.net'");
+            Model.INSTANCE.getLogger().warning("An update of ProDisFuzz is available. Please go to " +
+                    "'http://prodisfuzz.net' and download the new version");
         } else {
             Model.INSTANCE.getLogger().fine("ProDisFuzz is up to date.");
         }
@@ -103,25 +104,24 @@ public class UpdateCheck {
      */
     private static ReleaseInformation[] readNewReleases(Document document) {
         List<ReleaseInformation> result = new ArrayList<>();
-        Elements elements = document.getRootElement().getChildElements("release", Constants.XML_NAMESPACE_PRODISFUZZ);
+        Elements elements = document.getRootElement().getChildElements("release");
         for (int i = 0; i < elements.size(); i++) {
             Element element = elements.get(i);
             //noinspection HardCodedStringLiteral
-            int number = Integer.parseInt(element.getFirstChildElement("number", Constants.XML_NAMESPACE_PRODISFUZZ)
+            int number = Integer.parseInt(element.getFirstChildElement("number")
                     .getValue());
             if (number <= Constants.RELEASE_NUMBER) {
                 continue;
             }
             //noinspection HardCodedStringLiteral
-            String name = element.getFirstChildElement("name", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            String name = element.getFirstChildElement("name").getValue();
             //noinspection HardCodedStringLiteral
-            String date = element.getFirstChildElement("date", Constants.XML_NAMESPACE_PRODISFUZZ).getValue();
+            String date = element.getFirstChildElement("date").getValue();
             //noinspection HardCodedStringLiteral
-            String requirements = element.getFirstChildElement("requirements", Constants.XML_NAMESPACE_PRODISFUZZ)
+            String requirements = element.getFirstChildElement("requirements")
                     .getValue();
             // noinspection HardCodedStringLiteral
-            Elements items = element.getFirstChildElement("information", Constants.XML_NAMESPACE_PRODISFUZZ)
-                    .getChildElements("item", Constants.XML_NAMESPACE_PRODISFUZZ);
+            Elements items = element.getFirstChildElement("information").getChildElements("item");
             String[] information = new String[items.size()];
             for (int j = 0; j < items.size(); j++) {
                 information[j] = items.get(j).getValue();

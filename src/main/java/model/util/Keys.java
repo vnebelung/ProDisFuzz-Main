@@ -1,12 +1,12 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.utilities;
+package model.util;
 
 import model.Model;
 
@@ -17,7 +17,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
-@SuppressWarnings("StaticMethodOnlyUsedInOneClass")
 public enum Keys {
     ;
 

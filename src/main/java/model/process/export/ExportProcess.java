@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 31.03.14 19:42.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -12,9 +12,9 @@ import model.process.AbstractProcess;
 import model.protocol.ProtocolBlock;
 import model.protocol.ProtocolBlock.Type;
 import model.protocol.ProtocolStructure;
-import model.utilities.Constants;
-import model.utilities.Hex;
-import model.xml.XmlExchange;
+import model.util.Constants;
+import model.util.Hex;
+import model.util.XmlExchange;
 import nu.xom.Attribute;
 import nu.xom.Document;
 import nu.xom.Element;
@@ -136,7 +136,7 @@ public class ExportProcess extends AbstractProcess {
         // Append byte elements to the content element
         StringBuilder content = new StringBuilder(bytes.length * 2);
         for (Byte each : bytes) {
-            content.append(Hex.byte2Hex(each));
+            content.append(Hex.byte2HexBin(each));
         }
         result.appendChild(content.toString());
         return result;

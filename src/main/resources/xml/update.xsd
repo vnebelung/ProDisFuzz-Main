@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
-  ~ This file is part of ProDisFuzz, modified on 01.03.14 12:36.
-  ~ Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+  ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:pdf="http://prodisfuzz.net"
-           xmlns:sig="http://www.w3.org/2000/09/xmldsig#" targetNamespace="http://prodisfuzz.net"
-           elementFormDefault="qualified">
-    <xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd" />
-    <xs:element name="update" type="pdf:updateType" />
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="update" type="updateType" />
 
-    <xs:complexType name="updateType">
-        <xs:sequence>
-            <xs:element name="release" type="pdf:releaseType" minOccurs="1" maxOccurs="unbounded" />
-            <xs:element ref="sig:Signature" />
-        </xs:sequence>
-    </xs:complexType>
+    <xsd:complexType name="updateType">
+        <xsd:sequence>
+            <xsd:element name="releases" type="releasesType" />
+            <xsd:element name="signature" type="signatureType" />
+        </xsd:sequence>
+    </xsd:complexType>
 
-    <xs:complexType name="releaseType">
-        <xs:sequence>
-            <xs:element name="number" type="xs:int" />
-            <xs:element name="name" type="xs:string" />
-            <xs:element name="date" type="xs:date" />
-            <xs:element name="requirements" type="xs:string" />
-            <xs:element name="information" type="pdf:informationType" />
-        </xs:sequence>
-    </xs:complexType>
+    <xsd:complexType name="releaseType">
+        <xsd:sequence>
+            <xsd:element name="number" type="xsd:int" />
+            <xsd:element name="name" type="xsd:string" />
+            <xsd:element name="date" type="xsd:date" />
+            <xsd:element name="requirements" type="xsd:string" />
+            <xsd:element name="information" type="informationType" />
+        </xsd:sequence>
+    </xsd:complexType>
 
-    <xs:complexType name="informationType">
-        <xs:sequence minOccurs="1" maxOccurs="unbounded">
-            <xs:element name="item" type="xs:string" />
-        </xs:sequence>
-    </xs:complexType>
-</xs:schema>
+    <xsd:complexType name="informationType">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="item" type="xsd:string" />
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:simpleType name="signatureType">
+        <xsd:restriction base="xsd:hexBinary">
+            <xsd:length value="256" />
+        </xsd:restriction>
+    </xsd:simpleType>
+    <xsd:complexType name="releasesType">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="release" type="releaseType" />
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

@@ -1,6 +1,14 @@
+/*
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ */
+
 package model.xml;
 
-import model.utilities.Constants;
+import model.util.XmlSchema;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Elements;
@@ -23,139 +31,65 @@ public class XmlSchemaValidatorTest {
         Document document = getDocument("/releases.xml");
         Path path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertTrue(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertTrue(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("release", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getFirstChildElement("number", Constants.XML_NAMESPACE_PRODISFUZZ).detach();
+        document.getRootElement().getFirstChildElement("releases").getFirstChildElement("release")
+                .getFirstChildElement("number").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("release", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getFirstChildElement("name", Constants.XML_NAMESPACE_PRODISFUZZ).detach();
+        document.getRootElement().getFirstChildElement("releases").getFirstChildElement("release")
+                .getFirstChildElement("name").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("release", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getFirstChildElement("date", Constants.XML_NAMESPACE_PRODISFUZZ).detach();
+        document.getRootElement().getFirstChildElement("releases").getFirstChildElement("release")
+                .getFirstChildElement("date").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("release", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getFirstChildElement("requirements", Constants.XML_NAMESPACE_PRODISFUZZ).detach();
+        document.getRootElement().getFirstChildElement("releases").getFirstChildElement("release")
+                .getFirstChildElement("requirements").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("release", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getFirstChildElement("information", Constants.XML_NAMESPACE_PRODISFUZZ).detach();
+        document.getRootElement().getFirstChildElement("releases").getFirstChildElement("release")
+                .getFirstChildElement("information").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        Elements elements = document.getRootElement().getFirstChildElement("release", Constants
-                .XML_NAMESPACE_PRODISFUZZ).getFirstChildElement("information", Constants.XML_NAMESPACE_PRODISFUZZ)
-                .getChildElements("item", Constants.XML_NAMESPACE_PRODISFUZZ);
+        Elements elements = document.getRootElement().getFirstChildElement("releases").getFirstChildElement
+                ("release").getFirstChildElement("information").getChildElements("item");
         for (int i = 0; i < elements.size(); i++) {
             elements.get(i).detach();
         }
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
 
         document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE).detach();
+        document.getRootElement().getFirstChildElement("signature").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("CanonicalizationMethod", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("SignatureMethod", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("Reference", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("Reference", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement("Transforms", Constants
-                .XML_NAMESPACE_SIGNATURE).getFirstChildElement("Transform", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("Reference", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement("DigestMethod", Constants
-                .XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignedInfo", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement
-                ("Reference", Constants.XML_NAMESPACE_SIGNATURE).getFirstChildElement("DigestValue", Constants
-                .XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
-        Files.delete(path);
-
-        document = getDocument("/releases.xml");
-        document.getRootElement().getFirstChildElement("Signature", Constants.XML_NAMESPACE_SIGNATURE)
-                .getFirstChildElement("SignatureValue", Constants.XML_NAMESPACE_SIGNATURE).detach();
-        path = Files.createTempFile(null, null);
-        Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateUpdateCheck(path));
+        Assert.assertFalse(XmlSchema.validateUpdateInformation(path));
         Files.delete(path);
     }
 
@@ -170,14 +104,14 @@ public class XmlSchemaValidatorTest {
         Document document = getDocument("/protocol.xml");
         Path path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertTrue(XmlSchemaValidator.validateProtocol(path));
+        Assert.assertTrue(XmlSchema.validateProtocol(path));
         Files.delete(path);
 
         document = getDocument("/protocol.xml");
         document.getRootElement().getFirstChildElement("protocolblocks").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateProtocol(path));
+        Assert.assertFalse(XmlSchema.validateProtocol(path));
         Files.delete(path);
 
         document = getDocument("/protocol.xml");
@@ -186,7 +120,7 @@ public class XmlSchemaValidatorTest {
         }
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateProtocol(path));
+        Assert.assertFalse(XmlSchema.validateProtocol(path));
         Files.delete(path);
 
         document = getDocument("/protocol.xml");
@@ -194,7 +128,7 @@ public class XmlSchemaValidatorTest {
                 .getFirstChildElement("content").detach();
         path = Files.createTempFile(null, null);
         Files.write(path, document.toXML().getBytes(StandardCharsets.UTF_8));
-        Assert.assertFalse(XmlSchemaValidator.validateProtocol(path));
+        Assert.assertFalse(XmlSchema.validateProtocol(path));
         Files.delete(path);
     }
 }

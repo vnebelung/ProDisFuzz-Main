@@ -1,12 +1,12 @@
 /*
- * This file is part of ProDisFuzz, modified on 01.03.14 10:47.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.xml;
+package model.util;
 
 import model.Model;
 import org.xml.sax.ErrorHandler;
@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 
-public enum XmlSchemaValidator {
+@SuppressWarnings("ClassIndependentOfModule")
+public enum XmlSchema {
     ;
 
     /**
@@ -31,11 +32,10 @@ public enum XmlSchemaValidator {
      * @param path the path to the update information file
      * @return true, if the XML update information file is validated against the schema without any errors
      */
-    public static boolean validateUpdateCheck(Path path) {
+    public static boolean validateUpdateInformation(Path path) {
         Source source = new StreamSource(path.toFile());
         // noinspection HardCodedStringLiteral
-        String[] schemes = {"/xml/xmldsig-core-schema.xsd", "/xml/update.xsd"};
-        return validate(source, schemes);
+        return validate(source, "/xml/update.xsd");
     }
 
     /**
@@ -47,18 +47,17 @@ public enum XmlSchemaValidator {
     public static boolean validateProtocol(Path path) {
         Source source = new StreamSource(path.toFile());
         //noinspection HardCodedStringLiteral
-        String[] scheme = {"/xml/protocol.xsd"};
-        return validate(source, scheme);
+        return validate(source, "/xml/protocol.xsd");
     }
 
     /**
-     * Validates the given XML file against the given schemes.
+     * Validates the given XML file against the given schema.
      *
-     * @param xml         the XML source to be validated.
-     * @param schemaNames the file names of the schemes
+     * @param xml        the XML source to be validated.
+     * @param schemaName the file name of the schema
      * @return true, if the XML file is validated against the schema without any errors
      */
-    private static boolean validate(Source xml, String... schemaNames) {
+    private static boolean validate(Source xml, String schemaName) {
         boolean[] result = {true};
         // Initializes the error handler
         ErrorHandler errorHandler = new ErrorHandler() {
@@ -82,31 +81,15 @@ public enum XmlSchemaValidator {
         };
         // Load the XML schema
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        InputStream[] schemaStreams = new InputStream[schemaNames.length];
-        try {
-            for (int i = 0; i < schemaStreams.length; i++) {
-                //noinspection resource,IOResourceOpenedButNotSafelyClosed
-                schemaStreams[i] = XmlSchemaValidator.class.getResourceAsStream(schemaNames[i]);
-            }
-            Source[] schemaSources = new Source[schemaNames.length];
-            for (int i = 0; i < schemaSources.length; i++) {
-                schemaSources[i] = new StreamSource(schemaStreams[i]);
-            }
-            Validator validator = schemaFactory.newSchema(schemaSources).newValidator();
+        try (InputStream inputStream = XmlSchema.class.getResourceAsStream(schemaName)) {
+            Source source = new StreamSource(inputStream);
+            Validator validator = schemaFactory.newSchema(source).newValidator();
             validator.setErrorHandler(errorHandler);
             // Validate the whole XML document
             validator.validate(xml);
         } catch (IOException | SAXException e) {
             Model.INSTANCE.getLogger().error(e);
             return false;
-        } finally {
-            for (InputStream each : schemaStreams) {
-                try {
-                    each.close();
-                } catch (IOException ignored) {
-                    // Should not happen
-                }
-            }
         }
         return result[0];
     }

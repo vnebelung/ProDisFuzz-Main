@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 07.02.14 00:21.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -49,7 +49,7 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
             algorithm.update(bytes, 0, bytes.length);
             byte[] digest = algorithm.digest();
             for (byte each : digest) {
-                hash.append(String.format("%02X", each));
+                hash.append(String.format("%02x", each));
             }
         } catch (IOException e) {
             hash.delete(0, hash.length());
@@ -126,7 +126,6 @@ public class ProtocolFile implements Comparable<ProtocolFile> {
         return content;
     }
 
-    @SuppressWarnings("ElementOnlyUsedFromTestCode")
     @Override
     public int compareTo(ProtocolFile o) {
         // Custom comparison by comparing the name of the particular files

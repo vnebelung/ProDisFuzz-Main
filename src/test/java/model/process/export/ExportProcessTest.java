@@ -1,7 +1,15 @@
+/*
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ */
+
 package model.process.export;
 
 import model.protocol.ProtocolStructure;
-import model.xml.WhiteSpaceEliminator;
+import model.util.XmlWhiteSpaceEliminator;
 import nu.xom.*;
 import nu.xom.canonical.Canonicalizer;
 import org.testng.Assert;
@@ -19,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("HardCodedStringLiteral")
 public class ExportProcessTest {
 
     private ExportProcess exportProcess;
@@ -71,7 +80,7 @@ public class ExportProcessTest {
         String exported = null;
         //noinspection OverlyBroadCatchBlock
         try (OutputStream outputStream = new ByteArrayOutputStream()) {
-            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Builder parser = new Builder(new XmlWhiteSpaceEliminator());
             Document exportedDoc = parser.build(path.toFile());
             replaceDateTimes(exportedDoc.getRootElement());
             Canonicalizer canonicalizer = new Canonicalizer(outputStream, false);
@@ -83,7 +92,7 @@ public class ExportProcessTest {
         String reference = null;
         //noinspection OverlyBroadCatchBlock
         try (OutputStream outputStream = new ByteArrayOutputStream()) {
-            Builder parser = new Builder(new WhiteSpaceEliminator());
+            Builder parser = new Builder(new XmlWhiteSpaceEliminator());
             Document referenceDoc = parser.build(Paths.get(getClass().getResource("/protocol.xml").toURI()).toFile());
             Canonicalizer canonicalizer = new Canonicalizer(outputStream, Canonicalizer.EXCLUSIVE_XML_CANONICALIZATION);
             canonicalizer.write(referenceDoc);

@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -13,7 +13,7 @@ import model.process.AbstractProcess;
 import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
-import model.xml.XmlExchange;
+import model.util.XmlExchange;
 import nu.xom.Attribute;
 import nu.xom.DocType;
 import nu.xom.Document;

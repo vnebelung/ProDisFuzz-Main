@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.04.14 20:25.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -13,7 +13,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import model.protocol.ProtocolStructure;
-import model.utilities.Hex;
+import model.util.Hex;
 import view.window.FxmlConnection;
 
 import java.util.ArrayList;
@@ -138,7 +138,7 @@ public class ProtocolHexDump extends GridPane {
             if (each == null) {
                 stringBuilder.append(VAR_CHAR);
             } else {
-                int decimal = Integer.parseInt(Hex.byte2Hex(each), 16);
+                int decimal = Integer.parseInt(Hex.byte2HexBin(each), 16);
                 //noinspection NumericCastThatLosesPrecision
                 stringBuilder.append(((decimal >= 32) && (decimal <= 126)) ? (char) decimal : NON_READABLE_CHAR);
             }
@@ -193,7 +193,7 @@ public class ProtocolHexDump extends GridPane {
             if (each == null) {
                 stringBuilder.append(VAR_CHAR).append(VAR_CHAR);
             } else {
-                stringBuilder.append(Hex.byte2Hex(each));
+                stringBuilder.append(Hex.byte2HexBin(each));
             }
         }
         for (int i = 0; i < (16 - bytes.length); i++) {

@@ -1,56 +1,50 @@
-<update xmlns="http://prodisfuzz.net">
-    <release>
-        <number>3</number>
-        <name>Red Fish</name>
-        <date>2014-04-06</date>
-        <requirements>Java >= 8</requirements>
-        <information>
-            <item>GUI feedback to user actions increased</item>
-            <item>Even more Internal changes in code architecture</item>
-            <item>GUI changed from Swing to JavaFX</item>
-            <item>Performance optimizations</item>
-            <item>Even better visualization of protocol structure</item>
-        </information>
-    </release>
-    <release>
-        <number>2</number>
-        <name>Green River</name>
-        <date>2013-10-01</date>
-        <requirements>Java >= 7</requirements>
-        <information>
-            <item>GUI changed from SWT to Swing</item>
-            <item>Internal changes in code architecture</item>
-            <item>New logging mechanism implemented</item>
-            <item>Better visualization of protocol structure</item>
-        </information>
-    </release>
-    <release>
-        <number>1</number>
-        <name>First Release</name>
-        <date>2013-05-19</date>
-        <requirements>Java >= 7</requirements>
-        <information>
-            <item>Nothing special</item>
-        </information>
-    </release>
-    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-        <SignedInfo>
-            <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" />
-            <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
-            <Reference URI="">
-                <Transforms>
-                    <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
-                </Transforms>
-                <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256" />
-                <DigestValue>+h/5YbHzS4KAQh6oWCBl9aOKqkXmqTWUEUWMENn8kcw=</DigestValue>
-            </Reference>
-        </SignedInfo>
-        <SignatureValue>
-            B+zz+E/NrmHVaLmqK5pkGJRKmeubE+OtfSPRC30z5C4dhXxC/6ZBFUdIfZ6fc9a4wfQQXESrZZ3M
-            uO/RPP2jQAVC9ZATl/jaFWWE7ufesJaKojYuQfzXJ5bhDxLdJxkmhQuAEde/ysV7RnNUGlmmbeBs
-            nIQWORJq0s4EmY6BCyV48ReDCnnf/N5N1enjOOZd6CGPztbVHO0lGviPj1LiDcJtUWvo19UIyMLW
-            DBXTuP9xhVVi1YCc6sUB6oY1nmU9NpXNqmExfT1YabR6ieEnfjYW7992LPafTKoZBqHmaexmIe1A
-            Dwj5HZvZtBaPyADO7cdVJggXT/vSeP6lVHO21Q==
-        </SignatureValue>
-    </Signature>
+<!--
+  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+  ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This work is free. You can redistribute it and/or modify it under the
+  ~ terms of the Do What The Fuck You Want To Public License, Version 2,
+  ~ as published by Sam Hocevar. See the COPYING file for more details.
+  -->
+
+<!--suppress XmlUnboundNsPrefix -->
+<update>
+    <releases>
+        <release>
+            <number>3</number>
+            <name>Red Fish</name>
+            <date>2014-04-06</date>
+            <requirements>Java >= 8</requirements>
+            <information>
+                <item>GUI feedback to user actions increased</item>
+                <item>Even more Internal changes in code architecture</item>
+                <item>GUI changed from Swing to JavaFX</item>
+                <item>Performance optimizations</item>
+                <item>Even better visualization of protocol structure</item>
+            </information>
+        </release>
+        <release>
+            <number>2</number>
+            <name>Green River</name>
+            <date>2013-10-01</date>
+            <requirements>Java >= 7</requirements>
+            <information>
+                <item>GUI changed from SWT to Swing</item>
+                <item>Internal changes in code architecture</item>
+                <item>New logging mechanism implemented</item>
+                <item>Better visualization of protocol structure</item>
+            </information>
+        </release>
+        <release>
+            <number>1</number>
+            <name>First Release</name>
+            <date>2013-05-19</date>
+            <requirements>Java >= 7</requirements>
+            <information>
+                <item>Nothing special</item>
+            </information>
+        </release>
+    </releases>
+    <signature>
+        2887686f177bd0167c5363d401be74f1608ad399a8472ecd40a6e8d9437afe53920f1907bb9e4f5a7c8fc8c1ad1e83506e21fc688fd9eaf3387bdb769bac7c3038b420683cb3e496340f192483171fb4f0ac8b21eba03d2197753fa2fe93a8543e4e1a3b43adbda3a455674778db11e596b49fe8579a55468d3f4a9c97c2fa5a0163939038a4e0fc7e9a49ff3b3a078fd7707576a354bed3eb91badb2d756a21c959beb860901ce1f26de43c78595c3b08c019bf8a50e4f5f968f552ee085795ea764a914814f063f54d3aa21d0688cb578e51eddec79388e4ddc9ffacdebb8b515413a571eab4bd97a3fe4c4aa970a70c37ef95058654d2ef6ec1ecb5233612
+    </signature>
 </update>

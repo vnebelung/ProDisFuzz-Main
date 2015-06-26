@@ -1,12 +1,12 @@
 /*
- * This file is part of ProDisFuzz, modified on 31.03.14 19:36.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.utilities;
+package model.util;
 
 @SuppressWarnings("HardCodedStringLiteral")
 public enum Constants {
@@ -22,7 +22,6 @@ public enum Constants {
     public static final String XML_PROTOCOL_CONTENT = "content";
     public static final String XML_PROTOCOL_MAXLENGTH = "maxlength";
     public static final String XML_PROTOCOL_MINLENGTH = "minlength";
-    public static final String XML_NAMESPACE_PRODISFUZZ = "http://prodisfuzz.net";
-    public static final String XML_NAMESPACE_SIGNATURE = "http://www.w3.org/2000/09/xmldsig#";
+    public static final String XML_SIGNATURE = "signature";
 
 }

@@ -1,7 +1,17 @@
+/*
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This work is free. You can redistribute it and/or modify it under the
+ * terms of the Do What The Fuck You Want To Public License, Version 2,
+ * as published by Sam Hocevar. See the COPYING file for more details.
+ */
+
 package model.process.fuzzOptions;
 
 import model.Model;
-import model.protocol.InjectedProtocolBlock;
+import model.process.tmp.FuzzOptionsProcess;
+import model.process.tmp.FuzzOptionsProcess.CommunicationSave;
+import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.ProtocolStructure;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -16,13 +26,13 @@ import java.util.List;
 
 public class FuzzOptionsProcessTest {
 
-    private model.process.fuzzOptions.SimulatedServer simulatedServer;
+    private SimulatedServer simulatedServer;
     private ProtocolStructure protocolStructure;
 
     @BeforeClass
     public void setUp() throws Exception {
         protocolStructure = new ProtocolStructure();
-        simulatedServer = new model.process.fuzzOptions.SimulatedServer();
+        simulatedServer = new SimulatedServer();
         simulatedServer.start();
         List<Byte> block1 = new ArrayList<>();
         block1.add((byte) 0);
@@ -63,14 +73,12 @@ public class FuzzOptionsProcessTest {
 
         fuzzOptionsProcess.setRandomInjection(1000);
         for (int i = 0; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod(), InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod(), DataInjectionMethod.RANDOM);
         }
 
         fuzzOptionsProcess.setLibraryInjection(-2);
         for (int i = 0; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod(), InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod(), DataInjectionMethod.LIBRARY);
         }
     }
 
@@ -82,22 +90,18 @@ public class FuzzOptionsProcessTest {
         fuzzOptionsProcess.setSeparateInjectionMode();
 
         fuzzOptionsProcess.setLibraryInjection(0);
-        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod()
-                == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod() == DataInjectionMethod.LIBRARY);
         for (int i = 1; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod() == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod.LIBRARY);
         }
 
         for (int i = 1; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
             fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).setLibraryInjection();
         }
         fuzzOptionsProcess.setRandomInjection(0);
-        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod()
-                == InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod() == DataInjectionMethod.RANDOM);
         for (int i = 1; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod() == InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod.RANDOM);
         }
     }
 
@@ -106,7 +110,7 @@ public class FuzzOptionsProcessTest {
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
 
         fuzzOptionsProcess.setSaveAllCommunication();
-        Assert.assertEquals(fuzzOptionsProcess.getSaveCommunication(), FuzzOptionsProcess.CommunicationSave.ALL);
+        Assert.assertEquals(fuzzOptionsProcess.getSaveCommunication(), CommunicationSave.ALL);
 
     }
 
@@ -115,7 +119,7 @@ public class FuzzOptionsProcessTest {
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
 
         fuzzOptionsProcess.setSaveCriticalCommunication();
-        Assert.assertEquals(fuzzOptionsProcess.getSaveCommunication(), FuzzOptionsProcess.CommunicationSave.CRITICAL);
+        Assert.assertEquals(fuzzOptionsProcess.getSaveCommunication(), CommunicationSave.CRITICAL);
     }
 
     @Test
@@ -167,18 +171,15 @@ public class FuzzOptionsProcessTest {
         fuzzOptionsProcess.setSimultaneousInjectionMode();
         fuzzOptionsProcess.setLibraryInjection(0);
         for (int i = 0; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod
-                    () == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+            Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod.LIBRARY);
         }
 
         fuzzOptionsProcess.setRandomInjection(0);
         fuzzOptionsProcess.setSeparateInjectionMode();
         fuzzOptionsProcess.setLibraryInjection(0);
-        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod()
-                == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+        Assert.assertTrue(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(0).getDataInjectionMethod() == DataInjectionMethod.LIBRARY);
         for (int i = 1; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod() == InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+            Assert.assertFalse(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod() == DataInjectionMethod.LIBRARY);
         }
     }
 
@@ -215,16 +216,14 @@ public class FuzzOptionsProcessTest {
         fuzzOptionsProcess.setSimultaneousInjectionMode();
         fuzzOptionsProcess.setRandomInjection(0);
         for (int i = 0; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod(), InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod(), DataInjectionMethod.RANDOM);
         }
 
         fuzzOptionsProcess.setLibraryInjection(0);
         fuzzOptionsProcess.setSeparateInjectionMode();
         fuzzOptionsProcess.setRandomInjection(0);
         for (int i = 0; i < fuzzOptionsProcess.getInjectedProtocolStructure().getVarSize(); i++) {
-            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i)
-                    .getDataInjectionMethod(), InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+            Assert.assertEquals(fuzzOptionsProcess.getInjectedProtocolStructure().getVarBlock(i).getDataInjectionMethod(), DataInjectionMethod.RANDOM);
         }
     }
 }

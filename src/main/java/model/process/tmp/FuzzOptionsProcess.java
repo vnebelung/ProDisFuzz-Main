@@ -1,16 +1,16 @@
 /*
- * This file is part of ProDisFuzz, modified on 03.04.14 20:36.
- * Copyright (c) 2013-2014 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
+ * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.process.fuzzOptions;
+package model.process.tmp;
 
 import model.Model;
 import model.process.AbstractProcess;
-import model.protocol.InjectedProtocolBlock;
+import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 import model.protocol.ProtocolStructure;
 
@@ -22,10 +22,10 @@ import java.nio.file.Path;
 
 public class FuzzOptionsProcess extends AbstractProcess {
 
-    private final static int INTERVAL_MIN = 100;
-    private final static int INTERVAL_MAX = 30000;
-    private final static int TIMEOUT_MIN = 50;
-    private final static int TIMEOUT_MAX = 10000;
+    private static final int INTERVAL_MIN = 100;
+    private static final int INTERVAL_MAX = 30000;
+    private static final int TIMEOUT_MIN = 50;
+    private static final int TIMEOUT_MAX = 10000;
     private final InjectedProtocolStructure injectedProtocolStructure;
     private InjectionMethod injectionMethod;
     private InetSocketAddress target;
@@ -48,7 +48,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
         }
         timeout = 5 * TIMEOUT_MIN;
         interval = 5 * INTERVAL_MIN;
-        injectionMethod = FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS;
+        injectionMethod = InjectionMethod.SIMULTANEOUS;
         saveCommunication = CommunicationSave.CRITICAL;
         targetReachable = false;
         spreadUpdate();
@@ -59,7 +59,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
         injectedProtocolStructure.clear();
         timeout = 5 * TIMEOUT_MIN;
         interval = 5 * INTERVAL_MIN;
-        injectionMethod = FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS;
+        injectionMethod = InjectionMethod.SIMULTANEOUS;
         saveCommunication = CommunicationSave.CRITICAL;
         targetReachable = false;
         spreadUpdate();
@@ -89,12 +89,11 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * iteration.
      */
     public void setSimultaneousInjectionMode() {
-        if (injectionMethod == FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS) {
+        if (injectionMethod == InjectionMethod.SIMULTANEOUS) {
             return;
         }
-        injectionMethod = FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS;
-        Model.INSTANCE.getLogger().info("Injection mode set to " + FuzzOptionsProcess.InjectionMethod.SIMULTANEOUS
-                .toString());
+        injectionMethod = InjectionMethod.SIMULTANEOUS;
+        Model.INSTANCE.getLogger().info("Injection mode set to " + InjectionMethod.SIMULTANEOUS);
         switch (injectedProtocolStructure.getVarBlock(0).getDataInjectionMethod()) {
             case LIBRARY:
                 for (int i = 1; i < injectedProtocolStructure.getVarSize(); i++) {
@@ -120,12 +119,11 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * its data injection.
      */
     public void setSeparateInjectionMode() {
-        if (injectionMethod == FuzzOptionsProcess.InjectionMethod.SEPARATE) {
+        if (injectionMethod == InjectionMethod.SEPARATE) {
             return;
         }
-        injectionMethod = FuzzOptionsProcess.InjectionMethod.SEPARATE;
-        Model.INSTANCE.getLogger().info("Injection mode set to " + FuzzOptionsProcess.InjectionMethod.SEPARATE
-                .toString());
+        injectionMethod = InjectionMethod.SEPARATE;
+        Model.INSTANCE.getLogger().info("Injection mode set to " + InjectionMethod.SEPARATE);
         for (int i = 1; i < injectedProtocolStructure.getVarSize(); i++) {
             setSingleRandomInjection(i);
         }
@@ -141,7 +139,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
             return;
         }
         saveCommunication = CommunicationSave.ALL;
-        Model.INSTANCE.getLogger().info("Communication that is saved set to " + CommunicationSave.ALL.toString());
+        Model.INSTANCE.getLogger().info("Communication that is saved set to " + CommunicationSave.ALL);
         spreadUpdate();
     }
 
@@ -153,7 +151,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
             return;
         }
         saveCommunication = CommunicationSave.CRITICAL;
-        Model.INSTANCE.getLogger().info("Communication that is saved set to " + CommunicationSave.CRITICAL.toString());
+        Model.INSTANCE.getLogger().info("Communication that is saved set to " + CommunicationSave.CRITICAL);
         spreadUpdate();
     }
 
@@ -298,13 +296,12 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * @param index the index of the variable protocol block
      */
     private void setSingleLibraryInjection(int index) {
-        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == InjectedProtocolBlock
-                .DataInjectionMethod.LIBRARY) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == DataInjectionMethod.LIBRARY) {
             return;
         }
         injectedProtocolStructure.getVarBlock(index).setLibraryInjection();
         Model.INSTANCE.getLogger().info("Data Injection method of variable protocol block #" + index + " set to " +
-                InjectedProtocolBlock.DataInjectionMethod.LIBRARY);
+                DataInjectionMethod.LIBRARY);
         spreadUpdate();
     }
 
@@ -347,7 +344,7 @@ public class FuzzOptionsProcess extends AbstractProcess {
         injectedProtocolStructure.getVarBlock(index).setLibrary(path);
         if (injectedProtocolStructure.getVarBlock(index).getLibrary() != null) {
             Model.INSTANCE.getLogger().info("Library file of variable protocol block #" + index + " set to '" +
-                    injectedProtocolStructure.getVarBlock(index).getLibrary().toString() + "'");
+                    injectedProtocolStructure.getVarBlock(index).getLibrary() + "'");
         }
         spreadUpdate();
     }
@@ -380,13 +377,12 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * @param index the index of the variable protocol block
      */
     private void setSingleRandomInjection(int index) {
-        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == InjectedProtocolBlock
-                .DataInjectionMethod.RANDOM) {
+        if (injectedProtocolStructure.getVarBlock(index).getDataInjectionMethod() == DataInjectionMethod.RANDOM) {
             return;
         }
         injectedProtocolStructure.getVarBlock(index).setRandomInjection();
         Model.INSTANCE.getLogger().info("Data Injection method of variable protocol block '" + index + "' set to " +
-                InjectedProtocolBlock.DataInjectionMethod.RANDOM);
+                DataInjectionMethod.RANDOM);
         spreadUpdate();
     }
 
@@ -401,17 +397,17 @@ public class FuzzOptionsProcess extends AbstractProcess {
             return false;
         }
         if (!Files.isRegularFile(path)) {
-            Model.INSTANCE.getLogger().error("" + path.toString() + "' is not a regular file");
+            Model.INSTANCE.getLogger().error("" + path + "' is not a regular file");
             return false;
         }
         if (!Files.isReadable(path)) {
-            Model.INSTANCE.getLogger().error("Library file '" + path.toString() + "' is not readable");
+            Model.INSTANCE.getLogger().error("Library file '" + path + "' is not readable");
             return false;
         }
         return true;
     }
 
-    public static enum CommunicationSave {ALL, CRITICAL}
+    public enum CommunicationSave {ALL, CRITICAL}
 
-    public static enum InjectionMethod {SIMULTANEOUS, SEPARATE}
+    public enum InjectionMethod {SIMULTANEOUS, SEPARATE}
 }

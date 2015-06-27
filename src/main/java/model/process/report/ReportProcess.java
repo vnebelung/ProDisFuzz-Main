@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:35.
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:38.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,7 +10,7 @@ package model.process.report;
 
 import model.Model;
 import model.process.AbstractProcess;
-import model.process.fuzzOptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.tmp.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
 import model.util.XmlExchange;

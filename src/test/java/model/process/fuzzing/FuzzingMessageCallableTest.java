@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:25.
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:35.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,7 +8,7 @@
 
 package model.process.fuzzing;
 
-import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
+import model.process.fuzzOptions.FuzzOptionsProcess.InjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 import org.testng.Assert;
 import org.testng.annotations.Test;

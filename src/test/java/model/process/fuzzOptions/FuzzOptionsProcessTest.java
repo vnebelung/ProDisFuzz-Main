@@ -9,8 +9,8 @@
 package model.process.fuzzOptions;
 
 import model.Model;
-import model.process.tmp.FuzzOptionsProcess;
-import model.process.tmp.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzoptions.FuzzOptionsProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.ProtocolStructure;
 import org.testng.Assert;

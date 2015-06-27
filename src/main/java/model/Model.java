@@ -13,11 +13,11 @@ import model.logger.Logger;
 import model.process.collect.CollectProcess;
 import model.process.export.ExportProcess;
 import model.process.fuzzing.FuzzingProcess;
+import model.process.fuzzoptions.FuzzOptionsProcess;
 import model.process.import_.ImportProcess;
 import model.process.learn.LearnProcess;
 import model.process.monitor.MonitorProcess;
 import model.process.report.ReportProcess;
-import model.process.tmp.FuzzOptionsProcess;
 import model.updater.UpdateCheck;
 
 public enum Model {

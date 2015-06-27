@@ -6,7 +6,7 @@
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.process.tmp;
+package model.process.fuzzoptions;
 
 import model.Model;
 import model.process.AbstractProcess;

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 6/28/15 12:31 AM.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -28,7 +28,6 @@ public class HexTest {
         Assert.assertEquals(Hex.hexBin2Byte("007f800"), new byte[]{});
         Assert.assertEquals(Hex.hexBin2Byte("zz"), new byte[]{});
 
-        //noinspection HardCodedStringLiteral
         Assert.assertEquals(Hex.hexBin2Byte("7f"), new byte[]{127});
     }
 }

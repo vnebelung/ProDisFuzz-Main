@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 6/28/15 12:31 AM.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -68,38 +68,39 @@ public class FuzzingMessageCallableTest {
         }
 
         // Test SEPARATE
-        fuzzingMessageCallable = new FuzzingMessageCallable(injectedProtocolStructure, InjectionMethod.SEPARATE);
 
         count = 0;
         byte[] answer4;
-        for (int i = 0; i < 5; i++) {
-            answer4 = fuzzingMessageCallable.call();
-            // Tests whether the correct fixed bytes are present
-            Assert.assertEquals(b1[0], Byte.valueOf(answer4[0]));
-            Assert.assertEquals(b1[0], Byte.valueOf(answer4[2]));
-            // Test whether the first variable block is the correct library line
-            Assert.assertEquals(answer4[1], (byte) (65 + i));
-            // Test whether the second variable block is a library line
-            Assert.assertTrue((answer4[3] > 64) && (answer4[3] < 70));
-            count += answer4[3] == answer4[1] ? -1 : 1;
+        for (int j = 0; j < 100; j++) {
+            fuzzingMessageCallable = new FuzzingMessageCallable(injectedProtocolStructure, InjectionMethod.SEPARATE);
+            for (int i = 0; i < 5; i++) {
+                answer4 = fuzzingMessageCallable.call();
+                // Tests whether the correct fixed bytes are present
+                Assert.assertEquals(b1[0], Byte.valueOf(answer4[0]));
+                Assert.assertEquals(b1[0], Byte.valueOf(answer4[2]));
+                // Test whether the first variable block is the correct library line
+                Assert.assertEquals(answer4[1], (byte) (65 + i));
+                // Test whether the second variable block is a library line
+                Assert.assertTrue((answer4[3] > 64) && (answer4[3] < 70));
+                count += answer4[3] == answer4[1] ? -1 : 1;
+            }
+            for (int i = 0; i < 5; i++) {
+                answer4 = fuzzingMessageCallable.call();
+                // Tests whether the correct fixed bytes are present
+                Assert.assertEquals(b1[0], Byte.valueOf(answer4[0]));
+                Assert.assertEquals(b1[0], Byte.valueOf(answer4[2]));
+                // Test whether the first variable block is the correct library line
+                Assert.assertEquals(answer4[3], (byte) (65 + i));
+                // Test whether the second variable block is a library line
+                Assert.assertTrue((answer4[1] > 64) && (answer4[1] < 70));
+                count += answer4[3] == answer4[1] ? -1 : 1;
+            }
+            Assert.assertEquals(fuzzingMessageCallable.call(), null);
         }
         // Test whether the second variable block is different from the first one
         Assert.assertTrue(count > 0);
-        count = 0;
-        for (int i = 0; i < 5; i++) {
-            answer4 = fuzzingMessageCallable.call();
-            // Tests whether the correct fixed bytes are present
-            Assert.assertEquals(b1[0], Byte.valueOf(answer4[0]));
-            Assert.assertEquals(b1[0], Byte.valueOf(answer4[2]));
-            // Test whether the second variable block is the correct library line
-            Assert.assertEquals(answer4[3], (byte) (65 + i));
-            // Test whether the first variable block is a library line
-            Assert.assertTrue((answer4[1] > 64) && (answer4[1] < 70));
-            count += answer4[1] == answer4[3] ? -1 : 1;
-        }
-        // Test whether the first variable block is different from the second one
-        // Test may fail, just repeat it
-        Assert.assertTrue(count > 0);
+
+        fuzzingMessageCallable = new FuzzingMessageCallable(injectedProtocolStructure, InjectionMethod.SEPARATE);
 
         injectedProtocolStructure.getVarBlock(0).setRandomInjection();
         injectedProtocolStructure.getVarBlock(1).setRandomInjection();

@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:22.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -15,9 +15,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import model.Model;
-import model.process.fuzzoptions.FuzzOptionsProcess;
-import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
-import model.process.fuzzoptions.FuzzOptionsProcess.InjectionMethod;
+import model.process.fuzzOptions.FuzzOptionsProcess;
+import model.process.fuzzOptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzOptions.FuzzOptionsProcess.InjectionMethod;
 import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
 import model.protocol.InjectedProtocolStructure;
 import view.controls.BlockInjection;

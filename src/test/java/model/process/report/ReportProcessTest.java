@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:22.
+ * This file is part of ProDisFuzz, modified on 28.06.15 01:25.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -8,7 +8,7 @@
 
 package model.process.report;
 
-import model.process.fuzzOptions.FuzzOptionsProcess.CommunicationSave;
+import model.process.fuzzoptions.FuzzOptionsProcess.CommunicationSave;
 import model.protocol.InjectedProtocolStructure;
 import model.record.Recordings;
 import model.util.XmlWhiteSpaceEliminator;

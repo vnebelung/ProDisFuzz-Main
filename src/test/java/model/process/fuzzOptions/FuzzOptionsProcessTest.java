@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
+ * This file is part of ProDisFuzz, modified on 01.07.15 00:18.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -19,6 +19,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.net.InetSocketAddress;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ public class FuzzOptionsProcessTest {
     }
 
     @Test
-    public void testSetSimultaneousInjectionMode() throws Exception {
+    public void testSetSimultaneousInjectionMode() throws URISyntaxException {
         Model.INSTANCE.getImportProcess().importXML(Paths.get(getClass().getResource("/protocol.xml").toURI()));
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzOptionsProcess.init(protocolStructure);
@@ -83,7 +84,7 @@ public class FuzzOptionsProcessTest {
     }
 
     @Test
-    public void testSetSeparateInjectionMode() throws Exception {
+    public void testSetSeparateInjectionMode() throws URISyntaxException {
         Model.INSTANCE.getImportProcess().importXML(Paths.get(getClass().getResource("/protocol.xml").toURI()));
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzOptionsProcess.init(protocolStructure);
@@ -163,7 +164,7 @@ public class FuzzOptionsProcessTest {
     }
 
     @Test
-    public void testSetLibraryInjection() throws Exception {
+    public void testSetLibraryInjection() throws URISyntaxException {
         Model.INSTANCE.getImportProcess().importXML(Paths.get(getClass().getResource("/protocol.xml").toURI()));
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzOptionsProcess.init(protocolStructure);
@@ -184,7 +185,7 @@ public class FuzzOptionsProcessTest {
     }
 
     @Test
-    public void testSetLibrary() throws Exception {
+    public void testSetLibrary() throws URISyntaxException {
         Model.INSTANCE.getImportProcess().importXML(Paths.get(getClass().getResource("/protocol.xml").toURI()));
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzOptionsProcess.init(protocolStructure);
@@ -208,7 +209,7 @@ public class FuzzOptionsProcessTest {
     }
 
     @Test
-    public void testSetRandomInjection() throws Exception {
+    public void testSetRandomInjection() throws URISyntaxException {
         Model.INSTANCE.getImportProcess().importXML(Paths.get(getClass().getResource("/protocol.xml").toURI()));
         FuzzOptionsProcess fuzzOptionsProcess = new FuzzOptionsProcess();
         fuzzOptionsProcess.init(protocolStructure);

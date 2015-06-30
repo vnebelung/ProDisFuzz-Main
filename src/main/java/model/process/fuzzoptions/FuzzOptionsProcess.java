@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
+ * This file is part of ProDisFuzz, modified on 01.07.15 00:18.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -106,9 +106,6 @@ public class FuzzOptionsProcess extends AbstractProcess {
                     setRandomInjection(i);
                 }
                 break;
-            default:
-                // Should not happen
-                break;
         }
         spreadUpdate();
     }
@@ -166,21 +163,24 @@ public class FuzzOptionsProcess extends AbstractProcess {
             return;
         }
         if (address.isEmpty()) {
+            //noinspection AssignmentToMethodParameter
             address = null;
         }
+        //noinspection OverlyBroadCatchBlock
         try (Socket socket = new Socket()) {
+            //noinspection ConstantConditions
             target = new InetSocketAddress(address, port);
             // Establish a test connection without sending any data
             socket.setSoTimeout(timeout);
             socket.connect(target, timeout);
             targetReachable = true;
-            Model.INSTANCE.getLogger().fine("Target '" + target.getHostString() + ":" + target.getPort() + "' is " +
+            Model.INSTANCE.getLogger().fine("Target '" + target.getHostString() + ':' + target.getPort() + "' is " +
                     "reachable");
-        } catch (IOException e) {
-            Model.INSTANCE.getLogger().error("Target '" + target.getHostString() + ":" + target.getPort() + "' is" +
+        } catch (IOException ignored) {
+            Model.INSTANCE.getLogger().error("Target '" + target.getHostString() + ':' + target.getPort() + "' is" +
                     " not reachable");
             targetReachable = false;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException ignored) {
             Model.INSTANCE.getLogger().error("Target has invalid syntax");
             target = null;
             targetReachable = false;
@@ -286,7 +286,6 @@ public class FuzzOptionsProcess extends AbstractProcess {
             case SEPARATE:
                 setSingleLibraryInjection(index);
                 break;
-            default:
         }
     }
 
@@ -327,7 +326,6 @@ public class FuzzOptionsProcess extends AbstractProcess {
             case SEPARATE:
                 setSingleLibrary(newPath, index);
                 break;
-            default:
         }
     }
 
@@ -338,13 +336,13 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * @param index the index of the variable target protocol block
      */
     private void setSingleLibrary(Path path, int index) {
-        if (path == injectedProtocolStructure.getVarBlock(index).getLibrary()) {
+        if (path.equals(injectedProtocolStructure.getVarBlock(index).getLibrary())) {
             return;
         }
         injectedProtocolStructure.getVarBlock(index).setLibrary(path);
         if (injectedProtocolStructure.getVarBlock(index).getLibrary() != null) {
             Model.INSTANCE.getLogger().info("Library file of variable protocol block #" + index + " set to '" +
-                    injectedProtocolStructure.getVarBlock(index).getLibrary() + "'");
+                    injectedProtocolStructure.getVarBlock(index).getLibrary() + '\'');
         }
         spreadUpdate();
     }
@@ -366,7 +364,6 @@ public class FuzzOptionsProcess extends AbstractProcess {
                     setSingleRandomInjection(i);
                 }
                 break;
-            default:
         }
     }
 
@@ -392,12 +389,12 @@ public class FuzzOptionsProcess extends AbstractProcess {
      * @param path the path to the library file
      * @return true, if the library file has a valid format
      */
-    private boolean checkLibrary(Path path) {
+    private static boolean checkLibrary(Path path) {
         if (path == null) {
             return false;
         }
         if (!Files.isRegularFile(path)) {
-            Model.INSTANCE.getLogger().error("" + path + "' is not a regular file");
+            Model.INSTANCE.getLogger().error("'" + path + "' is not a regular file");
             return false;
         }
         if (!Files.isReadable(path)) {

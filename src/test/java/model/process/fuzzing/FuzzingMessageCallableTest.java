@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
+ * This file is part of ProDisFuzz, modified on 01.07.15 00:18.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -70,9 +70,9 @@ public class FuzzingMessageCallableTest {
         // Test SEPARATE
 
         count = 0;
-        byte[] answer4;
         for (int j = 0; j < 100; j++) {
             fuzzingMessageCallable = new FuzzingMessageCallable(injectedProtocolStructure, InjectionMethod.SEPARATE);
+            byte[] answer4;
             for (int i = 0; i < 5; i++) {
                 answer4 = fuzzingMessageCallable.call();
                 // Tests whether the correct fixed bytes are present

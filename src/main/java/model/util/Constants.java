@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 29.06.15 22:49.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -12,7 +12,7 @@ package model.util;
 public enum Constants {
     ;
 
-    public static final int RELEASE_NUMBER = 4;
+    public static final int RELEASE_NUMBER = 3;
     public static final String FILE_PREFIX = "prodisfuzz_";
 
     public static final String XML_PROTOCOL_ROOT = "prodisfuzz";

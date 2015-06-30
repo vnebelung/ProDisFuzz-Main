@@ -1,3 +1,8 @@
+ToDo, Version 4 "Colorful Leaf":
+
+- Switched to new Java 8 Date/Time API
+- Optimized FXML and CSS files
+
 2014-04-06, Version 3 "Red Fish":
 
 - GUI changed from Swing to JavaFX

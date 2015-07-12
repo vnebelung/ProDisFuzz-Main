@@ -1,0 +1,12 @@
+#textArea {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255, 255, 255, 0.7);
+    -fx-border-radius: 4px;
+    -fx-font-family: monospace;
+    -fx-text-fill: white;
+}
+
+#textArea .content, #textArea .viewport {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}

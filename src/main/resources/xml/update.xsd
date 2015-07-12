@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
-  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+  ~ This file is part of ProDisFuzz, modified on 05.07.15 15:28.
   ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
     <xsd:element name="update" type="updateType" />
 
     <xsd:complexType name="updateType">

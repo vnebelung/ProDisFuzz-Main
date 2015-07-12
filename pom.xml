@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
-  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+  ~ This file is part of ProDisFuzz, modified on 10.07.15 23:52.
   ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,7 +10,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <prerequisites>
-        <maven>3.2.1</maven>
+        <maven>3.3.3</maven>
     </prerequisites>
     <groupId>net.prodisfuzz</groupId>
     <artifactId>ProDisFuzz</artifactId>
@@ -23,11 +23,6 @@
     <packaging>jar</packaging>
     <name>ProDisFuzz</name>
     <dependencies>
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>8.20.8</version>
-        </dependency>
         <dependency>
             <groupId>com.io7m.xom</groupId>
             <artifactId>xom</artifactId>

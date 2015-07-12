@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 12.07.15 10:10.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -11,7 +11,7 @@ package view.application;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import view.window.UpdateTimer;
+import view.update.UpdateTimer;
 import view.window.Window;
 
 public class WindowApplication extends Application {
@@ -40,7 +40,7 @@ public class WindowApplication extends Application {
      */
     @SuppressWarnings("MethodMayBeStatic")
     private void initUpdateCheck(Stage stage) {
-        new UpdateTimer(stage).start();
+        new UpdateTimer().start();
     }
 
     /**

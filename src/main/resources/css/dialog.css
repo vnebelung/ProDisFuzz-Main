@@ -1,0 +1,84 @@
+.alert {
+    -fx-background-color: #4d4c62 !important;
+    -fx-background-image: url("../images/background.png") !important;
+    -fx-background-repeat: repeat-x !important;
+    -fx-background-position: left bottom !important;
+}
+
+.alert .label {
+    -fx-text-fill: white !important;
+}
+
+.alert .header-panel {
+    -fx-background-color: transparent !important;
+}
+
+/*
+.alert .details-button.more {
+    -fx-text-fill: white !important;
+    -fx-effect: dropshadow(three-pass-box, #6060a0, 10, 0.0, 0, 0);
+}
+
+.alert .details-button.less {
+    -fx-graphic: null !important;
+    -fx-text-fill: white !important;
+    -fx-effect: dropshadow(three-pass-box, #6060a0, 10, 0.0, 0, 0);
+}
+
+.alert .details-button:hover {
+    -fx-underline: false !important;
+    -fx-text-fill: white !important;
+    -fx-effect: dropshadow(three-pass-box, #6060a0, 10, 0.0, 0, 0);
+}
+*/
+.alert.warning.dialog-pane {
+    -fx-graphic: url("dialog-warning.png");
+}
+
+.alert .button, .alert .details-button {
+    -fx-background-color: #6060a0;
+    -fx-border-color: rgba(255, 255, 255, 0.7);
+    -fx-border-radius: 4px;
+    -fx-effect: dropshadow(three-pass-box, white, 8, 0.0, 0, 0);
+    -fx-graphic: null;
+    -fx-text-fill: white;
+}
+
+.alert .button:armed, .alert .details-button:armed {
+    -fx-background-color: white;
+    -fx-border-color: #6060a0;
+    -fx-effect: dropshadow(three-pass-box, #6060a0, 10, 0.0, 0, 0);
+    -fx-text-fil
+    l: #6060a0;
+}
+
+.alert .details-button:hover {
+    -fx-underline: false;
+}
+
+.alert .scroll-bar {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.alert .alert .scroll-bar .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.scroll-bar .track-background {
+    -fx-background-color: transparent;
+}
+
+.alert .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.7);
+    -fx-background-insets: 0 3px 0 3px;
+}
+
+.alert .scroll-bar:vertical .increment-button, .alert .scroll-bar:vertical .decrement-button {
+    -fx-background-color: transparent;
+    -fx-padding:0 6px 0 0;
+}
+
+.alert .scroll-bar .increment-arrow, .alert .scroll-bar .decrement-arrow {
+    -fx-shape: " ";
+}

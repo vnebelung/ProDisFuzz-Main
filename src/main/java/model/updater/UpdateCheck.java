@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:31 PM.
+ * This file is part of ProDisFuzz, modified on 12.07.15 00:29.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -10,25 +10,13 @@ package model.updater;
 
 import model.Model;
 import model.util.Constants;
-import model.util.Keys;
 import model.util.XmlExchange;
 import model.util.XmlSchema;
+import model.util.XmlSignature;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
-import nu.xom.converters.DOMConverter;
-import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Node;
 
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.XMLValidateContext;
-import javax.xml.crypto.dsig.dom.DOMValidateContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -38,7 +26,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -74,13 +61,13 @@ public class UpdateCheck {
                     "update information. Please check manually for an update.");
             return false;
         }
-        Document document = XmlExchange.importXml(xmlPath);
-        if (document == null) {
-            return false;
-        }
-        if (!verifyIntegrity(document)) {
+        if (!XmlSignature.validate(xmlPath)) {
             Model.INSTANCE.getLogger().error("ProDisFuzz could not verify the integrity of the update information at " +
                     '\'' + url + "'. This is strange. Please check manually for an update.");
+            return false;
+        }
+        Document document = XmlExchange.importXml(xmlPath);
+        if (document == null) {
             return false;
         }
         releaseInformation = readNewReleases(document);
@@ -104,7 +91,7 @@ public class UpdateCheck {
      */
     private static ReleaseInformation[] readNewReleases(Document document) {
         List<ReleaseInformation> result = new ArrayList<>();
-        Elements elements = document.getRootElement().getChildElements("release");
+        Elements elements = document.getRootElement().getFirstChildElement("releases").getChildElements("release");
         for (int i = 0; i < elements.size(); i++) {
             Element element = elements.get(i);
             //noinspection HardCodedStringLiteral
@@ -129,36 +116,6 @@ public class UpdateCheck {
             result.add(new ReleaseInformation(number, name, date, requirements, information));
         }
         return result.toArray(new ReleaseInformation[result.size()]);
-    }
-
-    /**
-     * Verifies the integrity of the XML document by checking its XML signature.
-     *
-     * @param document the DOM document
-     * @return true, if the integrity could be verified
-     */
-    private static boolean verifyIntegrity(Document document) {
-        PublicKey publicKey = Keys.getUpdatePublicKey();
-        if (publicKey == null) {
-            return false;
-        }
-        try {
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            documentBuilderFactory.setNamespaceAware(true);
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            DOMImplementation domImplementation = documentBuilder.getDOMImplementation();
-            org.w3c.dom.Document domDocument = DOMConverter.convert(document, domImplementation);
-            //noinspection HardCodedStringLiteral
-            Node signatureNode = domDocument.getElementsByTagName("Signature").item(0);
-            XMLValidateContext valContext = new DOMValidateContext(publicKey, signatureNode);
-            //noinspection HardCodedStringLiteral
-            XMLSignatureFactory xmlSignatureFactory = XMLSignatureFactory.getInstance("DOM");
-            XMLSignature signature = xmlSignatureFactory.unmarshalXMLSignature(valContext);
-            return signature.validate(valContext);
-        } catch (MarshalException | XMLSignatureException | ParserConfigurationException e) {
-            Model.INSTANCE.getLogger().error(e);
-            return false;
-        }
     }
 
     /**

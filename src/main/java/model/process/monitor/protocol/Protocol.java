@@ -1,14 +1,15 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
+ * This file is part of ProDisFuzz, modified on 25.07.15 21:43.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
  */
 
-package model.connector;
+package model.process.monitor.protocol;
 
 import model.Model;
+import model.process.monitor.protocol.StateMachine.Command;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +20,7 @@ public class Protocol {
 
     private final InputStream inputStream;
     private final OutputStream outputStream;
-    private State state;
+    private StateMachine stateMachine;
 
     /**
      * Instantiates a new monitor protocol responsible for communicating with the remote monitor component.
@@ -30,7 +31,7 @@ public class Protocol {
     public Protocol(InputStream inputStream, OutputStream outputStream) {
         this.inputStream = inputStream;
         this.outputStream = outputStream;
-        state = State.NEW;
+        stateMachine = new StateMachine();
     }
 
     /**
@@ -42,14 +43,15 @@ public class Protocol {
      *                     not connected
      */
     public int ayt() throws IOException {
-        if (state != State.NEW) {
-            throw new IllegalStateException("Illegal try to send an AYT command to monitor");
+        if (!stateMachine.isAllowedAtCurrentState(Command.AYT)) {
+            throw new IllegalStateException("Error in communication with monitor: Command AYT is not allowed at the "
+                    + "current state");
         }
         //noinspection HardCodedStringLiteral
         String message = "AYT 0 ";
         byte[] response = getResponse(message.getBytes(StandardCharsets.UTF_8));
         if (response != null) {
-            state = State.CONNECTED;
+            stateMachine.updateWith(Command.AYT);
             return Integer.parseInt(new String(response, StandardCharsets.UTF_8));
         }
         return -1;
@@ -139,9 +141,9 @@ public class Protocol {
      *                     not connected
      */
     public boolean sfp(Map<String, String> parameters) throws IOException {
-        if ((state != State.CONNECTED) && (state != State.CONFIGURED)) {
-            throw new IllegalStateException("Error in communication with monitor: illegal try to set state to " +
-                    "'CONFIGURED'");
+        if (!stateMachine.isAllowedAtCurrentState(Command.SFP)) {
+            throw new IllegalStateException("Error in communication with monitor: Command SFP is not allowed at the "
+                    + "current state");
         }
         if (parameters.isEmpty()) {
             throw new IllegalArgumentException("Parameters submitted to monitor must not be empty");
@@ -156,7 +158,7 @@ public class Protocol {
         String message = "SFP " + stringBuilder.length() + ' ' + stringBuilder;
         byte[] response = getResponse(message.getBytes(StandardCharsets.UTF_8));
         if (response != null) {
-            state = State.CONFIGURED;
+            stateMachine.updateWith(Command.SFP);
             return true;
         }
         return false;
@@ -164,22 +166,23 @@ public class Protocol {
 
     /**
      * Sends a "get fuzzing parameter" message that returns a fuzzing parameter. If the monitor is receiving this
-     * message and understands it, it responds the parameter value with the given name. If the monitor cannot find a
-     * parameter with the given name, the monitor will respond an empty string
+     * message and understands it, it will respond the parameter value with the given name. If the monitor cannot find a
+     * parameter with the given name, the monitor will respond an empty string.
      *
      * @return the value of the parameter, or an empty string if the monitor cannot find the parameter
      * @throws IOException if an I/O error occurs when creating the input stream, the socket is closed or the socket is
      *                     not connected
      */
     public String gfp(String parameter) throws IOException {
-        if ((state != State.CONNECTED) && (state != State.CONFIGURED)) {
-            throw new IllegalStateException("Error in communication with monitor: illegal try to set state to " +
-                    "'CONFIGURED'");
+        if (!stateMachine.isAllowedAtCurrentState(Command.GFP)) {
+            throw new IllegalStateException("Error in communication with monitor: Command GFP is not allowed at the "
+                    + "current state");
         }
         //noinspection HardCodedStringLiteral
         String message = "GFP " + parameter.length() + ' ' + parameter;
         byte[] response = getResponse(message.getBytes(StandardCharsets.UTF_8));
         if (response != null) {
+            stateMachine.updateWith(Command.GFP);
             return new String(response, StandardCharsets.UTF_8);
         }
         return "";
@@ -195,9 +198,9 @@ public class Protocol {
      *                     not connected
      */
     public boolean ctd(byte... data) throws IOException {
-        if ((state != State.CONFIGURED) && (state != State.FUZZING)) {
-            throw new IllegalStateException("Error in communication with monitor: illegal try to set state to " +
-                    "'FUZZING'");
+        if (!stateMachine.isAllowedAtCurrentState(Command.CTD)) {
+            throw new IllegalStateException("Error in communication with monitor: Command CTD is not allowed at the "
+                    + "current state");
         }
         byte[] message = new byte[4 + String.valueOf(data.length).length() + 1 + data.length];
         //noinspection HardCodedStringLiteral
@@ -206,7 +209,7 @@ public class Protocol {
         System.arraycopy(data, 0, message, header.length(), data.length);
         byte[] response = getResponse(message);
         if (response != null) {
-            state = State.FUZZING;
+            stateMachine.updateWith(Command.CTD);
             Map<String, String> targetReaction = extractKeyValues(new String(response, StandardCharsets.UTF_8));
             //noinspection HardCodedStringLiteral
             return "yes".equals(targetReaction.get("crashed"));
@@ -230,5 +233,4 @@ public class Protocol {
         return result;
     }
 
-    private enum State {NEW, CONNECTED, CONFIGURED, FUZZING}
 }

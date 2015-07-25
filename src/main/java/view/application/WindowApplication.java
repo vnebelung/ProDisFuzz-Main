@@ -1,5 +1,5 @@
 /*
- * This file is part of ProDisFuzz, modified on 12.07.15 10:10.
+ * This file is part of ProDisFuzz, modified on 25.07.15 21:43.
  * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -30,16 +30,15 @@ public class WindowApplication extends Application {
         primaryStage.minWidthProperty().setValue(1024);
         primaryStage.show();
 
-        initUpdateCheck(primaryStage);
+        initUpdateCheck();
     }
 
     /**
      * Starts the check for an update of ProDisFuzz.
      *
-     * @param stage the stage
      */
     @SuppressWarnings("MethodMayBeStatic")
-    private void initUpdateCheck(Stage stage) {
+    private void initUpdateCheck() {
         new UpdateTimer().start();
     }
 

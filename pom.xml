@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><!--
-  ~ This file is part of ProDisFuzz, modified on 10.07.15 23:52.
+  ~ This file is part of ProDisFuzz, modified on 25.07.15 21:43.
   ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
@@ -13,7 +13,7 @@
         <maven>3.3.3</maven>
     </prerequisites>
     <groupId>net.prodisfuzz</groupId>
-    <artifactId>ProDisFuzz</artifactId>
+    <artifactId>ProDisFuzz-Main</artifactId>
     <version>4-SNAPSHOT</version>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -21,7 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <packaging>jar</packaging>
-    <name>ProDisFuzz</name>
+    <name>ProDisFuzz-Main</name>
     <dependencies>
         <dependency>
             <groupId>com.io7m.xom</groupId>

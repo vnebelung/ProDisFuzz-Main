@@ -2,6 +2,7 @@ ToDo, Version 4 "Colorful Leaf":
 
 - Switched to new Java 8 Date/Time API
 - Optimized FXML and CSS files
+- Replaced dialogs of ControlsFX by native Java 8 dialogs
 
 2014-04-06, Version 3 "Red Fish":
 

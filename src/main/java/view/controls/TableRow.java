@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -19,6 +19,9 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+/**
+ * This class is a JavaFX based table row that represents the table row model for the collect view.
+ */
 @SuppressWarnings("unused")
 public class TableRow {
     private final String name;
@@ -28,7 +31,7 @@ public class TableRow {
     private final BooleanProperty selected;
 
     /**
-     * Instantiates a new table row that represents the table model for the collect view.
+     * Constructs a new table row.
      *
      * @param checkbox  the checkbox flag
      * @param fileName the file name
@@ -41,7 +44,7 @@ public class TableRow {
         selected.addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                Model.INSTANCE.getCollectProcess().setSelected(name, selected.get());
+                Model.INSTANCE.getCollectProcess().toggleSelection(name, selected.get());
             }
         });
         name = fileName;

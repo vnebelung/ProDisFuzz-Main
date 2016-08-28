@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,12 +8,13 @@
 
 package view.page;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import model.Model;
-import model.process.export.ExportProcess;
+import model.process.export.Process;
 import view.window.FxmlConnection;
 import view.window.Navigation;
 
@@ -22,6 +23,10 @@ import java.nio.file.Path;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * This class is the JavaFX based export page, responsible for visualizing the process of exporting the protocol
+ * structure to XML.
+ */
 public class ExportPage extends VBox implements Observer, Page {
 
     private final Navigation navigation;
@@ -32,14 +37,13 @@ public class ExportPage extends VBox implements Observer, Page {
     private Path savePath;
 
     /**
-     * Instantiates a new export area responsible for visualizing the process of exporting the protocol structure to
-     * XML.
+     * Constructs a new export page.
      *
      * @param navigation the navigation controls
      */
     public ExportPage(Navigation navigation) {
         super();
-        //noinspection HardcodedFileSeparator,ThisEscapedInObjectConstruction,HardCodedStringLiteral
+        // noinspection ThisEscapedInObjectConstruction,HardCodedStringLiteral
         FxmlConnection.connect(getClass().getResource("/fxml/exportPage.fxml"), this);
         //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getExportProcess().addObserver(this);
@@ -48,23 +52,26 @@ public class ExportPage extends VBox implements Observer, Page {
 
     @Override
     public void update(Observable o, Object arg) {
-        ExportProcess process = (ExportProcess) o;
+        Platform.runLater(() -> {
+            Process process = (Process) o;
 
-        // noinspection HardCodedStringLiteral
-        fileTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
-        if (process.isExported()) {
-            //noinspection HardCodedStringLiteral
-            fileTextField.getStyleClass().add("text-field-success");
-            fileTextField.setText("Successfully exported to '" + savePath + '\'');
-        } else {
-            //noinspection HardCodedStringLiteral
-            fileTextField.getStyleClass().add("text-field-fail");
-            fileTextField.setText((savePath == null) ? ("Please choose the file the protocol structure will be " +
-                    "exported " + "to") : ("Could not export to '" + savePath + '\''));
-        }
+            // noinspection HardCodedStringLiteral
+            fileTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
+            if (process.isComplete()) {
+                //noinspection HardCodedStringLiteral
+                fileTextField.getStyleClass().add("text-field-success");
+                fileTextField.setText("Successfully exported to '" + savePath + '\'');
+            } else {
+                //noinspection HardCodedStringLiteral
+                fileTextField.getStyleClass().add("text-field-fail");
+                fileTextField.setText((savePath == null) ?
+                        ("Please choose the file the protocol structure will be " + "exported " + "to") :
+                        ("Could not export to '" + savePath + '\''));
+            }
 
-        navigation.setCancelable(!process.isExported(), this);
-        navigation.setFinishable(process.isExported(), this);
+            navigation.setCancelable(!process.isComplete(), this);
+            navigation.setFinishable(process.isComplete(), this);
+        });
     }
 
     @FXML
@@ -80,7 +87,7 @@ public class ExportPage extends VBox implements Observer, Page {
             //noinspection HardCodedStringLiteral
             savePath = savePath.getParent().resolve(savePath.getFileName() + ".xml");
         }
-        Model.INSTANCE.getExportProcess().exportXML(savePath);
+        Model.INSTANCE.getExportProcess().exportProtocolStructure(savePath);
     }
 
     @Override

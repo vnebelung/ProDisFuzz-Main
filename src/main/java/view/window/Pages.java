@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -13,14 +13,17 @@ import javafx.scene.Node;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents the JavaFX based pages. Each page has a successor and a predecessor page (except for the first
+ * and last page), so that it is possible to navigate through pages.
+ */
 public class Pages {
 
     private final List<Node> pages;
     private int currentIndex;
 
     /**
-     * Instantiates a new pages list. Each page has a successor and a predecessor page (except for the first and last
-     * page), so that it is possible to navigate through pages. The current page pointer is set to the first page.
+     * Constructs a new pages list. The current page is set to the first page.
      */
     public Pages() {
         super();

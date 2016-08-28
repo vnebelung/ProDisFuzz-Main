@@ -1,24 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
-  ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This file is part of ProDisFuzz, modified on 28.08.16 20:29.
+  ~ Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
   -->
 
-<?import javafx.scene.control.ScrollPane?><?import javafx.scene.layout.VBox?><?import view.controls.ControlBar?><?import view.log.Log?><?import java.net.URL?>
+<?import javafx.scene.control.ScrollPane?><?import javafx.scene.layout.*?><?import view.controls.ControlBar?><?import view.log.Log?><?import java.net.URL?>
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="window">
-    <children>
-        <VBox fx:id="mainFrame" VBox.vgrow="ALWAYS">
-            <ScrollPane fx:id="scrollPane" content="$null" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
-                        VBox.vgrow="ALWAYS" />
-            <ControlBar fx:id="controlBar" />
-        </VBox>
-        <Log />
-    </children>
     <stylesheets>
         <URL value="@../css/window.css" />
     </stylesheets>
+    <VBox fx:id="mainFrame" VBox.vgrow="ALWAYS">
+        <ScrollPane fx:id="scrollPane" content="$null" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER"
+                    VBox.vgrow="ALWAYS" />
+        <ControlBar fx:id="controlBar" />
+    </VBox>
+    <Log />
 </fx:root>

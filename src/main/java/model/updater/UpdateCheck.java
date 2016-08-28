@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 12.07.15 00:29.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -30,57 +30,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * This class is the update check, responsible for checking for newer versions of ProDisFuzz available on "prodisfuzz
+ * .net".
+ */
 public class UpdateCheck {
 
-    @SuppressWarnings("HardCodedStringLiteral")
-    private static final String URL = "http://prodisfuzz.net/updater/releases.xml";
     private ReleaseInformation[] releaseInformation;
-
-    /**
-     * Checks whether the remote server prodisfuzz.net has a newer version available for download.
-     *
-     * @return true, if there is a newer version available for download
-     */
-    public boolean hasUpdate() {
-        URL url;
-        try {
-            url = new URL(URL);
-        } catch (MalformedURLException e) {
-            // Should not happen
-            Model.INSTANCE.getLogger().error(e);
-            return false;
-        }
-        Path xmlPath = downloadXML(url);
-        if (xmlPath == null) {
-            Model.INSTANCE.getLogger().error("ProDisFuzz could not receive the update information from '" + url + "'." +
-                    " Please check manually for an update.");
-            return false;
-        }
-        if (!XmlSchema.validateUpdateInformation(xmlPath)) {
-            Model.INSTANCE.getLogger().error("ProDisFuzz could validate the format of the XML file containing the " +
-                    "update information. Please check manually for an update.");
-            return false;
-        }
-        if (!XmlSignature.validate(xmlPath)) {
-            Model.INSTANCE.getLogger().error("ProDisFuzz could not verify the integrity of the update information at " +
-                    '\'' + url + "'. This is strange. Please check manually for an update.");
-            return false;
-        }
-        Document document = XmlExchange.importXml(xmlPath);
-        if (document == null) {
-            return false;
-        }
-        releaseInformation = readNewReleases(document);
-        Arrays.sort(releaseInformation);
-        boolean result = releaseInformation.length > 0;
-        if (result) {
-            Model.INSTANCE.getLogger().warning("An update of ProDisFuzz is available. Please go to " +
-                    "'http://prodisfuzz.net' and download the new version");
-        } else {
-            Model.INSTANCE.getLogger().fine("ProDisFuzz is up to date.");
-        }
-        return result;
-    }
 
     /**
      * Returns information about all releases found in the XML document that are newer than the current release of
@@ -95,8 +51,7 @@ public class UpdateCheck {
         for (int i = 0; i < elements.size(); i++) {
             Element element = elements.get(i);
             //noinspection HardCodedStringLiteral
-            int number = Integer.parseInt(element.getFirstChildElement("number")
-                    .getValue());
+            int number = Integer.parseInt(element.getFirstChildElement("number").getValue());
             if (number <= Constants.RELEASE_NUMBER) {
                 continue;
             }
@@ -105,8 +60,7 @@ public class UpdateCheck {
             //noinspection HardCodedStringLiteral
             String date = element.getFirstChildElement("date").getValue();
             //noinspection HardCodedStringLiteral
-            String requirements = element.getFirstChildElement("requirements")
-                    .getValue();
+            String requirements = element.getFirstChildElement("requirements").getValue();
             // noinspection HardCodedStringLiteral
             Elements items = element.getFirstChildElement("information").getChildElements("item");
             String[] information = new String[items.size()];
@@ -137,6 +91,53 @@ public class UpdateCheck {
             }
         } catch (IOException ignored) {
             return null;
+        }
+        return result;
+    }
+
+    /**
+     * Checks whether the remote server prodisfuzz.net has a newer version available for download.
+     *
+     * @return true, if there is a newer version available for download
+     */
+    public boolean hasUpdate() {
+        URL url;
+        try {
+            url = new URL(Constants.UPDATE_URL);
+        } catch (MalformedURLException e) {
+            // Should not happen
+            Model.INSTANCE.getLogger().error(e);
+            return false;
+        }
+        Path xmlPath = downloadXML(url);
+        if (xmlPath == null) {
+            Model.INSTANCE.getLogger().error("ProDisFuzz could not receive the update information from '" + url + "'." +
+                    " Please check manually for an update.");
+            return false;
+        }
+        if (!XmlSchema.validateUpdateInformation(xmlPath)) {
+            Model.INSTANCE.getLogger().error("ProDisFuzz could not validate the format of the XML file containing the" +
+                    " update information. Please check manually for an update.");
+            return false;
+        }
+        if (!XmlSignature.validate(xmlPath)) {
+            Model.INSTANCE.getLogger()
+                    .error("ProDisFuzz could not verify the integrity of the update information at " + '\'' + url +
+                            "'. This is strange. Please check manually for an update.");
+            return false;
+        }
+        Document document = XmlExchange.load(xmlPath);
+        if (document == null) {
+            return false;
+        }
+        releaseInformation = readNewReleases(document);
+        Arrays.sort(releaseInformation);
+        boolean result = releaseInformation.length > 0;
+        if (result) {
+            Model.INSTANCE.getLogger().warning("An update of ProDisFuzz is available. Please go to " +
+                    "'http://prodisfuzz.net' and download the new version");
+        } else {
+            Model.INSTANCE.getLogger().fine("ProDisFuzz is up to date.");
         }
         return result;
     }

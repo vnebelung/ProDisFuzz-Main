@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 05.07.15 22:36.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,6 +10,10 @@ package model.updater;
 
 import java.util.Arrays;
 
+/**
+ * This class represents the release information, responsible for encapsulating all information about a release of
+ * ProDisFuzz.
+ */
 public class ReleaseInformation implements Comparable<ReleaseInformation> {
 
     private final int number;
@@ -19,7 +23,7 @@ public class ReleaseInformation implements Comparable<ReleaseInformation> {
     private final String[] information;
 
     /**
-     * Initializes a new release information that is responsible for encapsulating all information about a release.
+     * Constructs a new release information.
      *
      * @param name         the release name
      * @param date         the release date
@@ -85,7 +89,7 @@ public class ReleaseInformation implements Comparable<ReleaseInformation> {
         if (o.number == number) {
             return 0;
         } else {
-            return o.number > number ? 1 : -1;
+            return number < o.number ? -1 : 1;
         }
     }
 }

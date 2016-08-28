@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,6 +10,9 @@ package model.protocol;
 
 import java.util.Arrays;
 
+/**
+ * This class is a protocol block, responsible for defining a data block of the protocol structure.
+ */
 public class ProtocolBlock {
 
     private final Type type;
@@ -18,7 +21,7 @@ public class ProtocolBlock {
     private final int maxLength;
 
     /**
-     * Instantiates a new protocol block that is responsible for defining a data block of the protocol structure.
+     * Constructs a new protocol block.
      *
      * @param type  the type of the protocol block
      * @param bytes the content in bytes
@@ -64,7 +67,11 @@ public class ProtocolBlock {
      * @return the content in bytes
      */
     public Byte[] getBytes() {
-        return bytes.clone();
+        Byte[] result = new Byte[bytes.length];
+        for (int i = 0; i < bytes.length; i++) {
+            result[i] = bytes[i] == null ? null : Byte.valueOf(bytes[i]);
+        }
+        return result;
     }
 
     public enum Type {FIX, VAR}

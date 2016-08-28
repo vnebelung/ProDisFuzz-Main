@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -11,10 +11,13 @@ package model.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class contains functions to convert from and to hex binary strings.
+ */
 public enum Hex {
     ;
 
-    private static final Pattern HEXBIN = Pattern.compile("^([0-9a-f]{2})*$");
+    private static final Pattern HEXBIN = Pattern.compile("^([0-9a-fA-F]{2})*$");
 
     @SuppressWarnings("HardCodedStringLiteral")
     private static final char[] HEX_CHARS = "0123456789abcdef".toCharArray();
@@ -28,8 +31,8 @@ public enum Hex {
     public static String byte2HexBin(byte... bytes) {
         StringBuilder stringBuilder = new StringBuilder(bytes.length * 2);
         for (byte each : bytes) {
-            stringBuilder.append(HEX_CHARS[(each & 0xF0) >>> 4]);
-            stringBuilder.append(HEX_CHARS[each & 0x0F]);
+            stringBuilder.append(HEX_CHARS[(each & 0xf0) >>> 4]);
+            stringBuilder.append(HEX_CHARS[each & 0x0f]);
         }
         return stringBuilder.toString();
     }

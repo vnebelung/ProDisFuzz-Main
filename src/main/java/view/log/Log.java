@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/28/15 12:31 AM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:29.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -14,8 +14,8 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import model.Model;
+import model.logger.Entry;
 import model.logger.Logger;
-import model.logger.Message;
 import view.window.FxmlConnection;
 
 import java.time.ZoneId;
@@ -23,6 +23,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Observable;
 import java.util.Observer;
 
+/**
+ * This class is the JavaFX based log component,  responsible for visualizing the log.
+ */
 public class Log extends ScrollPane implements Observer {
 
     @SuppressWarnings("InstanceVariableMayNotBeInitialized")
@@ -30,11 +33,11 @@ public class Log extends ScrollPane implements Observer {
     private TextFlow textFlow;
 
     /**
-     * Instantiates a new log area responsible for visualizing the log.
+     * Constructs a new log component.
      */
     public Log() {
         super();
-        //noinspection HardcodedFileSeparator,HardCodedStringLiteral,ThisEscapedInObjectConstruction
+        // noinspection HardCodedStringLiteral,ThisEscapedInObjectConstruction
         FxmlConnection.connect(getClass().getResource("/fxml/log.fxml"), this);
         //noinspection ThisEscapedInObjectConstruction
         Model.INSTANCE.getLogger().addObserver(this);
@@ -45,16 +48,16 @@ public class Log extends ScrollPane implements Observer {
     /**
      * Returns a styled text based on the given log message.
      *
-     * @param message the log message
+     * @param entry the log message
      * @return the styled text
      */
-    private static Text styleText(Message message) {
+    private static Text styleText(Entry entry) {
         StringBuilder stringBuilder = new StringBuilder();
         Text result = new Text();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm:ss").withZone(ZoneId.systemDefault());
         //noinspection HardCodedStringLiteral
-        stringBuilder.append('[').append(formatter.format(message.getTime())).append("] ");
-        switch (message.getType()) {
+        stringBuilder.append('[').append(formatter.format(entry.getTime())).append("] ");
+        switch (entry.getType()) {
             case ERROR:
                 //noinspection HardCodedStringLiteral
                 result.getStyleClass().add("error");
@@ -76,7 +79,7 @@ public class Log extends ScrollPane implements Observer {
                 stringBuilder.append("[INFO] ");
                 break;
         }
-        stringBuilder.append(message.getText()).append(System.lineSeparator());
+        stringBuilder.append(entry.getText()).append(System.lineSeparator());
         result.setText(stringBuilder.toString());
         return result;
     }
@@ -85,11 +88,11 @@ public class Log extends ScrollPane implements Observer {
     public void update(Observable o, Object arg) {
         Logger logger = (Logger) o;
         Platform.runLater(() -> {
-            Message[] messages = logger.getUnreadEntries();
-            if (messages.length == 0) {
+            Entry[] entries = logger.getUnreadEntries();
+            if (entries.length == 0) {
                 return;
             }
-            for (Message each : messages) {
+            for (Entry each : entries) {
                 textFlow.getChildren().add(styleText(each));
             }
             purge();

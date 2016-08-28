@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -17,6 +17,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
 
+/**
+ * This class is a recorded file responsible for saving exchanged fuzzing data.
+ */
 public class RecordedFile {
 
     private final Instant time;
@@ -25,8 +28,7 @@ public class RecordedFile {
     private Path outputPath;
 
     /**
-     * Instantiates a new data file responsible for saving exchanged fuzzing data. The file will be located in the
-     * system defined temp directory.
+     * Constructs a new data file. The file will be located in the system defined temp directory.
      *
      * @param content the saved data
      * @param crash   true if the data lead to a crash

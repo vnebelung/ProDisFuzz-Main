@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,10 +8,14 @@
 
 package model;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * This class is responsible for managing the access to random data.
+ */
 @SuppressWarnings("DeserializableClassInSecureContext")
 public class RandomPool extends Random {
 
@@ -19,14 +23,15 @@ public class RandomPool extends Random {
     private static final RandomPool INSTANCE = new RandomPool();
 
     /**
-     * Instantiates a new singleton pool for getting random data.
+     * Constructs a new singleton pool.
      */
     private RandomPool() {
         super();
+        setSeed(Instant.now().toEpochMilli());
     }
 
     /**
-     * Returns the only instance.
+     * Returns the only random pool instance.
      *
      * @return the singleton random source
      */

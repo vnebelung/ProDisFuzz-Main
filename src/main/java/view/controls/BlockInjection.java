@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -15,11 +15,15 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.FileChooser;
 import model.Model;
-import model.protocol.InjectedProtocolBlock.DataInjectionMethod;
+import model.protocol.InjectedProtocolBlock.DataInjection;
 import view.window.FxmlConnection;
 
 import java.io.File;
 
+/**
+ * This class is a JavaFX block injection component responsible for displaying all GUI components for one fuzzable
+ * protocol block.
+ */
 public class BlockInjection extends GridPane {
 
     private final int protocolBlockIndex;
@@ -34,8 +38,7 @@ public class BlockInjection extends GridPane {
     private Button browseButton;
 
     /**
-     * Instantiates a new block injection module responsible for displaying all GUI components for one fuzzable protocol
-     * block.
+     * Constructs a new block injection module.
      *
      * @param index the index of the corresponding protocol block
      */
@@ -53,9 +56,11 @@ public class BlockInjection extends GridPane {
     @FXML
     private void injectionSource() {
         if (randomRadioButton.isSelected()) {
-            Model.INSTANCE.getFuzzOptionsProcess().setRandomInjection(protocolBlockIndex);
+            Model.INSTANCE.getFuzzOptionsProcess()
+                    .setInjectionDataForVarProtocolBlock(protocolBlockIndex, DataInjection.RANDOM);
         } else if (libraryRadioButton.isSelected()) {
-            Model.INSTANCE.getFuzzOptionsProcess().setLibraryInjection(protocolBlockIndex);
+            Model.INSTANCE.getFuzzOptionsProcess()
+                    .setInjectionDataForVarProtocolBlock(protocolBlockIndex, DataInjection.LIBRARY);
         }
     }
 
@@ -71,26 +76,26 @@ public class BlockInjection extends GridPane {
             return;
         }
         libraryTextField.setText(file.getAbsolutePath());
-        Model.INSTANCE.getFuzzOptionsProcess().setLibrary(file.toPath(), protocolBlockIndex);
+        Model.INSTANCE.getFuzzOptionsProcess().setLibraryForVarProtocolBlock(protocolBlockIndex, file.toPath());
     }
 
     /**
      * Updates all components of this module.
      *
-     * @param dataInjectionMethod the data injection method
+     * @param dataInjection the data injection method
      * @param enabled             false if this complete module should be greyed out
      * @param isValidLibrary      true, if the library file is valid
      */
-    public void update(DataInjectionMethod dataInjectionMethod, boolean enabled, boolean isValidLibrary) {
-        randomRadioButton.setSelected(dataInjectionMethod == DataInjectionMethod.RANDOM);
+    public void update(DataInjection dataInjection, boolean enabled, boolean isValidLibrary) {
+        randomRadioButton.setSelected(dataInjection == DataInjection.RANDOM);
         randomRadioButton.setDisable(!enabled);
 
-        libraryRadioButton.setSelected(dataInjectionMethod == DataInjectionMethod.LIBRARY);
+        libraryRadioButton.setSelected(dataInjection == DataInjection.LIBRARY);
         libraryRadioButton.setDisable(!enabled);
 
         //noinspection HardCodedStringLiteral
         libraryTextField.getStyleClass().removeAll("text-field-success", "text-field-fail");
-        if (enabled && (dataInjectionMethod == DataInjectionMethod.LIBRARY)) {
+        if (enabled && (dataInjection == DataInjection.LIBRARY)) {
             libraryTextField.setDisable(false);
             if (isValidLibrary) {
                 //noinspection HardCodedStringLiteral
@@ -105,7 +110,7 @@ public class BlockInjection extends GridPane {
             libraryTextField.setText("");
         }
 
-        browseButton.setDisable(!enabled || (dataInjectionMethod != DataInjectionMethod.LIBRARY));
+        browseButton.setDisable(!enabled || (dataInjection != DataInjection.LIBRARY));
     }
 
 }

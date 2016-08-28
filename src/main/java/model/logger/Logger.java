@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,20 +8,24 @@
 
 package model.logger;
 
-import model.logger.Message.Type;
+import model.logger.Entry.Type;
+import model.util.Constants;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
+/**
+ * This class is responsible for logging warnings, errors and informational messages.
+ */
 public class Logger extends Observable {
 
-    private final List<Message> log;
-    private final Map<Message, Boolean> returned;
+    private final List<Entry> log;
+    private final Map<Entry, Boolean> returned;
 
     /**
-     * Instantiates the logging mechanism.
+     * Constructs the logging mechanism.
      */
     public Logger() {
         super();
@@ -86,9 +90,9 @@ public class Logger extends Observable {
      * @param type the log type
      */
     private void addEntry(String text, Type type) {
-        Message message = new Message(text, type);
-        log.add(message);
-        returned.put(message, false);
+        Entry entry = new Entry(text, type);
+        log.add(entry);
+        returned.put(entry, false);
         prune();
         spreadUpdate();
     }
@@ -102,10 +106,10 @@ public class Logger extends Observable {
     }
 
     /**
-     * Keeps the number of entries of the log under the defined size of 500.
+     * Keeps the number of log entries under a defined size.
      */
     private void prune() {
-        while (log.size() > 500) {
+        while (log.size() > Constants.LOG_ENTRY_SIZE) {
             returned.remove(log.get(0));
             log.remove(0);
         }
@@ -114,10 +118,10 @@ public class Logger extends Observable {
     /**
      * Gets all not yet read log entries. The returned entries are set to "read" afterwards.
      *
-     * @return the unread log entries or am empty list, if there are no unread entries
+     * @return the unread log entries, sort by creation date, ascending. Can be empty, if there are no unread entries
      */
-    public Message[] getUnreadEntries() {
-        List<Message> result = new LinkedList<>();
+    public Entry[] getUnreadEntries() {
+        List<Entry> result = new LinkedList<>();
         for (int i = log.size() - 1; i >= 0; i--) {
             if (returned.get(log.get(i))) {
                 break;
@@ -126,7 +130,7 @@ public class Logger extends Observable {
                 result.add(0, log.get(i));
             }
         }
-        return result.toArray(new Message[result.size()]);
+        return result.toArray(new Entry[result.size()]);
     }
 
     /**

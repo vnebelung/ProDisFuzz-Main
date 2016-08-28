@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 28.06.15 01:39.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,43 +10,41 @@ package model;
 
 import model.logger.ExceptionHandler;
 import model.logger.Logger;
-import model.process.collect.CollectProcess;
-import model.process.export.ExportProcess;
-import model.process.fuzzing.FuzzingProcess;
-import model.process.fuzzoptions.FuzzOptionsProcess;
-import model.process.import_.ImportProcess;
-import model.process.learn.LearnProcess;
 import model.process.monitor.MonitorProcess;
-import model.process.report.ReportProcess;
+import model.process.report.Process;
 import model.updater.UpdateCheck;
 
+/**
+ * This class is the model component of the MVC based project structure, responsible for managing the data and logic
+ * of ProDisFuzz.
+ */
 public enum Model {
 
     INSTANCE;
-    private final CollectProcess collectProcess;
-    private final LearnProcess learnProcess;
-    private final ExportProcess exportProcess;
-    private final ImportProcess importProcess;
+    private final model.process.collect.Process collectProcess;
+    private final model.process.learn.Process learnProcess;
+    private final model.process.export.Process exportProcess;
+    private final model.process.import_.Process importProcess;
     private final MonitorProcess monitorProcess;
-    private final FuzzOptionsProcess fuzzOptionsProcess;
-    private final FuzzingProcess fuzzingProcess;
-    private final ReportProcess reportProcess;
+    private final model.process.fuzzoptions.Process fuzzOptionsProcess;
+    private final model.process.fuzzing.Process fuzzingProcess;
+    private final Process reportProcess;
     private final Logger logger;
     private final UpdateCheck updateCheck;
 
     /**
-     * Instantiates a new singleton model responsible for managing the data and logic.
+     * Constructs a new singleton model.
      */
     @SuppressWarnings("OverlyCoupledMethod")
     Model() {
-        collectProcess = new CollectProcess();
-        learnProcess = new LearnProcess();
-        exportProcess = new ExportProcess();
-        importProcess = new ImportProcess();
+        collectProcess = new model.process.collect.Process();
+        learnProcess = new model.process.learn.Process();
+        exportProcess = new model.process.export.Process();
+        importProcess = new model.process.import_.Process();
         monitorProcess = new MonitorProcess();
-        fuzzOptionsProcess = new FuzzOptionsProcess();
-        fuzzingProcess = new FuzzingProcess();
-        reportProcess = new ReportProcess();
+        fuzzOptionsProcess = new model.process.fuzzoptions.Process();
+        fuzzingProcess = new model.process.fuzzing.Process();
+        reportProcess = new Process();
         logger = new Logger();
         updateCheck = new UpdateCheck();
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler());
@@ -61,7 +59,7 @@ public enum Model {
         learnProcess.reset();
         exportProcess.reset();
         importProcess.reset();
-        monitorProcess.reset();
+        //TODO: monitorProcess.reset();
         fuzzOptionsProcess.reset();
         fuzzingProcess.reset();
         reportProcess.reset();
@@ -72,7 +70,7 @@ public enum Model {
      *
      * @return the collect process
      */
-    public CollectProcess getCollectProcess() {
+    public model.process.collect.Process getCollectProcess() {
         return collectProcess;
     }
 
@@ -81,7 +79,7 @@ public enum Model {
      *
      * @return the learn process
      */
-    public LearnProcess getLearnProcess() {
+    public model.process.learn.Process getLearnProcess() {
         return learnProcess;
     }
 
@@ -90,7 +88,7 @@ public enum Model {
      *
      * @return the export process
      */
-    public ExportProcess getExportProcess() {
+    public model.process.export.Process getExportProcess() {
         return exportProcess;
     }
 
@@ -99,7 +97,7 @@ public enum Model {
      *
      * @return the import process
      */
-    public ImportProcess getImportProcess() {
+    public model.process.import_.Process getImportProcess() {
         return importProcess;
     }
 
@@ -108,7 +106,7 @@ public enum Model {
      *
      * @return the fuzz options process
      */
-    public FuzzOptionsProcess getFuzzOptionsProcess() {
+    public model.process.fuzzoptions.Process getFuzzOptionsProcess() {
         return fuzzOptionsProcess;
     }
 
@@ -117,7 +115,7 @@ public enum Model {
      *
      * @return the fuzz options process
      */
-    public FuzzingProcess getFuzzingProcess() {
+    public model.process.fuzzing.Process getFuzzingProcess() {
         return fuzzingProcess;
     }
 
@@ -126,7 +124,7 @@ public enum Model {
      *
      * @return the report process
      */
-    public ReportProcess getReportProcess() {
+    public Process getReportProcess() {
         return reportProcess;
     }
 

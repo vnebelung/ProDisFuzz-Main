@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/28/15 12:31 AM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,7 +8,7 @@
 
 package model.logger;
 
-import model.logger.Message.Type;
+import model.logger.Entry.Type;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -31,33 +31,33 @@ public class LoggerTest {
     @Test
     public void testInfo() throws Exception {
         logger.info("testinfo1");
-        Message[] messages = logger.getUnreadEntries();
-        Assert.assertEquals(messages.length, 1);
-        Assert.assertEquals(messages[0].getType(), Type.INFO);
-        Assert.assertEquals(messages[0].getText(), "testinfo1");
-        Assert.assertEquals(messages[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
+        Entry[] entries = logger.getUnreadEntries();
+        Assert.assertEquals(entries.length, 1);
+        Assert.assertEquals(entries[0].getType(), Type.INFO);
+        Assert.assertEquals(entries[0].getText(), "testinfo1");
+        Assert.assertEquals(entries[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
                 .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 
     @Test
     public void testFine() throws Exception {
         logger.fine("testfine1");
-        Message[] messages = logger.getUnreadEntries();
-        Assert.assertEquals(messages.length, 1);
-        Assert.assertEquals(messages[0].getType(), Type.FINE);
-        Assert.assertEquals(messages[0].getText(), "testfine1");
-        Assert.assertEquals(messages[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
+        Entry[] entries = logger.getUnreadEntries();
+        Assert.assertEquals(entries.length, 1);
+        Assert.assertEquals(entries[0].getType(), Type.FINE);
+        Assert.assertEquals(entries[0].getText(), "testfine1");
+        Assert.assertEquals(entries[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
                 .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 
     @Test
     public void testError() throws Exception {
         logger.error("testerror1");
-        Message[] messages = logger.getUnreadEntries();
-        Assert.assertEquals(messages.length, 1);
-        Assert.assertEquals(messages[0].getType(), Type.ERROR);
-        Assert.assertEquals(messages[0].getText(), "testerror1");
-        Assert.assertEquals(messages[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
+        Entry[] entries = logger.getUnreadEntries();
+        Assert.assertEquals(entries.length, 1);
+        Assert.assertEquals(entries[0].getType(), Type.ERROR);
+        Assert.assertEquals(entries[0].getText(), "testerror1");
+        Assert.assertEquals(entries[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
                 .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 
@@ -65,24 +65,24 @@ public class LoggerTest {
     public void testError1() throws Exception {
         Throwable throwable = new Throwable("testerror1");
         logger.error(throwable);
-        Message[] messages = logger.getUnreadEntries();
-        Assert.assertEquals(messages.length, 1);
-        Assert.assertEquals(messages[0].getType(), Type.ERROR);
+        Entry[] entries = logger.getUnreadEntries();
+        Assert.assertEquals(entries.length, 1);
+        Assert.assertEquals(entries[0].getType(), Type.ERROR);
         StringWriter sw = new StringWriter();
         throwable.printStackTrace(new PrintWriter(sw));
-        Assert.assertEquals(messages[0].getText(), sw.toString());
-        Assert.assertEquals(messages[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
+        Assert.assertEquals(entries[0].getText(), sw.toString());
+        Assert.assertEquals(entries[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
                 .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 
     @Test
     public void testWarning() throws Exception {
         logger.warning("testwarning1");
-        Message[] messages = logger.getUnreadEntries();
-        Assert.assertEquals(messages.length, 1);
-        Assert.assertEquals(messages[0].getType(), Type.WARNING);
-        Assert.assertEquals(messages[0].getText(), "testwarning1");
-        Assert.assertEquals(messages[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
+        Entry[] entries = logger.getUnreadEntries();
+        Assert.assertEquals(entries.length, 1);
+        Assert.assertEquals(entries[0].getType(), Type.WARNING);
+        Assert.assertEquals(entries[0].getText(), "testwarning1");
+        Assert.assertEquals(entries[0].getTime().truncatedTo(ChronoUnit.SECONDS).toString(), Instant.now()
                 .truncatedTo(ChronoUnit.SECONDS).toString());
     }
 

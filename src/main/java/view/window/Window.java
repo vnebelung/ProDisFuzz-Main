@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -18,6 +18,9 @@ import model.Model;
 import view.controls.ControlBar;
 import view.page.*;
 
+/**
+ * This class is the JavaFx based window, responsible for displaying various pages.
+ */
 public class Window extends VBox implements NavigationControl, Navigation {
 
     private final OperationMode operationMode;
@@ -28,7 +31,7 @@ public class Window extends VBox implements NavigationControl, Navigation {
     private Pages pages;
 
     /**
-     * Instantiates a new window area responsible for displaying various pages.
+     * Constructs a new window.
      */
     public Window() {
         super();
@@ -72,9 +75,9 @@ public class Window extends VBox implements NavigationControl, Navigation {
 
         ImportPage importPage = new ImportPage(this);
         pages.add(importPage);
-
-        MonitorPage monitorPage = new MonitorPage(this);
-        pages.add(monitorPage);
+        // TODO: Remove comment
+        //        MonitorPage monitorPage = new MonitorPage(this);
+        //        pages.add(monitorPage);
 
         FuzzOptionsPage fuzzOptionsPage = new FuzzOptionsPage(this);
         pages.add(fuzzOptionsPage);

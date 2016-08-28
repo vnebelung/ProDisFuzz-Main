@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,6 +8,9 @@
 
 package view.window;
 
+/**
+ * This interface represents a navigation control component, responsible for navigating through pages.
+ */
 public interface NavigationControl {
 
     /**
@@ -33,7 +36,8 @@ public interface NavigationControl {
     void previousPage();
 
     /**
-     * Makes the default start page visible. The start page is determined by the defined order ot hte pages.
+     * Makes the default readDirectory page visible. The readDirectory page is determined by the defined order ot hte
+     * pages.
      */
     void resetPage();
 }

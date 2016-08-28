@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/28/15 12:31 AM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -24,9 +24,9 @@ public class HexTest {
     public void testHex2Byte() throws Exception {
         Assert.assertEquals(Hex.hexBin2Byte("007f80"), new byte[]{0, 127, -128});
 
-        Assert.assertEquals(Hex.hexBin2Byte("7F"), new byte[]{});
+        Assert.assertEquals(Hex.hexBin2Byte("7F"), new byte[]{127});
         Assert.assertEquals(Hex.hexBin2Byte("007f800"), new byte[]{});
-        Assert.assertEquals(Hex.hexBin2Byte("zz"), new byte[]{});
+        Assert.assertEquals(Hex.hexBin2Byte("0z"), new byte[]{});
 
         Assert.assertEquals(Hex.hexBin2Byte("7f"), new byte[]{127});
     }

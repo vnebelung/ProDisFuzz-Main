@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -14,7 +14,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import model.Model;
-import model.process.fuzzing.FuzzingProcess;
+import model.process.AbstractProcess.State;
+import model.process.fuzzing.Process;
 import view.controls.LabeledProgressBar;
 import view.window.FxmlConnection;
 import view.window.Navigation;
@@ -28,6 +29,9 @@ import java.util.Observer;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * This class is the JavaFX based fuzzing page, responsible for visualizing the process of fuzzing the target.
+ */
 public class FuzzingPage extends VBox implements Observer, Page {
 
     private final Navigation navigation;
@@ -38,9 +42,10 @@ public class FuzzingPage extends VBox implements Observer, Page {
     private Timer processTimer;
     @FXML
     private Label timeLabel;
+    private boolean isRunning;
 
     /**
-     * Instantiates a new fuzzing area responsible for visualizing the process of fuzzing the target.
+     * Constructs a new fuzzing page.
      *
      * @param navigation the navigation controls
      */
@@ -54,50 +59,56 @@ public class FuzzingPage extends VBox implements Observer, Page {
     }
 
     /**
-     * Handles the action of the start/stop button and starts oder stops the fuzzing process.
+     * Handles the action of the start/stop button and starts or stops the fuzzing process.
      */
-    @SuppressWarnings("MethodMayBeStatic")
     @FXML
     private void startStop() {
-        if (Model.INSTANCE.getFuzzingProcess().isRunning()) {
-            Model.INSTANCE.getFuzzingProcess().interrupt();
+        if (isRunning) {
+            Model.INSTANCE.getFuzzingProcess().stop();
         } else {
-            Model.INSTANCE.getFuzzingProcess().start();
+            Model.INSTANCE.getFuzzingProcess()
+                    .startFuzzing(Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolStructure(),
+                            Model.INSTANCE.getFuzzOptionsProcess().getTarget(),
+                            Model.INSTANCE.getFuzzOptionsProcess().getInterval(),
+                            Model.INSTANCE.getFuzzOptionsProcess().getTimeout(),
+                            Model.INSTANCE.getFuzzOptionsProcess().getRecordingMethod(),
+                            Model.INSTANCE.getFuzzOptionsProcess().getInjectionMethod());
         }
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        FuzzingProcess process = (FuzzingProcess) o;
-
         Platform.runLater(() -> {
-            startStopButton.setText(process.isRunning() ? "Stop" : "Start");
+            Process process = (Process) o;
+            isRunning = arg == State.RUNNING;
+
+            startStopButton.setText(isRunning ? "Stop" : "Start");
 
             double progress;
-            switch (process.getWorkTotal()) {
+            switch (process.getTotalWork()) {
                 case 0:
                     progress = 0;
                     break;
                 case -1:
-                    progress = process.isRunning() ? -1 : 0;
+                    progress = isRunning ? -1 : 0;
                     break;
                 default:
-                    progress = (1.0 * process.getWorkProgress()) / process.getWorkTotal();
+                    progress = (1.0 * process.getWorkDone()) / process.getTotalWork();
                     break;
             }
-            labeledProgressBar.update(progress, process.isRunning());
+            labeledProgressBar.update(progress, isRunning);
 
-            if (process.isRunning()) {
+            if (isRunning) {
                 startTimer(process.getStartTime());
             } else {
                 stopTimer();
-                if (process.getWorkProgress() == 0) {
+                if (process.getWorkDone() == 0) {
                     timeLabel.setText("00:00:00");
                 }
             }
 
-            navigation.setCancelable(!process.isRunning(), this);
-            navigation.setFinishable((process.getWorkProgress() > 0) && !process.isRunning(), this);
+            navigation.setCancelable(!isRunning, this);
+            navigation.setFinishable((process.getWorkDone() > 0) && !isRunning, this);
         });
     }
 
@@ -105,7 +116,7 @@ public class FuzzingPage extends VBox implements Observer, Page {
      * Starts the timer for displaying the duration of the fuzzing process once it is started. If the timer is already
      * running, it will be reset.
      *
-     * @param time the start time
+     * @param time the readDirectory time
      */
     private void startTimer(Temporal time) {
         if (processTimer != null) {
@@ -117,7 +128,7 @@ public class FuzzingPage extends VBox implements Observer, Page {
             public void run() {
                 // Fill the time values up to 2 chars with preceding zeros
                 DecimalFormat timeFormat = new DecimalFormat("00");
-                // The duration of the current fuzzing process is the current time minus the given start time
+                // The duration of the current fuzzing process is the current time minus the given readDirectory time
                 Duration duration = Duration.between(time, Instant.now());
                 Platform.runLater(() -> timeLabel.setText(timeFormat.format(duration.toHours()) + ':' +
                         timeFormat.format(duration.toMinutes()) + ':' + timeFormat.format(duration.getSeconds())));
@@ -139,10 +150,5 @@ public class FuzzingPage extends VBox implements Observer, Page {
 
     @Override
     public void initProcess() {
-        Model.INSTANCE.getFuzzingProcess().init(Model.INSTANCE.getFuzzOptionsProcess().getInjectedProtocolStructure()
-                , Model.INSTANCE.getFuzzOptionsProcess().getTarget(), Model.INSTANCE.getFuzzOptionsProcess()
-                .getInterval(), Model.INSTANCE.getFuzzOptionsProcess().getTimeout(), Model.INSTANCE
-                .getFuzzOptionsProcess().getSaveCommunication(), Model.INSTANCE.getFuzzOptionsProcess()
-                .getInjectionMethod());
     }
 }

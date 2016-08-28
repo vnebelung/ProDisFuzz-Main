@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -19,16 +19,19 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * This class contains functions to import and export XOM based XML documents.
+ */
 public enum XmlExchange {
     ;
 
     /**
-     * Imports a given XML file and returns the parsed XOM document.
+     * Loads a given XML file and returns the parsed XOM document.
      *
      * @param path the path to the XML file
      * @return the parsed document or null in case of an error
      */
-    public static Document importXml(Path path) {
+    public static Document load(Path path) {
         //noinspection OverlyBroadCatchBlock
         try {
             Builder parser = new Builder(new XmlWhiteSpaceEliminator());
@@ -40,13 +43,14 @@ public enum XmlExchange {
     }
 
     /**
-     * Exports the given XOM document to the given XML file path.
+     * Saves the given XOM document under the given file path. If a file does already exist under the given path, the
+     * file will be overwritten.
      *
      * @param path     the path to the file
      * @param document the XOM document to export
      * @return true, if the XML structure was successfully exported
      */
-    public static boolean exportXML(Document document, Path path) {
+    public static boolean save(Document document, Path path) {
         Path exportPath = path.toAbsolutePath().normalize();
         if (!Files.isDirectory(exportPath.getParent())) {
             Model.INSTANCE.getLogger().error("Path '" + exportPath + "' for saving file invalid");

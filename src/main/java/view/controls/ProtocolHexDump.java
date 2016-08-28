@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -20,6 +20,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+/**
+ * This class is a JavaFX based protocol hex dump component, responsible for visualizing the process of the learned
+ * protocol structure.
+ */
 public class ProtocolHexDump extends GridPane {
 
     private static final char VAR_CHAR = '*';
@@ -29,8 +33,7 @@ public class ProtocolHexDump extends GridPane {
     private TextFlow textFlow;
 
     /**
-     * Instantiates a new protocol content area responsible for visualizing the process of learning the protocol
-     * sequence.
+     * Constructs a new protocol hex dump component.
      */
     public ProtocolHexDump() {
         super();
@@ -38,28 +41,6 @@ public class ProtocolHexDump extends GridPane {
         FxmlConnection.connect(getClass().getResource("/fxml/protocolHexDump.fxml"), this);
         textFlow.getChildren().add(createHeader());
         textFlow.getChildren().add(createPlaceholder());
-    }
-
-    /**
-     * Updates the protocol text depending on the given protocol structure. If the given protocol structure is identical
-     * to the current one, no update will be done.
-     *
-     * @param protocolStructure the protocol structure
-     */
-    public void addProtocolText(ProtocolStructure protocolStructure) {
-        if (protocolStructure.hashCode() == lastHashCode) {
-            return;
-        }
-        lastHashCode = protocolStructure.hashCode();
-        Collection<Text> newTexts = new ArrayList<>();
-        newTexts.add(createHeader());
-        if (protocolStructure.getSize() == 0) {
-            newTexts.add(createPlaceholder());
-        } else {
-            newTexts.addAll(createText(protocolStructure));
-        }
-        textFlow.getChildren().clear();
-        textFlow.getChildren().addAll(newTexts);
     }
 
     /**
@@ -205,5 +186,27 @@ public class ProtocolHexDump extends GridPane {
         text.getStyleClass().add(isPreByteNull ? "var" : "fix");
         result.add(text);
         return result;
+    }
+
+    /**
+     * Updates the protocol text depending on the given protocol structure. If the given protocol structure is identical
+     * to the current one, no update will be done.
+     *
+     * @param protocolStructure the protocol structure
+     */
+    public void addProtocolText(ProtocolStructure protocolStructure) {
+        if (protocolStructure.hashCode() == lastHashCode) {
+            return;
+        }
+        lastHashCode = protocolStructure.hashCode();
+        Collection<Text> newTexts = new ArrayList<>();
+        newTexts.add(createHeader());
+        if (protocolStructure.getSize() == 0) {
+            newTexts.add(createPlaceholder());
+        } else {
+            newTexts.addAll(createText(protocolStructure));
+        }
+        textFlow.getChildren().clear();
+        textFlow.getChildren().addAll(newTexts);
     }
 }

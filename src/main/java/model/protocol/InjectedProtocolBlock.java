@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,23 +10,25 @@ package model.protocol;
 
 import model.Model;
 import model.RandomPool;
+import model.util.Hex;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * This class represents a protocol block that is responsible for defining a data block of the protocol structure.
+ */
 public class InjectedProtocolBlock extends ProtocolBlock {
 
     private Path library;
-    private DataInjectionMethod dataInjectionMethod;
+    private DataInjection dataInjection;
 
     /**
-     * Instantiates a new protocol block that is responsible for defining a data block of the protocol structure. The
-     * default data injection method is RANDOM.
+     * Constructs a new injected protocol block. The default data injection method is RANDOM.
      *
      * @param type  the type of the protocol block
      * @param bytes the content in bytes
@@ -34,7 +36,7 @@ public class InjectedProtocolBlock extends ProtocolBlock {
     public InjectedProtocolBlock(Type type, Byte... bytes) {
         super(type, bytes);
         if (type == Type.VAR) {
-            dataInjectionMethod = DataInjectionMethod.RANDOM;
+            dataInjection = DataInjection.RANDOM;
         }
     }
 
@@ -43,9 +45,9 @@ public class InjectedProtocolBlock extends ProtocolBlock {
      *
      * @return the data injection method, null for not variable protocol blocks
      */
-    public DataInjectionMethod getDataInjectionMethod() {
+    public DataInjection getDataInjection() {
         //noinspection ReturnOfNull
-        return (getType() == Type.VAR) ? dataInjectionMethod : null;
+        return (getType() == Type.VAR) ? dataInjection : null;
     }
 
     /**
@@ -92,10 +94,10 @@ public class InjectedProtocolBlock extends ProtocolBlock {
      * Sets the injection data to library-based, that means the injected data is read from a file.
      */
     public void setLibraryInjection() {
-        if ((getType() != Type.VAR) || (dataInjectionMethod == DataInjectionMethod.LIBRARY)) {
+        if ((getType() != Type.VAR) || (dataInjection == DataInjection.LIBRARY)) {
             return;
         }
-        dataInjectionMethod = DataInjectionMethod.LIBRARY;
+        dataInjection = DataInjection.LIBRARY;
         library = null;
     }
 
@@ -103,10 +105,10 @@ public class InjectedProtocolBlock extends ProtocolBlock {
      * Sets the injection data to random-based, that means the injected data is randomly generated.
      */
     public void setRandomInjection() {
-        if ((getType() != Type.VAR) || (dataInjectionMethod == DataInjectionMethod.RANDOM)) {
+        if ((getType() != Type.VAR) || (dataInjection == DataInjection.RANDOM)) {
             return;
         }
-        dataInjectionMethod = DataInjectionMethod.RANDOM;
+        dataInjection = DataInjection.RANDOM;
         library = null;
     }
 
@@ -116,13 +118,13 @@ public class InjectedProtocolBlock extends ProtocolBlock {
      * @return the number of lines of the defined library file or 0 if data injection method is not library-based
      */
     public int getNumOfLibraryLines() {
-        if (dataInjectionMethod != DataInjectionMethod.LIBRARY) {
+        if (dataInjection != DataInjection.LIBRARY) {
             return 0;
         }
         int result = 0;
         // Go to the last line and read out its number
-        try (LineNumberReader lineNumberReader = new LineNumberReader(Files.newBufferedReader(library, Charset
-                .forName("UTF-8")))) {
+        try (LineNumberReader lineNumberReader = new LineNumberReader(
+                Files.newBufferedReader(library, StandardCharsets.UTF_8))) {
             String line;
             while ((line = lineNumberReader.readLine()) != null) {
                 if (!line.isEmpty()) {
@@ -142,17 +144,17 @@ public class InjectedProtocolBlock extends ProtocolBlock {
      * @return the library line or null in case of an error
      */
     public byte[] getLibraryLine(int lineNo) {
-        try (LineNumberReader lineNumberReader = new LineNumberReader(Files.newBufferedReader(library, Charset
-                .forName("UTF-8")))) {
+        try (LineNumberReader lineNumberReader = new LineNumberReader(
+                Files.newBufferedReader(library, StandardCharsets.UTF_8))) {
             int count = 0;
             String result;
             do {
                 result = lineNumberReader.readLine();
-                if (!result.isEmpty()) {
+                if (result != null && !result.isEmpty()) {
                     count++;
                 }
             } while ((count - 1) != lineNo);
-            return result.getBytes(StandardCharsets.UTF_8);
+            return Hex.hexBin2Byte(result);
         } catch (IOException e) {
             Model.INSTANCE.getLogger().error(e);
             //noinspection ReturnOfNull
@@ -170,5 +172,17 @@ public class InjectedProtocolBlock extends ProtocolBlock {
         return getLibraryLine(rnd);
     }
 
-    public enum DataInjectionMethod {RANDOM, LIBRARY}
+    /**
+     * Creates a deep copy of the object.
+     *
+     * @return the copied object
+     */
+    public InjectedProtocolBlock copy() {
+        InjectedProtocolBlock result = new InjectedProtocolBlock(getType(), getBytes());
+        result.library = getLibrary();
+        result.dataInjection = dataInjection;
+        return result;
+    }
+
+    public enum DataInjection {RANDOM, LIBRARY}
 }

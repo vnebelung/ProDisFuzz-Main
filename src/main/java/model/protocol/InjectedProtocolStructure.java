@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -8,52 +8,63 @@
 
 package model.protocol;
 
+import model.process.fuzzoptions.Process.InjectionMethod;
 import model.protocol.ProtocolBlock.Type;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * This class represents the protocol structure, that is the whole protocol including information about the chosen
+ * fuzzing options.
+ */
 public class InjectedProtocolStructure {
 
-    private final List<InjectedProtocolBlock> injectedProtocolBlocks;
-    private final List<InjectedProtocolBlock> varInjectedProtocolBlocks;
+    private List<InjectedProtocolBlock> injectedProtocolBlocks;
+    private List<InjectedProtocolBlock> varInjectedProtocolBlocks;
 
     /**
-     * Instantiates a new protocol structure representing the whole protocol including information about the chosen
-     * fuzzing options.
+     * Constructs a new injected protocol structure.
      */
     public InjectedProtocolStructure() {
-        super();
-        injectedProtocolBlocks = new ArrayList<>();
-        varInjectedProtocolBlocks = new ArrayList<>();
+        injectedProtocolBlocks = Collections.emptyList();
+        varInjectedProtocolBlocks = Collections.emptyList();
     }
 
     /**
-     * Adds a protocol block to the protocol structure. The given bytes must only contain null values or not null
-     * values. If mixed null - not null combinations are found, the data block will be silently dropped.
-     *
-     * @param bytes the bytes
+     * Constructs a new injected protocol structure out of a given protocol structure.
      */
-    public void addBlock(Byte... bytes) {
-        boolean fixed = true;
-        boolean variable = true;
-        for (Byte each : bytes) {
-            if (each == null) {
-                fixed = false;
-            } else {
-                variable = false;
+    public InjectedProtocolStructure(ProtocolStructure protocolStructure) {
+        injectedProtocolBlocks = new ArrayList<>(protocolStructure.getSize());
+        varInjectedProtocolBlocks = new ArrayList<>(protocolStructure.getSize());
+        for (int i = 0; i < protocolStructure.getSize(); i++) {
+            Type type = protocolStructure.getBlock(i).getType();
+            InjectedProtocolBlock injectedProtocolBlock =
+                    new InjectedProtocolBlock(type, protocolStructure.getBlock(i).getBytes());
+            injectedProtocolBlocks.add(injectedProtocolBlock);
+            if (type == Type.VAR) {
+                varInjectedProtocolBlocks.add(injectedProtocolBlock);
             }
         }
-        if (!fixed && !variable) {
-            return;
-        }
-        // noinspection UnqualifiedInnerClassAccess
-        Type type = fixed ? Type.FIX : Type.VAR;
-        InjectedProtocolBlock injectedProtocolBlock = new InjectedProtocolBlock(type, bytes);
-        injectedProtocolBlocks.add(injectedProtocolBlock);
-        if (type == Type.VAR) {
-            varInjectedProtocolBlocks.add(injectedProtocolBlock);
+    }
+
+    /**
+     * Calculates the fuzzing iterations for simultaneous data injections.
+     *
+     * @return the number of iterations, -1 for infinite work
+     */
+    private int calcWorkSimultaneous() {
+        switch (varInjectedProtocolBlocks.get(0).getDataInjection()) {
+            case LIBRARY:
+                return varInjectedProtocolBlocks.get(0).getNumOfLibraryLines();
+            case RANDOM:
+                return -1;
+            //noinspection UnnecessaryDefault
+            default:
+                return 0;
         }
     }
 
@@ -114,5 +125,64 @@ public class InjectedProtocolStructure {
             result.addBlock(Arrays.asList(each.getBytes()));
         }
         return result;
+    }
+
+    /**
+     * Creates a deep copy of the object.
+     *
+     * @return the copied object
+     */
+    public InjectedProtocolStructure copy() {
+        InjectedProtocolStructure result = new InjectedProtocolStructure();
+
+        result.injectedProtocolBlocks = new ArrayList<>(injectedProtocolBlocks.size());
+        result.injectedProtocolBlocks
+                .addAll(injectedProtocolBlocks.stream().map(InjectedProtocolBlock::copy).collect(Collectors.toList()));
+
+        result.varInjectedProtocolBlocks = new ArrayList<>(varInjectedProtocolBlocks);
+        result.varInjectedProtocolBlocks.addAll(varInjectedProtocolBlocks.stream().map(InjectedProtocolBlock::copy)
+                .collect(Collectors.toList()));
+
+        return result;
+    }
+
+    /**
+     * Calculates the fuzzing iterations for separate data injections.
+     *
+     * @return the number of iterations, -1 for infinite work
+     */
+    private int calcNumOfSeparateIterations() {
+        int result = 0;
+        for (InjectedProtocolBlock each : varInjectedProtocolBlocks) {
+            switch (each.getDataInjection()) {
+                case LIBRARY:
+                    result += each.getNumOfLibraryLines();
+                    break;
+                case RANDOM:
+                    return -1;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Calculates the number of fuzzing iterations based on the injected protocol structure for the given injection
+     * method.
+     *
+     * @param injectionMethod the injection method
+     * @return the number of fuzzing iterations
+     */
+    public int getNumOfIterations(InjectionMethod injectionMethod) {
+        if (varInjectedProtocolBlocks.isEmpty()) {
+            return 0;
+        }
+        switch (injectionMethod) {
+            case SEPARATE:
+                return calcNumOfSeparateIterations();
+            case SIMULTANEOUS:
+                return calcWorkSimultaneous();
+            default:
+                return 0;
+        }
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
-  ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+  ~ Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,29 +10,27 @@
 
 <?import javafx.scene.control.*?><?import javafx.scene.layout.*?><?import java.net.URL?>
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="page">
-    <children>
-        <Label id="title" text="ProDisFuzz" maxHeight="Infinity" VBox.vgrow="ALWAYS" maxWidth="Infinity" />
-        <GridPane VBox.vgrow="ALWAYS" maxHeight="Infinity">
-            <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="50" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints valignment="BOTTOM" vgrow="NEVER" />
-                <RowConstraints valignment="TOP" vgrow="ALWAYS" />
-            </rowConstraints>
-            <Button fx:id="learnButton" onAction="#learnButtonAction" text="Learn Protocol" GridPane.columnIndex="0"
-                    GridPane.halignment="CENTER" GridPane.rowIndex="0" />
-            <Button fx:id="fuzzingButton" onAction="#fuzzingButtonAction" text="Fuzzing" GridPane.columnIndex="1"
-                    GridPane.halignment="CENTER" GridPane.rowIndex="0" />
-            <Label text="This mode is used to learn the protocol structure of an unknown protocol. To collect the messages between two systems, ProDisFuzz can watch a specific folder for communication files created by for example a proxy server."
-                   wrapText="true" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-            <Label text="This mode is used to fuzz a destination with the protocol structure gained in the learning mode. Depending on the structure different fuzzed messages are generated and sent to the destination. Crashes are detected automatically and can be exported in a final report."
-                   wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        </GridPane>
-    </children>
     <stylesheets>
         <URL value="@../css/page.css" />
         <URL value="@../css/operationMode.css" />
     </stylesheets>
+    <Label id="title" text="ProDisFuzz" maxHeight="Infinity" VBox.vgrow="ALWAYS" maxWidth="Infinity" />
+    <GridPane VBox.vgrow="ALWAYS" maxHeight="Infinity">
+        <columnConstraints>
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" percentWidth="50" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints valignment="BOTTOM" vgrow="NEVER" />
+            <RowConstraints valignment="TOP" vgrow="ALWAYS" />
+        </rowConstraints>
+        <Button fx:id="learnButton" onAction="#learnButtonAction" text="Learn Protocol" GridPane.columnIndex="0"
+                GridPane.halignment="CENTER" GridPane.rowIndex="0" />
+        <Button fx:id="fuzzingButton" onAction="#fuzzingButtonAction" text="Fuzzing" GridPane.columnIndex="1"
+                GridPane.halignment="CENTER" GridPane.rowIndex="0" />
+        <Label text="This mode is used to learn the protocol structure of an unknown protocol. To collect the messages between two systems, ProDisFuzz can watch a specific folder for communication files created by for example a proxy server."
+               wrapText="true" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label text="This mode is used to fuzz a destination with the protocol structure gained in the learning mode. Depending on the structure different fuzzed messages are generated and sent to the destination. Crashes are detected automatically and can be exported in a final report."
+               wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+    </GridPane>
 </fx:root>

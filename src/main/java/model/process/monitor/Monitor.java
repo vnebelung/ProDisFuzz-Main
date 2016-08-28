@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 25.07.15 21:43.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 20:30.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -9,12 +9,14 @@
 package model.process.monitor;
 
 import model.Model;
-import model.process.monitor.protocol.Protocol;
-import model.util.Constants;
+import model.monitor.protocol.Protocol;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
 public class Monitor {
@@ -80,35 +82,41 @@ public class Monitor {
         try {
             socket.setSoTimeout(TIMEOUT);
             socket.connect(inetSocketAddress, TIMEOUT);
-            protocol = new Protocol(socket.getInputStream(), socket.getOutputStream());
+            protocol = new Protocol(new DataInputStream(socket.getInputStream()),
+                    new DataOutputStream(socket.getOutputStream()));
         } catch (IOException ignored) {
             disconnect();
             Model.INSTANCE.getLogger().error("Cannot connect to monitor '" + inetSocketAddress.getHostString() +
                     ':' + inetSocketAddress.getPort() + '\'');
             return false;
         }
-        int monitorVersion;
-        try {
-            monitorVersion = protocol.ayt();
-        } catch (IOException ignored) {
-            disconnect();
-            Model.INSTANCE.getLogger().error("Monitor '" + inetSocketAddress.getHostString() + ':' +
-                    inetSocketAddress.getPort() + "' is not responding");
-            return false;
-        }
-        if (monitorVersion == -1) {
-            disconnect();
-            Model.INSTANCE.getLogger().error("Connection to monitor '" + inetSocketAddress.getHostString() + ':' +
-                    inetSocketAddress.getPort() + "' is lost");
-            return false;
-        }
-        if (monitorVersion != Constants.RELEASE_NUMBER) {
-            disconnect();
-            Model.INSTANCE.getLogger().error("Version mismatch between monitor '" + inetSocketAddress.getHostString()
-                    + ':' + inetSocketAddress.getPort() + "' (release " + monitorVersion + ") and main instance (" +
-                    Constants.RELEASE_NUMBER + ')');
-            return false;
-        }
+        //        int monitorVersion;
+        //        try {
+        //           // TODO: monitorVersion = protocol.ayt();
+        //        } catch (IllegalStateException e) {
+        //            Model.INSTANCE.getLogger().error(e);
+        //            return false;
+        //        } catch (IOException ignored) {
+        //            disconnect();
+        //            Model.INSTANCE.getLogger().error("Monitor '" + inetSocketAddress.getHostString() + ':' +
+        //                    inetSocketAddress.getPort() + "' is not responding");
+        //            return false;
+        //        }
+        //        if (monitorVersion == -1) {
+        //            disconnect();
+        //            Model.INSTANCE.getLogger().error("Connection to monitor '" + inetSocketAddress.getHostString()
+        // + ':' +
+        //                    inetSocketAddress.getPort() + "' is lost");
+        //            return false;
+        //        }
+        //        if (monitorVersion != Constants.RELEASE_NUMBER) {
+        //            disconnect();
+        //            Model.INSTANCE.getLogger().error("Version mismatch between monitor '" + inetSocketAddress
+        // .getHostString()
+        //                    + ':' + inetSocketAddress.getPort() + "' (release " + monitorVersion + ") and main instance (" +
+        //                    Constants.RELEASE_NUMBER + ')');
+        //            return false;
+        //        }
         Model.INSTANCE.getLogger().fine("Monitor '" + inetSocketAddress.getHostString() + ':' + inetSocketAddress
                 .getPort() + "' is reachable");
         return true;
@@ -120,40 +128,47 @@ public class Monitor {
      *
      * @param parameters the fuzzing parameters as key => value
      */
-    public void setFuzzingParameters(Map<String, String> parameters) {
+    public void setParameters(Map<String, String> parameters) {
         if (!isSocketOpen()) {
             return;
         }
-        try {
-            if (!protocol.sfp(parameters)) {
-                Model.INSTANCE.getLogger().error("Malformed or wrong fuzzing parameters");
-                return;
-            }
-        } catch (IOException ignored) {
-            Model.INSTANCE.getLogger().error("Connection to monitor was lost");
-            return;
-        }
-        Model.INSTANCE.getLogger().fine("Monitor successfully received the fuzzing parameters");
+        //        try {
+        //    TODO        if (!protocol.spm(parameters)) {
+        //                protocol.rst();
+        //                Model.INSTANCE.getLogger().error("Malformed or wrong parameters");
+        //                return;
+        //            }
+        //        } catch (IllegalArgumentException | IllegalStateException e) {
+        //            Model.INSTANCE.getLogger().error(e);
+        //            return;
+        //        } catch (IOException ignored) {
+        //            Model.INSTANCE.getLogger().error("Connection to monitor was lost");
+        //            return;
+        //        }
+        Model.INSTANCE.getLogger().fine("Monitor successfully received the parameters");
     }
 
     /**
-     * Returns a fuzzing parameter value with the given key from the monitor. If the monitor cannot find the value with
-     * the given key or an connection error occurs an empty string is returned.
+     * Returns parameter values for the given keys from the monitor. If the monitor cannot find any value for the given
+     * keys or an connection error occurs an empty string is returned.
      *
-     * @param key the fuzzing parameter key
-     * @return the parameter value or an empty string, if the monitor cannot find the parameter or the connection is
-     * closed during reading
+     * @param keys the parameter keys
+     * @return the parameter key/value pairs or an empty map, if the monitor cannot find any of the parameters or the
+     * connection is closed during reading
      */
-    public String getFuzzingParameter(String key) {
+    public Map<String, String> getParameters(String... keys) {
         if (!isSocketOpen()) {
-            return "";
+            return new HashMap<>(0);
         }
-        try {
-            return protocol.gfp(key);
-        } catch (IOException ignored) {
-            Model.INSTANCE.getLogger().error("Connection to monitor was lost");
-            return "";
-        }
+        //  TODO      try {
+        //            return protocol.gpm(keys);
+        //        } catch (IllegalStateException e) {
+        //            Model.INSTANCE.getLogger().error(e);
+        //            return new HashMap<>(0);
+        //        } catch (IOException ignored) {
+        //            Model.INSTANCE.getLogger().error("Connection to monitor was lost");
+        return new HashMap<>(0);
+        //        }
     }
 
     /**
@@ -183,8 +198,7 @@ public class Monitor {
         }
         try {
             socket.close();
-        } catch (IOException e) {
-            Model.INSTANCE.getLogger().error(e);
+        } catch (IOException ignored) {
         }
     }
 }

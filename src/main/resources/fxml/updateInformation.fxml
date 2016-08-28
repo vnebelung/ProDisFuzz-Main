@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  ~ This file is part of ProDisFuzz, modified on 11.07.15 23:27.
-  ~ Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+  ~ This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+  ~ Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
   ~ This work is free. You can redistribute it and/or modify it under the
   ~ terms of the Do What The Fuck You Want To Public License, Version 2,
   ~ as published by Sam Hocevar. See the COPYING file for more details.
@@ -10,10 +10,8 @@
 
 <?import javafx.scene.control.TextArea?><?import javafx.scene.layout.VBox?><?import java.net.URL?>
 <fx:root xmlns:fx="http://javafx.com/fxml" type="javafx.scene.layout.VBox" id="updateInformation">
-    <children>
-        <TextArea maxWidth="Infinity" maxHeight="Infinity" editable="false" wrapText="true" fx:id="textArea" />
-    </children>
     <stylesheets>
         <URL value="@../css/updateInformation.css" />
     </stylesheets>
+    <TextArea maxWidth="Infinity" maxHeight="Infinity" editable="false" wrapText="true" fx:id="textArea" />
 </fx:root>

@@ -1,6 +1,6 @@
 /*
- * This file is part of ProDisFuzz, modified on 6/26/15 9:26 PM.
- * Copyright (c) 2013-2015 Volker Nebelung <vnebelung@prodisfuzz.net>
+ * This file is part of ProDisFuzz, modified on 28.08.16 19:39.
+ * Copyright (c) 2013-2016 Volker Nebelung <vnebelung@prodisfuzz.net>
  * This work is free. You can redistribute it and/or modify it under the
  * terms of the Do What The Fuck You Want To Public License, Version 2,
  * as published by Sam Hocevar. See the COPYING file for more details.
@@ -22,6 +22,9 @@ import java.security.NoSuchAlgorithmException;
 import java.security.Signature;
 import java.security.SignatureException;
 
+/**
+ * This class contains functions to validate signatures of XOM based XML structures.
+ */
 public enum XmlSignature {
     ;
 
@@ -41,9 +44,12 @@ public enum XmlSignature {
             Signature signature = Signature.getInstance("SHA256withRSA");
             signature.initVerify(Keys.getUpdatePublicKey());
             signature.update(xml.getBytes(StandardCharsets.UTF_8));
-            String signatureElement = document.getRootElement().getFirstChildElement(Constants.XML_SIGNATURE)
-                    .getValue();
-            return signature.verify(Hex.hexBin2Byte(signatureElement));
+            Element signatureElement = document.getRootElement().getFirstChildElement(Constants.XML_TAG_NAME_SIGNATURE);
+            if (signatureElement == null) {
+                Model.INSTANCE.getLogger().error("XML element '" + Constants.XML_TAG_NAME_SIGNATURE + "' not found");
+                return false;
+            }
+            return signature.verify(Hex.hexBin2Byte(signatureElement.getValue()));
         } catch (ParsingException | IOException | NoSuchAlgorithmException | SignatureException | InvalidKeyException
                 e) {
             Model.INSTANCE.getLogger().error(e);
@@ -71,8 +77,8 @@ public enum XmlSignature {
      *
      * @param path the path to the XML file
      * @return the normailzed XML document
-     * @throws ParsingException
-     * @throws IOException
+     * @throws ParsingException if a well-formedness error is detected
+     * @throws IOException if an I/O error such as a bad disk prevents the file from being read
      */
     @SuppressWarnings("OverlyBroadThrowsClause")
     private static Document normalize(Path path) throws ParsingException, IOException {
